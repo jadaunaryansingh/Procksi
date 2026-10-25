@@ -1,0 +1,10 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic-settings==2.6.1
+python-dotenv>=1.2.3  # CVE fix: set_key symlink-following arbitrary file overwrite (GHSA); pinned floor over the pydantic-settings transitive
+python-jose[cryptography]>=3.4.1  # CVE fix: algorithm confusion (GHSA-cjwh-...)
+bcrypt==4.2.1
+python-multipart>=0.0.20  # CVE fix: arbitrary file write / DoS unbounded headers
+email-validator==2.2.0
+supabase==2.15.1
+httpx==0.28.1

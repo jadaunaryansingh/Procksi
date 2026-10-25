@@ -1,0 +1,237 @@
+name: Deploy EC2
+# Trigger EC2 redeployment to commit 940df14
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "apps/main/**"
+      - "README.md"
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - apps/main/**
+      - README.md
+
+  # Manual redeploy. Secrets are only written into the EC2 .env during a
+  # deploy, so changing a secret in the repo settings does nothing on its
+  # own -- use this to roll the new value out without an empty commit.
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install backend requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r backend/student-api/requirements.txt
+
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+          SECRET_KEY: ci-test-secret
+        run: |
+          cd backend
+          pytest tests
+          cd student-api
+          pytest tests
+
+      - name: Install frontend dependencies
+        run: |
+          for app in main student admin mentor panel; do
+            # npm ci is strict about cross-platform optional-dep drift in the
+            # lockfile (vite 8 rolldown / @napi-rs). Fall back to npm install so a
+            # lockfile authored on a non-Linux machine still deploys.
+            npm ci --prefix apps/$app || npm install --prefix apps/$app
+          done
+
+      - name: Lint frontends
+        run: |
+          for app in main student admin mentor panel; do
+            npm run lint --prefix apps/$app
+          done
+
+      - name: Run frontend tests
+        run: |
+          node --test apps/student/tests/*.test.mjs
+          node --test apps/admin/tests/*.test.mjs
+
+  build-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install frontend dependencies
+        run: |
+          for app in main student admin mentor panel; do
+            # npm ci is strict about cross-platform optional-dep drift in the
+            # lockfile (vite 8 rolldown / @napi-rs). Fall back to npm install so a
+            # lockfile authored on a non-Linux machine still deploys.
+            npm ci --prefix apps/$app || npm install --prefix apps/$app
+          done
+
+      - name: Build frontends
+        run: |
+          for app in main student admin mentor panel; do
+            npm run build --prefix apps/$app
+          done
+
+      - name: Compile backend Python
+        run: python -m compileall -q backend
+
+  deploy:
+    if: ${{ !github.event.pull_request }}
+    needs: [test, build-check]
+    runs-on: ubuntu-latest
+
+    steps:
+      # GitHub substitutes an undefined secret with an empty string and does NOT
+      # fail the job. That shipped a student bundle with the Supabase anon key
+      # baked in as "" -- Vite inlines VITE_* at build time -- so every portal
+      # died with "supabaseKey is required" while CI stayed green. Fail here
+      # instead, where the cause is obvious.
+      - name: Verify required secrets are set
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
+        run: |
+          missing=""
+          for name in SUPABASE_PUBLISHABLE_KEY SUPABASE_SERVICE_ROLE_KEY DATABASE_URL SECRET_KEY CLOUDFLARE_TUNNEL_TOKEN; do
+            if [ -z "${!name}" ]; then
+              missing="$missing $name"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Required repository secrets are empty or unset:$missing"
+            echo "Set them under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          timeout: 120s
+          command_timeout: 20m
+          script: |
+            cd ~/Project_Management_System
+            git fetch origin
+            git checkout main
+            git reset --hard origin/main
+
+            # Write root .env with all secrets needed by docker compose build args
+            cat > .env << ENVEOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}
+            TWILIO_PHONE_NUMBER=${{ secrets.TWILIO_PHONE_NUMBER }}
+            VITE_SUPABASE_URL=https://rmmkjczuwsuxcnrdtkrh.supabase.co
+            VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+            SUPABASE_URL=https://rmmkjczuwsuxcnrdtkrh.supabase.co
+            SUPABASE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+            SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            GOOGLE_CLIENT_ID=53268196905-gfa2r4klrqrtpgt9r9s4mjhmmgunjlrr.apps.googleusercontent.com
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URI=https://admin.glapms.in/auth/google/callback
+            GOOGLE_CALENDAR_ID=primary
+            MAIL_SERVER=smtp.gmail.com
+            MAIL_PORT=587
+            MAIL_USERNAME=aiml_project_coordinator@gla.ac.in
+            MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            MAIL_FROM=aiml_project_coordinator@gla.ac.in
+            MAIL_FROM_NAME="GLA PMS Portal"
+            STUDENT_PORTAL_URL=https://student.glapms.in
+            ADMIN_PORTAL_URL=https://admin.glapms.in
+            MENTOR_PORTAL_URL=https://mentor.glapms.in
+            PANEL_PORTAL_URL=https://panel.glapms.in
+            ADMIN_API_KEY=${{ secrets.ADMIN_API_KEY }}
+            # No VITE_ADMIN_API_KEY: baking this into the admin bundle (Vite
+            # inlines VITE_* at build time) is what let incident 2026-09-03 §2.8
+            # happen — anyone who opened the built JS could read the key and hit
+            # panel-api's admin-sync routes directly. The admin frontend now goes
+            # through admin-api's own server-side proxy instead; see
+            # backend/admin-api/app/panel_sync_proxy.py.
+            PASSWORD_RESET_SECRET=${{ secrets.PASSWORD_RESET_SECRET }}
+            # Cloudflare Tunnel token — the only credential the cloudflared
+            # container needs. Public-hostname routing lives in the CF Zero Trust
+            # dashboard. See deploy/cloudflared/README.md.
+            CLOUDFLARE_TUNNEL_TOKEN=${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
+            # PMS-Chat build-time kill switch. Vite inlines VITE_* at build
+            # time, so this decides whether the feature exists in the bundle at
+            # all. Left unset (or anything other than "true") the portals ship
+            # with PMS-Chat off regardless of the per-portal switches an admin
+            # sets, which are only consulted once the build allows the feature.
+            # Set the PMS_CHAT repository variable to "true" to ship it.
+            VITE_PMS_CHAT=${{ vars.PMS_CHAT }}
+            ENVEOF
+
+            # Sync root .env to all backend API directories to overwrite any stale local .env files
+            cp .env backend/admin-api/.env
+            cp .env backend/panel-api/.env
+            cp .env backend/student-api/.env
+            cp .env backend/mentor-api/.env
+
+            # mentor-api, panel-api and student-api must NOT share a JWT secret:
+            # until 2026-09-04 they all signed with the one SECRET_KEY above, so a
+            # token minted by any one of them verified on the other two — one
+            # leaked secret compromised all three (audit finding L-1). Override
+            # each with its own distinct value here. Falls back to the shared
+            # SECRET_KEY if the per-service secret isn't set yet, so this deploy
+            # keeps working the moment you add MENTOR_SECRET_KEY / PANEL_SECRET_KEY
+            # / STUDENT_SECRET_KEY under Settings > Secrets and variables > Actions
+            # — until then it's no worse than before, just not yet separated.
+            sed -i "s|^SECRET_KEY=.*|SECRET_KEY=${{ secrets.MENTOR_SECRET_KEY || secrets.SECRET_KEY }}|" backend/mentor-api/.env
+            sed -i "s|^SECRET_KEY=.*|SECRET_KEY=${{ secrets.PANEL_SECRET_KEY || secrets.SECRET_KEY }}|" backend/panel-api/.env
+            sed -i "s|^SECRET_KEY=.*|SECRET_KEY=${{ secrets.STUDENT_SECRET_KEY || secrets.SECRET_KEY }}|" backend/student-api/.env
+
+            # 1. Build all containers forcing no-cache on all frontends so nginx.conf and Vite updates always apply
+            docker compose build --no-cache admin-frontend student-frontend panel-frontend mentor-frontend
+            docker compose build admin-backend panel-backend student-backend mentor-backend
+
+            # 2. Restart all services with forced recreate
+            docker compose up -d --force-recreate
+
+            # 3. Clean up unused images
+            docker image prune -f

@@ -1,0 +1,2 @@
+# Alembic migration versions
+# Run `alembic revision --autogenerate -m "initial"` to generate the first migration.

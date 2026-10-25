@@ -1,0 +1,16 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+supabase==2.18.1
+python-dotenv>=1.2.3  # CVE fix: set_key symlink-following arbitrary file overwrite (GHSA)
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.108.0
+python-multipart>=0.0.20  # CVE fix: arbitrary file write / DoS unbounded headers
+pypdf
+pandas
+openpyxl
+rapidfuzz
+openai
+python-docx
+twilio
+pywhatkit

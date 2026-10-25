@@ -1,0 +1,246 @@
+Build: PMS-Chat - a role-aware messenger for a university project-management system
+====================================================================================
+
+PRODUCT
+-------
+
+PMS-Chat is the communication layer for a university capstone-project management
+system (PMS) used by a Computer Engineering department. It connects four separate
+user portals - Admin, Student, Mentor, Panel - so that coordination about student
+projects happens in context, with a permanent record, instead of being scattered
+across email and WhatsApp.
+
+The guiding principle: conversation to action to ownership to completion. A message
+about work should be convertible into tracked work, and every message should carry
+the context of the project it concerns.
+
+
+STRICT CONSTRAINT: NO EMOJI ANYWHERE
+------------------------------------
+
+Do not use emoji in any part of this product. Not in the interface, not in button
+labels, not in status indicators, not in notification text, not in empty states, not
+in seeded or sample data, and not in code comments. Convey status with text labels,
+colour, and line icons from a single icon set only. This is a formal academic
+administration tool used for graded coursework; emoji are inappropriate throughout
+and must not appear even as decoration.
+
+
+THE FOUR PORTALS AND WHO USES THEM
+----------------------------------
+
+  Admin    Project coordinator, sub-admins                        1 to 5 people
+  Student  Enrolled students, organised into teams                ~500 students,
+                                                                  ~200 teams of 2 to 4
+  Mentor   Faculty mentors supervising teams                      2 to 30 faculty
+  Panel    Evaluation panels (groups of faculty) who grade
+           presentations                                          3 to 10 panels
+
+Each portal is a separate front-end application with its own login and its own
+navigation. PMS-Chat must appear inside all four, sharing one message store, but
+showing each role only what it is entitled to see.
+
+
+DOMAIN ENTITIES PMS-CHAT MUST UNDERSTAND
+----------------------------------------
+
+- Semester - every conversation is scoped to a semester. Users can switch the active
+  semester; chat must refetch and never leak messages across semesters.
+- Team - has a team number, a project title, a leader, 2 to 4 members (name, roll
+  number, branch), and a validation status of Valid, Pending, or Invalid.
+- Student - name, roll number, email, branch, section, year; belongs to one team.
+- Mentor - name, email, domain expertise, allocated teams.
+- Panel - name, description, member faculty, assigned evaluation slots.
+- Problem statement - the project a team is allocated; up to 2 teams may share one.
+- Synopsis submission (milestone) - title, description, deadline, status
+  (not_started, in_progress, approved), optional GitHub URL and file upload.
+- Repository analysis - per-team GitHub stats: total commits, per-contributor commit
+  counts, quality/architecture/documentation/security scores, last commit date.
+
+
+CONVERSATION TYPES
+------------------
+
+1. Direct - a one-to-one thread between the admin and one specific mentor, team, or
+   panel. Created lazily on the first message so browsing a directory never creates
+   empty rows.
+
+2. Broadcast - one message sent to a whole audience: all mentors, all teams, all
+   panels, or everyone. Recipients see it in their own inbox; replies create a
+   per-recipient sub-thread visible only to the admin and that recipient.
+
+3. Team-internal - students in the same team talking to each other, plus their
+   mentor. Admin can view but this is not an admin-initiated thread.
+
+4. Panel to team - a panel and the teams it is scheduled to evaluate, opened
+   automatically around evaluation dates.
+
+
+FEATURE SPECIFICATION
+---------------------
+
+Messaging core (all portals)
+
+- Threaded conversations with an ordered message history and timestamps.
+- Reply to a specific message (quoted inline, click to jump to the original).
+- Mentions: typing @ opens a filtered list of people valid in that thread - team
+  members, the mentor, panel faculty. Filter by name or roll number. Arrow keys and
+  Enter to select; Enter must not send the message while the list is open. Mentioned
+  users get a targeted notification.
+- Slash commands: typing / at the start of a message opens a command palette.
+  Commands insert a reviewed template or fetch live data:
+    /report    request this week's progress report
+    /synopsis  remind about a pending synopsis submission
+    /repo      request the latest repository link
+    /status    insert a live summary: synopsis state, last commit date, total commits
+    /members   insert the team roster
+    /meeting   propose a review meeting with a date picker
+    /blockers  ask what is blocking progress
+- File attachments: images, PDF, DOC/DOCX, XLS/XLSX, PPT/PPTX, ZIP. Show inline
+  previews for images and PDFs. Attachments are permanently tied to their thread.
+- Read receipts: track who has read each message. Unread counts per conversation,
+  cleared when the thread is opened. Show "Seen by 3 of 4" on team threads.
+- Acknowledge: a single text action on a message, recorded per user and shown as
+  "Acknowledged by 4". Use this instead of reactions. No emoji, no reaction picker.
+- Message editing and deletion within 15 minutes, leaving an "Edited" marker;
+  deletion leaves a tombstone so the record is never silently altered.
+- Search across message bodies, thread subjects, participant names, roll numbers, and
+  team numbers, filterable by semester, portal, and date range.
+- Pin important messages to the top of a thread.
+
+DO NOT BUILD PRESENCE. No online or offline indicators, no last-seen timestamps, no
+typing indicators, no green dots. Faculty and students should not be observable in
+real time; the product is asynchronous by design and this is a deliberate decision,
+not an omission.
+
+
+Admin portal
+
+- A directory browser with tabs: Recent, Mentors, Teams, Panels.
+  - Recent lists conversations, newest first, with unread counts.
+  - The other tabs list live database rows: mentors with email and domain, teams with
+    team number, title, leader and validation status, panels with description.
+  - One search box filters whichever tab is active; searching teams must also match
+    member names and roll numbers, not just the team.
+  - Clicking a row opens a direct chat; clicking the open row closes it. The open row
+    collapses to its identifier plus "Click to close" without changing height.
+- Compose a broadcast with an audience picker showing the live recipient count
+  ("Will reach 2 mentors and 172 validated teams") before sending.
+- Team chats show a member roster as chips above the message area. Clicking a member
+  opens a card with their roll number, branch, commit count, contribution share, and
+  the git identities matched to them.
+- Maximize the messenger to a full-screen panel; state, scroll position and drafts
+  must survive the toggle.
+- Convert any message into a tracked task: assignee, due date, priority, status; the
+  task links back to the message it came from.
+
+
+Student portal
+
+- Inbox with three sections: My team, My mentor, Announcements.
+- Team chat with all members plus the mentor.
+- Direct chat with the mentor; direct chat with the coordinator.
+- Announcements are read-only broadcasts with an Acknowledge action.
+- Attach synopsis files and repository links directly from chat, which updates the
+  submission record.
+- Notification when assigned a task, mentioned, or when a deadline is within 3 days.
+
+
+Mentor portal
+
+- Conversation list grouped by allocated team, each showing that team's synopsis
+  status and last commit date as context.
+- Broadcast to all allocated teams at once.
+- Direct chat with the coordinator and with individual students.
+- A "Needs attention" filter: teams with no messages in 7 days, overdue synopses, or
+  no commits in 14 days.
+
+
+Panel portal
+
+- Conversations with the teams scheduled for evaluation, opening 48 hours before the
+  slot and remaining available afterwards.
+- Direct chat with the coordinator for scheduling conflicts and absences.
+- Post evaluation-day instructions to all assigned teams at once.
+- Read-only access to each team's synopsis and repository summary inside the thread.
+
+
+PERMISSIONS
+-----------
+
+  Action                    Admin  Mentor                      Panel                          Student
+  ------------------------  -----  --------------------------  -----------------------------  --------------------------
+  Broadcast to all          Yes    Own teams only              Own teams only                 No
+  Direct-message anyone     Yes    Coordinator and own teams   Coordinator and assigned teams Team, mentor, coordinator
+  See another team's chat   Yes    No                          No                             No
+  Create a task             Yes    Own teams only              No                             No
+  Delete a message          Own    Own only                    Own only                       Own only
+  Export a thread           Yes    Yes                         No                             No
+
+Enforce every rule server-side. A student must never be able to read another team's
+messages by changing an id in a request.
+
+
+NOTIFICATIONS
+-------------
+
+Event-driven, delivered in-app and by email digest: assignment, mention, reply,
+broadcast received, deadline in 3 days, 1 day and today, synopsis approved or
+rejected, evaluation scheduled.
+
+A notification centre with categories (Assigned to me, Mentions, Replies, Deadlines,
+Announcements) and read, unread and archived states. Per-user preferences controlling
+which events send email.
+
+CRITICAL: notifications must be addressed to a specific recipient identity, not
+written as role-wide rows with a null recipient - otherwise nobody receives them.
+
+
+NON-FUNCTIONAL REQUIREMENTS
+---------------------------
+
+- Message delivery under 2 seconds; use realtime subscriptions, not polling.
+- A thread with 5,000 messages must open in under 2 seconds - paginate, do not fetch
+  all.
+- Every message immutable in the audit trail; edits and deletions recorded, never
+  erased.
+- Role-based access control enforced at the database layer with row-level security.
+- Attachments in private storage with signed, expiring URLs.
+- Full history retained per semester and exportable to PDF or CSV by an admin.
+- Mobile-responsive: students will use this on phones.
+- Works with 500 or more concurrent users during evaluation week.
+
+
+DESIGN DIRECTION
+----------------
+
+Clean, professional, restrained - an academic administration tool, not a consumer
+chat app. Light and dark themes. Two-pane layout on desktop (list and thread),
+stacked on mobile. Rounded cards, generous whitespace, a single accent colour. Status
+is shown with text labels and colour, never with emoji or symbolic glyphs. Sticky
+section headers must be fully opaque so rows never show through when scrolling.
+Smooth, short transitions (about 300ms, ease-out); no bouncing.
+
+
+EXPLICITLY OUT OF SCOPE FOR V1
+------------------------------
+
+Presence and typing indicators, emoji and reactions, voice and video calls, message
+translation, AI reply generation, public channels, external guests, and message
+scheduling.
+
+
+ACCEPTANCE CRITERIA
+-------------------
+
+1. An admin broadcasts to all teams; every student in every validated team receives
+   it in their portal and by email, and the admin can see who has read it.
+2. A student replies; the reply reaches the admin as a per-recipient thread, and no
+   other team can see it.
+3. A mentor opens a team thread and sees that team's synopsis status and commit
+   activity without leaving chat.
+4. Mentioning a student notifies that student specifically, not their whole team.
+5. Switching the active semester changes every visible conversation and leaks nothing
+   from the previous semester.
+6. A student attempting to read another team's thread by id receives 403.
+7. No emoji appears anywhere in the interface, seeded data, or generated content.

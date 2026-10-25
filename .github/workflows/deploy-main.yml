@@ -1,0 +1,96 @@
+name: Deploy Main Website
+# Trigger main site deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/main/**"
+      - ".github/workflows/deploy-main.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - apps/main/**
+      - .github/workflows/deploy-main.yml
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/main
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          EOF
+
+      - name: Verify .env (without exposing secrets)
+        run: |
+          echo "Environment variables created:"
+          grep '^VITE_' .env | cut -d'=' -f1
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Lint Project
+        run: npm run lint
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-site-dist
+          path: apps/main/dist
+          if-no-files-found: error
+
+  deploy-main:
+    if: ${{ !github.event.pull_request }}
+    needs: build-check
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/main
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: main-site-dist
+          path: apps/main/dist
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"

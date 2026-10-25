@@ -1,0 +1,29 @@
+# Locally-managed Cloudflare Tunnel config (Option B in README.md).
+# Only used if you mount this file into the cloudflared container and run with
+# `--config /etc/cloudflared/config.yml`. Option A (dashboard + token) needs
+# none of this.
+
+# Replace with the UUID printed by `cloudflared tunnel create glapms-ec2`.
+tunnel: 00000000-0000-0000-0000-000000000000
+credentials-file: /etc/cloudflared/credentials.json
+
+# Route public hostnames to the frontend containers (compose network DNS).
+# Order matters: first match wins, and the final catch-all is required.
+ingress:
+  - hostname: admin.glapms.in
+    service: http://admin-frontend:80
+  - hostname: panel.glapms.in
+    service: http://panel-frontend:80
+  - hostname: student.glapms.in
+    service: http://student-frontend:80
+  - hostname: mentor.glapms.in
+    service: http://mentor-frontend:80
+  # everything else -> 404 (do NOT expose anything unlisted)
+  - service: http_status:404
+
+# Connator tuning (optional)
+# warp-routing:
+#   enabled: false
+originRequest:
+  connectTimeout: 30s
+  noHappyEyeballs: false

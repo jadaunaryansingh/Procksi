@@ -1,0 +1,19 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+alembic
+pydantic[email]
+pydantic-settings
+python-dotenv>=1.2.3  # CVE fix: set_key symlink-following arbitrary file overwrite (GHSA); pinned floor over the pydantic-settings transitive
+passlib[bcrypt]
+python-jose[cryptography]>=3.4.1  # CVE fix: algorithm confusion (GHSA-cjwh-...)
+fastapi-mail==1.6.4
+python-multipart>=0.0.20  # CVE fix: arbitrary file write / DoS unbounded headers
+openpyxl
+pandas
+openai
+numpy
+httpx==0.28.1
+supabase==2.18.1
+slowapi==0.1.9  # per-IP rate limiting on costly/abusable endpoints (audit finding L-2)

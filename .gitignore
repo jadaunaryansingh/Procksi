@@ -1,0 +1,51 @@
+# Workspace root gitignore
+venv/
+
+# Environment files — NEVER commit secrets
+.env
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node/Frontend
+node_modules/
+dist/
+.vite/
+.DS_Store
+
+# Documentation containing real credentials
+docs/ENVIRONMENT_SETUP.md
+
+# Scratch and test directories
+scratch/
+test_scripts/
+
+
+# Python virtualenvs (any name) & logs
+.venv/
+venv/
+logs/
+
+# Local credentials / secrets (never commit)
+PMS_RUN_AND_CREDENTIALS.txt
+
+# .env backups (contain secrets)
+.env.bak.*
+*/.env.bak.*
+
+# IDE Settings
+.vscode/
+
+# Local DB snapshots taken before destructive cleanups. These hold real user
+# rows -- emails and password hashes -- so they stay out of the repository.
+backups/
+
+# macOS custom-folder-icon stub.
+Icon?
+
+# Cloudflare Tunnel (Option B) — never commit tunnel credentials
+deploy/cloudflared/credentials.json

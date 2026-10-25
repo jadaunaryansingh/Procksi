@@ -1,0 +1,83 @@
+-- ============================================================================
+-- PHASE 6 — DROP LEGACY.  DO NOT RUN until:
+--   * every backend + frontend reads/writes team_uid only (phase 5 complete)
+--   * production has soaked >= 2 weeks with no team_uid-related incident
+--   * 04_membership_merge_and_verify.sql verification is clean
+-- Rename to .sql and run inside a transaction, after a fresh pg_dump.
+-- ============================================================================
+begin;
+
+-- fresh snapshots
+create table backup.teams_predrop as table public.teams;
+create table backup.team_members_predrop as table public.team_members;
+
+-- 1. archive the 14 unmapped invalid placeholder teams, then they can go with public.teams
+create table backup.teams_unmapped_archive as
+select t.* from public.teams t
+where not exists (select 1 from public.team_uid_map m where m.old_int_id = t.id);
+
+-- 2. drop the transitional sync layer
+do $$ declare tbl text; begin
+  foreach tbl in array array['alerts','projects','slots','evaluations','evaluation_drafts','milestones','team_members','results',
+                             'conversations','mentor_preferences','presentation_evaluations','presentation_schedule','presentation_submissions'] loop
+    execute format('drop trigger if exists trg_sync_team_uid on public.%I', tbl);
+  end loop;
+end $$;
+drop trigger if exists trg_map_new_team on public.teams;
+drop trigger if exists trg_heal_team_members on public.team_memberships;
+drop function if exists public.sync_team_uid_from_int();
+drop function if exists public.sync_team_uid_from_slug();
+drop function if exists public.sync_team_members_team_uid();
+drop function if exists public.sync_results_team_uid();
+drop function if exists public.map_new_team_to_uid();
+drop function if exists public.heal_team_members_on_membership();
+drop function if exists public.reconcile_team_uid();
+
+-- 3. drop legacy team key columns (team_uid stays)
+alter table public.alerts             drop column if exists team_id;
+alter table public.projects           drop column if exists team_id;
+alter table public.slots              drop column if exists team_id;
+alter table public.evaluations        drop column if exists team_id;
+alter table public.evaluation_drafts  drop column if exists team_id;
+alter table public.milestones         drop column if exists team_id;
+alter table public.conversations      drop column if exists team_id;
+alter table public.mentor_preferences drop column if exists team_id;
+alter table public.presentation_evaluations drop column if exists team_id;
+alter table public.presentation_schedule    drop column if exists team_id;
+alter table public.presentation_submissions drop column if exists team_id;
+alter table public.results            drop column if exists team;   -- keep team_uid
+alter table public.github_data              drop column if exists team_id, drop column if exists team_ref;
+alter table public.github_agent_analysis    drop column if exists team_id, drop column if exists team_ref;
+alter table public.team_join_requests       drop column if exists team_id, drop column if exists team_name;
+alter table public.proposals                drop column if exists "teamId";
+
+-- 4. team_members -> canonical-backed view (leaders only, keeps old readers alive)
+alter table public.team_members rename to team_members_legacy;
+create view public.team_members as
+select (mm.semester_id || ':' || mm.student_roll) as id,
+       mm.team_uid,
+       mm.student_roll as student_id,
+       mm.role
+from public.team_memberships mm
+where mm.role = 'LEADER';
+
+-- 5. demote public.teams to a compatibility view over the canonical table
+alter table public.teams rename to teams_legacy;
+create view public.teams as
+select tv.uid,
+       tv.uid          as id,          -- callers expecting `id` now get the uuid
+       tv.title        as name,
+       tv.title        as project_title,
+       tv.description,
+       tv.domain,
+       tv.mentor       as mentor_id,
+       tv.semester_id,
+       (tv."validationStatus" = 'Valid') as is_validated,
+       tv."validationStatus" as status,
+       tv.team_number
+from public.teams_validation tv;
+
+-- 6. crosswalk no longer needed
+drop table if exists public.team_uid_map;
+
+commit;
