@@ -32,7 +32,8 @@ postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/p
    `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
    `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `MAIL_USERNAME`, `MAIL_PASSWORD`,
    `MAIL_FROM`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`,
-   `OPENAI_API_KEY`, `GOOGLE_CLIENT_SECRET`, `ADMIN_API_KEY`, `PASSWORD_RESET_SECRET`.
+   `OPENAI_API_KEY`, `NVIDIA_API_KEY`, `GOOGLE_CLIENT_SECRET`, `ADMIN_API_KEY`,
+   `PASSWORD_RESET_SECRET`, `MASTER_ADMIN_EMAIL`, `MASTER_ADMIN_PASSWORD`.
    Use the same values as the GitHub Actions secrets used by `deploy-ec2.yml`.
 2. **New → Blueprint** → pick this repo. Render reads `render.yaml` and asks for
    each service's `SECRET_KEY` (use `SECRET_KEY` for admin, and
