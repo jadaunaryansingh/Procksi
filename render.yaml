@@ -39,7 +39,7 @@ envVarGroups:
       # Extra CORS origins on top of the hardcoded *.glapms.in list, so the
       # *.vercel.app preview URLs work before the custom domains are moved.
       - key: FRONTEND_URL
-        value: https://pms-main.vercel.app,https://pms-admin.vercel.app,https://pms-panel.vercel.app,https://pms-student.vercel.app,https://pms-mentor.vercel.app
+        value: https://pms-main-chi.vercel.app,https://pms-admin-fawn.vercel.app,https://pms-panel.vercel.app,https://pms-student.vercel.app,https://pms-mentor.vercel.app
 
 services:
   - type: web
