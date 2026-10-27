@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 // ── Persistent configurator helpers ────────────────────────────────────────
-const CONFIG_KEY = 'pms-schedule-config';
+const CONFIG_KEY = 'procksi-schedule-config';
 const DEFAULT_CONFIG = {
     rooms:                [
         { id: 1, name: 'Seminar Hall 1',   capacity: 30 },
@@ -1308,7 +1308,7 @@ export default function Schedule() {
                                             </div>
                                         ) : slot.meetLink ? (
                                             <div className="flex items-center justify-between w-full">
-                                                <a href={slot.meetLink.includes('jit.si') ? `https://meet.google.com/${slot.meetLink.split('/').pop().replace('pms-evaluation-', '')}` : slot.meetLink} target="_blank" rel="noreferrer" className="flex items-center text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
+                                                <a href={slot.meetLink.includes('jit.si') ? `https://meet.google.com/${slot.meetLink.split('/').pop().replace('procksi-evaluation-', '')}` : slot.meetLink} target="_blank" rel="noreferrer" className="flex items-center text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
                                                     <Video className="w-4 h-4 mr-1.5" /> Join Meet
                                                 </a>
                                                 <span className="text-[10px] bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 px-2 py-0.5 rounded font-black border border-emerald-100 dark:border-emerald-500/20">Generated</span>

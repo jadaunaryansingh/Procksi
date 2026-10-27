@@ -6,7 +6,7 @@ import { buildReminders, formatDeadlineName, formatDaysLeft, autoOpenDecision, l
 import RichText from './RichText';
 
 const COUNTDOWN_SECONDS = 10;
-const STORAGE_KEY = 'pms-reminders-shown';
+const STORAGE_KEY = 'procksi-reminders-shown';
 // A cold load can lose the race with Supabase session hydration and fail once.
 // Retry a couple of times before giving up, otherwise a single transient error
 // means the student never sees their deadlines this session.

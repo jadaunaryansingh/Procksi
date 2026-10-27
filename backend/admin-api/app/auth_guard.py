@@ -58,7 +58,7 @@ _identity_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 
 
 def _master_admin_email() -> str:
-    return os.getenv("MASTER_ADMIN_EMAIL", "aiml_project_coordinator@gla.ac.in").strip().lower()
+    return os.getenv("MASTER_ADMIN_EMAIL", "").strip().lower()
 
 
 def _cache_get(token: str) -> dict[str, Any] | None:
@@ -125,7 +125,7 @@ async def _identity_from_token(token: str) -> dict[str, Any]:
     # The role claim MUST come from app_metadata: it is writable only with the
     # service role key. user_metadata is attacker-controlled (POST /auth/v1/signup
     # `data:{...}`) — trusting it here let a self-registered account
-    # (glapmsnuke...@emalupe.com, incident 2026-09-03) pass as an administrator.
+    # (an attacker-chosen throwaway address, incident 2026-09-03) pass as an administrator.
     app_metadata = user.get("app_metadata") or {}
     role = str(app_metadata.get("role") or "").strip().lower()
 

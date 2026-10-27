@@ -11,7 +11,7 @@ const supabase = (url && key)
     : null;
 
 /**
- * Realtime signal for PMS-Chat.
+ * Realtime signal for Procksi Chat.
  *
  * The chat tables are locked to the backends' service-role key and are NOT
  * published to realtime — they hold message bodies. What is published is
@@ -31,7 +31,7 @@ const handlers = new Set();
 function open() {
     if (channel || !supabase) return;
     channel = supabase
-        .channel('pms-chat-events')
+        .channel('procksi-chat-events')
         .on(
             'postgres_changes',
             { event: 'INSERT', schema: 'public', table: 'chat_events' },

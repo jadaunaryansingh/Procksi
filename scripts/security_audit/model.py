@@ -41,7 +41,7 @@ class Finding:
     code: str                 # stable slug, e.g. "rls.permissive_policy"
     severity: Severity
     title: str                # one line, specific
-    obj: str                  # the object it is about: "public.students", "storage:PMS", "auth"
+    obj: str                  # the object it is about: "public.students", "storage:Procksi", "auth"
     detail: str               # what is wrong and why it matters
     remediation: str          # concrete fix
     category: str = "misc"    # rls | grants | functions | storage | auth | jwt | probe | exposure

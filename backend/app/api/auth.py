@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -16,6 +17,16 @@ from app.models.admin import Admin
 from app.schemas.auth import AdminLogin, TokenResponse, RefreshRequest
 from app.schemas.common import ok
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
+def _master_admin_email() -> str:
+    return os.getenv("MASTER_ADMIN_EMAIL", "").strip().lower()
+
+
 router = APIRouter(prefix="/api/admin", tags=["Auth"])
 
 
@@ -25,14 +36,14 @@ async def admin_login(payload: AdminLogin, db: AsyncSession = Depends(get_db)):
     Authenticate an admin and return a short-lived access token + long-lived refresh token.
     """
     email_clean = payload.email.strip().lower()
-    if not email_clean.endswith("@gla.ac.in") and email_clean != "aiml_project_coordinator@gla.ac.in":
+    if not email_clean.endswith(_allowed_email_suffix()) and email_clean != _master_admin_email():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "success": False,
                 "error": {
                     "code": "AUTH_FORBIDDEN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )

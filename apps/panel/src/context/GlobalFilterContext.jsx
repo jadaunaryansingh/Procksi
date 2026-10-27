@@ -48,19 +48,19 @@ export function GlobalFilterProvider({ children }) {
         fetchSemesters();
 
         const handleAuthChange = () => fetchSemesters();
-        window.addEventListener('pms-auth-changed', handleAuthChange);
+        window.addEventListener('procksi-auth-changed', handleAuthChange);
         window.addEventListener('storage', handleAuthChange);
 
         return () => {
             isMounted = false;
-            window.removeEventListener('pms-auth-changed', handleAuthChange);
+            window.removeEventListener('procksi-auth-changed', handleAuthChange);
             window.removeEventListener('storage', handleAuthChange);
         };
     }, []);
 
     useEffect(() => {
         saveStoredGlobalFilters(filters);
-        window.dispatchEvent(new CustomEvent('pms-panel-global-filters-changed', { detail: filters }));
+        window.dispatchEvent(new CustomEvent('procksi-panel-global-filters-changed', { detail: filters }));
     }, [filters]);
 
     useEffect(() => {
@@ -72,7 +72,7 @@ export function GlobalFilterProvider({ children }) {
         };
 
         const handleStorageEvent = (event) => {
-            if (event.key === 'pms-panel-global-filters' && event.newValue) {
+            if (event.key === 'procksi-panel-global-filters' && event.newValue) {
                 try {
                     const newFilters = JSON.parse(event.newValue);
                     if (newFilters && JSON.stringify(newFilters) !== JSON.stringify(filters)) {
@@ -84,11 +84,11 @@ export function GlobalFilterProvider({ children }) {
             }
         };
 
-        window.addEventListener('pms-panel-global-filters-changed', handleCustomEvent);
+        window.addEventListener('procksi-panel-global-filters-changed', handleCustomEvent);
         window.addEventListener('storage', handleStorageEvent);
 
         return () => {
-            window.removeEventListener('pms-panel-global-filters-changed', handleCustomEvent);
+            window.removeEventListener('procksi-panel-global-filters-changed', handleCustomEvent);
             window.removeEventListener('storage', handleStorageEvent);
         };
     }, [filters]);

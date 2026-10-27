@@ -1,17 +1,27 @@
 # Deployment: Vercel (frontends) + Render (backends)
 
-| Frontend (Vercel project) | Root directory | Proxies to (Render service) |
-| :--- | :--- | :--- |
-| `pms-main` → glapms.in, www.glapms.in | `apps/main` | `pms-student-api` |
-| `pms-admin` → admin.glapms.in | `apps/admin` | `pms-admin-api` |
-| `pms-panel` → panel.glapms.in | `apps/panel` | `pms-panel-api` |
-| `pms-student` → student.glapms.in | `apps/student` | `pms-student-api` |
-| `pms-mentor` → mentor.glapms.in | `apps/mentor` | `pms-mentor-api` |
+| Frontend (Vercel project) | URL | Root directory | Proxies to (Render service) |
+| :--- | :--- | :--- | :--- |
+| `procksi-main` | https://procksi-main.vercel.app | `apps/main` | student-api |
+| `procksi-admin` | https://procksi-admin.vercel.app | `apps/admin` | admin-api |
+| `procksi-panel` | https://procksi-panel.vercel.app | `apps/panel` | panel-api |
+| `procksi-student` | https://procksi-student.vercel.app | `apps/student` | student-api |
+| `procksi-mentor` | https://procksi-mentor.vercel.app | `apps/mentor` | mentor-api |
+
+| Render service | URL |
+| :--- | :--- |
+| admin-api | https://procksi-4d8a.onrender.com |
+| student-api | https://procksi-2.onrender.com |
+| mentor-api | https://procksi-mentor-portal.onrender.com |
+| panel-api | https://procksi-panel-portal.onrender.com |
 
 Each app's `vercel.json` forwards `/api/*`, `/auth/*` (and for panel `/panel/*`,
-`/mentor/*`, `/evaluation/*`) to its Render service, exactly like the old nginx
-config did. The browser only ever talks to its own origin, so **do not set
-`VITE_API_BASE_URL`** on Vercel.
+`/mentor/*`, `/evaluation/*`) to its Render service. The browser only ever talks
+to its own origin, so **do not set `VITE_API_BASE_URL`** on Vercel.
+
+No production host, institution or email domain is hardcoded in the code. They
+all come from the env vars below, so moving to a custom domain or another
+institution is a configuration change only.
 
 ## 1. Database URL (Supabase)
 
@@ -27,44 +37,59 @@ postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/p
 
 ## 2. Render (backends)
 
-1. Dashboard → **Environment Groups** → create `pms-secrets` with:
-   `DATABASE_URL` (from step 1), `SUPABASE_URL`, `SUPABASE_KEY`,
-   `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
-   `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `MAIL_USERNAME`, `MAIL_PASSWORD`,
-   `MAIL_FROM`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`,
-   `OPENAI_API_KEY`, `NVIDIA_API_KEY`, `GOOGLE_CLIENT_SECRET`, `ADMIN_API_KEY`,
-   `PASSWORD_RESET_SECRET`, `MASTER_ADMIN_EMAIL`, `MASTER_ADMIN_PASSWORD`.
-   Use the same values as the GitHub Actions secrets used by `deploy-ec2.yml`.
-2. **New → Blueprint** → pick this repo. Render reads `render.yaml` and asks for
-   each service's `SECRET_KEY` (use `SECRET_KEY` for admin, and
-   `PANEL_/STUDENT_/MENTOR_SECRET_KEY` for the others if you had them).
-3. Check each service's URL. If Render had to rename one (the name was taken), update
-   that URL in `render.yaml` and in the `apps/*/vercel.json` files.
-4. Smoke test: `https://pms-<name>-api.onrender.com/health`.
-5. Set Render's region to match your Supabase region. `render.yaml` uses Singapore.
+Every service needs:
+
+| Variable | Notes |
+| :--- | :--- |
+| `DATABASE_URL` | step 1 |
+| `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_PUBLISHABLE_KEY` | project URL and anon key |
+| `SUPABASE_SERVICE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | service role key (services read different names) |
+| `SECRET_KEY` | per service, random |
+| `ADMIN_API_KEY`, `PASSWORD_RESET_SECRET` | random, same value on every service |
+| `ALLOWED_EMAIL_DOMAIN` | the only email domain allowed to sign in, e.g. `university.edu`. **Unset rejects everyone.** |
+| `MASTER_ADMIN_EMAIL`, `MASTER_ADMIN_PASSWORD` | coordinator account |
+| `STUDENT_PORTAL_URL`, `ADMIN_PORTAL_URL`, `MENTOR_PORTAL_URL`, `PANEL_PORTAL_URL` | the Vercel URLs above (email links) |
+| `FRONTEND_URL` | all five Vercel URLs, comma-separated (CORS allowlist) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | redirect: `<admin URL>/auth/google/callback` |
+| `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_FROM_NAME` | SMTP; `MAIL_FROM_NAME=Procksi` |
+| `OPENAI_API_KEY` / `NVIDIA_API_KEY`, `TWILIO_*` | optional |
+| `PYTHON_VERSION` | `3.12.7` (also pinned by `backend/*/.python-version`) |
+
+admin-api also needs `PANEL_API_INTERNAL_URL`, `PANEL_PORTAL_API_URL` (panel-api URL)
+and `MENTOR_PORTAL_API_URL` (mentor-api URL).
+
+Service settings: Root Directory `backend/<service>`, build
+`pip install -r requirements.txt`, start
+`uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"`,
+health check `/health`, region Singapore (same as Supabase). `render.yaml` holds
+the same settings as a Blueprint.
 
 ## 3. Vercel (frontends)
-
-For each row in the table: **Add New → Project** → this repo → set **Root
-Directory** to the app folder (framework is detected as Vite) → env vars:
 
 | Variable | Apps |
 | :--- | :--- |
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | all |
-| `VITE_STUDENT_API_URL=https://student.glapms.in` | admin |
-| `VITE_PMS_CHAT` (optional, `true`/`false`) | admin, panel, student, mentor |
+| `VITE_ALLOWED_EMAIL_DOMAIN` | all (same value as `ALLOWED_EMAIL_DOMAIN`) |
+| `VITE_MASTER_ADMIN_EMAIL` | admin |
+| `VITE_STUDENT_API_URL`, `VITE_STUDENT_PORTAL_URL`, `VITE_PANEL_VIEW_URL`, `VITE_MENTOR_VIEW_URL` | admin |
+| `VITE_STUDENT_PORTAL_URL`, `VITE_SCROLL_FRAMES_BASE` (main URL) | student |
+| `VITE_STUDENT_PORTAL_URL`, `VITE_ADMIN_PORTAL_URL`, `VITE_PANEL_PORTAL_URL`, `VITE_MENTOR_PORTAL_URL` | main |
+| `VITE_PROCKSI_CHAT` (optional, `true`/`false`) | admin, panel, student, mentor |
 
-Name the projects as in the table. The `*.vercel.app` URLs are already
-allowlisted for CORS via `FRONTEND_URL` in `render.yaml`. Update that value if
-your project names differ.
+`VITE_*` values are baked in at build time: redeploy after changing one.
 
-## 4. Domains
+## 4. Supabase Auth
 
-In each Vercel project → Settings → Domains, add its `*.glapms.in` host and set
-the DNS records Vercel shows. If DNS is on Cloudflare, use **DNS only** (grey
-cloud) for these records. The Google OAuth redirect
-(`https://admin.glapms.in/auth/google/callback`), email links and CORS
-allowlists all already use these hostnames, so nothing else changes.
+Authentication → URL Configuration: Site URL = student URL; Redirect URLs = all
+five Vercel URLs with `/**`. Providers → Google: same client ID/secret as above.
+Google Cloud Console: add `https://<ref>.supabase.co/auth/v1/callback` and the
+`GOOGLE_REDIRECT_URI` as authorized redirect URIs.
+
+## 5. Custom domain (optional)
+
+Add the host in each Vercel project → Settings → Domains, then update the URL
+env vars above (Vercel and Render), Supabase redirect URLs and Google redirect
+URIs. No code change is needed.
 
 ## Render free plan limits
 
@@ -72,15 +97,12 @@ allowlists all already use these hostnames, so nothing else changes.
   takes about a minute while it boots.
 - **Background schedulers only run while a service is awake.** That covers
   presentation reminders and deadline mails (admin), the panel scheduler,
-  GitHub sync (student) and the communication scheduler (mentor). While a
-  service is asleep, its jobs don't run.
+  GitHub sync (student) and the communication scheduler (mentor).
 - Free instance hours are **750/month per workspace, shared by all four
-  services**. You can't keep all four awake with a pinger. If the reminders must
-  be reliable, move `pms-admin-api` to a paid instance.
+  services**. If the reminders must be reliable, move admin-api to a paid instance.
 
-## After cutover
+## Unused since the move off EC2
 
-Once traffic is on Vercel/Render, these are unused and can be removed:
 `docker-compose.yml`, `deploy/cloudflared/`, `apps/*/nginx.conf`,
 `apps/*/Dockerfile`, `backend/*/Dockerfile`, `.github/workflows/deploy-main.yml`,
-and the deploy job in `.github/workflows/deploy-ec2.yml`. Keep its test job as CI.
+and the deploy job in `.github/workflows/deploy-ec2.yml` (keep its test job as CI).

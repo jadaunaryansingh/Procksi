@@ -8,7 +8,7 @@ import MentorEvaluationForm from './pages/Mentor/MentorEvaluationForm';
 import Presentations from './pages/Mentor/Presentations';
 import History from './pages/Mentor/History';
 import MilestonesManager from './pages/Mentor/MilestonesManager';
-import PmsChat from './pages/Mentor/PmsChat';
+import ProcksiChat from './pages/Mentor/ProcksiChat';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
@@ -16,7 +16,7 @@ import Profile from './pages/profile/Profile';
 import { AuthProvider } from './context/AuthContext';
 import { GlobalFilterProvider } from './context/GlobalFilterContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import PmsChatRoute from './components/PmsChatRoute';
+import ProcksiChatRoute from './components/ProcksiChatRoute';
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
           <Route path="analyzer" element={<GitHubAnalyzer />} />
           <Route path="evaluation" element={<MentorEvaluationForm />} />
           <Route path="presentations" element={<Presentations />} />
-          <Route path="pms-chat" element={<PmsChatRoute><PmsChat /></PmsChatRoute>} />
+          <Route path="procksi-chat" element={<ProcksiChatRoute><ProcksiChat /></ProcksiChatRoute>} />
           <Route path="history" element={<History />} />
           <Route path="milestones" element={<MilestonesManager />} />
           <Route path="profile" element={<Profile />} />

@@ -103,7 +103,7 @@ const MissedSubmissions = () => {
         subject: `Report for Panel ${panelId}`,
         author: 'Panel Portal System',
         keywords: 'missed, submissions, evaluation, report',
-        creator: 'GLA University Panel Portal'
+        creator: 'Procksi Panel Portal'
       });
 
       // Header

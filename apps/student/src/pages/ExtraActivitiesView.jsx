@@ -78,7 +78,7 @@ export default function ExtraActivitiesView() {
                     const ext = proofFile.name.split('.').pop();
                     const filePath = `extra-activities/${userId}/${Date.now()}.${ext}`;
 
-                    const bucket = 'PMS';
+                    const bucket = 'Procksi';
                     const uploadResult = await supabase.storage
                         .from(bucket)
                         .upload(filePath, proofFile, { upsert: false });

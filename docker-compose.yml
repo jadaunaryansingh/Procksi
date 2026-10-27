@@ -105,7 +105,7 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-$SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-$SUPABASE_PUBLISHABLE_KEY}
-        VITE_PMS_CHAT: ${VITE_PMS_CHAT:-false}
+        VITE_PROCKSI_CHAT: ${VITE_PROCKSI_CHAT:-false}
         # No VITE_ADMIN_API_KEY here — see apps/admin/Dockerfile and
         # backend/admin-api/app/panel_sync_proxy.py. ADMIN_API_KEY is passed to
         # admin-backend as a normal (non-VITE, server-only) env var below.
@@ -123,7 +123,7 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-$SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-$SUPABASE_PUBLISHABLE_KEY}
-        VITE_PMS_CHAT: ${VITE_PMS_CHAT:-false}
+        VITE_PROCKSI_CHAT: ${VITE_PROCKSI_CHAT:-false}
     container_name: panel-frontend
     restart: unless-stopped
     ports:
@@ -138,7 +138,7 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-$SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-$SUPABASE_PUBLISHABLE_KEY}
-        VITE_PMS_CHAT: ${VITE_PMS_CHAT:-false}
+        VITE_PROCKSI_CHAT: ${VITE_PROCKSI_CHAT:-false}
     container_name: student-frontend
     restart: unless-stopped
     ports:
@@ -153,7 +153,7 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-$SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-$SUPABASE_PUBLISHABLE_KEY}
-        VITE_PMS_CHAT: ${VITE_PMS_CHAT:-false}
+        VITE_PROCKSI_CHAT: ${VITE_PROCKSI_CHAT:-false}
     container_name: mentor-frontend
     restart: unless-stopped
     ports:

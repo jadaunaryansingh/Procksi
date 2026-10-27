@@ -1,4 +1,4 @@
-export const MENTOR_GLOBAL_FILTERS_KEY = 'pms-mentor-global-filters';
+export const MENTOR_GLOBAL_FILTERS_KEY = 'procksi-mentor-global-filters';
 
 export const DEFAULT_GLOBAL_FILTERS = {
     search: '',

@@ -5,7 +5,7 @@ WORKDIR /app
 
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
-ARG VITE_PMS_CHAT
+ARG VITE_PROCKSI_CHAT
 # No admin-key build arg: panelSync.js now calls admin-api's own
 # /api/panel-sync/* proxy with the user's normal admin session, and admin-api
 # holds ADMIN_API_KEY server-side only (see panel_sync_proxy.py). Baking a
@@ -13,7 +13,7 @@ ARG VITE_PMS_CHAT
 
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-ENV VITE_PMS_CHAT=$VITE_PMS_CHAT
+ENV VITE_PROCKSI_CHAT=$VITE_PROCKSI_CHAT
 
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm install

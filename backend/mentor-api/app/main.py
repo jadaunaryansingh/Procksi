@@ -17,10 +17,10 @@ from app.api import auth, student, semester, proposal, team, mentor, schedule, e
 from app.core.config import settings
 from app.core.rate_limit import limiter
 
-logger = logging.getLogger("pms.scheduler")
+logger = logging.getLogger("procksi.scheduler")
 
 # How often the Communication Agent checks for due scheduled sends.
-_SCHEDULER_POLL_SECONDS = int(os.getenv("PMS_SCHEDULER_POLL_SECONDS", "60"))
+_SCHEDULER_POLL_SECONDS = int(os.getenv("PROCKSI_SCHEDULER_POLL_SECONDS", "60"))
 _SCHEDULER_ENABLED = False  # Disabled to avoid prepared statement issues with Supabase's pgbouncer
 
 
@@ -110,7 +110,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="PMS Backend",
+    title="Procksi Backend",
     description="Project Management System – Admin Dashboard API",
     version="1.0.0",
     lifespan=lifespan,
@@ -142,18 +142,6 @@ allowed_origins = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
-    "https://student.glapms.in",
-    "https://admin.glapms.in",
-    "https://mentor.glapms.in",
-    "https://panel.glapms.in",
-    "https://glapms.in",
-    "https://www.glapms.in",
-    "http://student.glapms.in",
-    "http://admin.glapms.in",
-    "http://mentor.glapms.in",
-    "http://panel.glapms.in",
-    "http://glapms.in",
-    "http://www.glapms.in",
 ]
 if settings.FRONTEND_URL:
     for origin in settings.FRONTEND_URL.split(","):
@@ -284,6 +272,6 @@ app.include_router(mentor_portal.router)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "PMS Backend"}
+    return {"status": "ok", "service": "Procksi Backend"}
 
 # Trigger reload

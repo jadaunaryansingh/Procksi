@@ -6,6 +6,7 @@ import {
     CheckCircle, AlertTriangle, XCircle, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { apiFetchTable, apiUpsertTable, apiDeleteRows } from '../lib/api';
+import { ALLOWED_EMAIL_SUFFIX, emailPlaceholder, isAllowedEmail } from '../lib/emailPolicy';
 
 /**
  * Mentor Master Data.
@@ -31,9 +32,9 @@ const FIELDS = [
     {
         key: 'email', label: 'E-mail', required: true,
         aliases: ['E-mail', 'E-Mail', 'Email', 'Email ID', 'Email Address', 'Mail'],
-        // The portal only admits @gla.ac.in, so reject anything else at upload
+        // The portal only admits the allowed email domain, so reject anything else at upload
         // rather than letting it fail confusingly at signup.
-        validate: (v) => /^[^\s@]+@gla\.ac\.in$/i.test(v) || 'Must be a @gla.ac.in address',
+        validate: (v) => isAllowedEmail(v) || `Must be a ${ALLOWED_EMAIL_SUFFIX} address`,
     },
     {
         key: 'phone', label: 'Phone', required: false,
@@ -137,8 +138,8 @@ export default function MentorMasterData() {
         e.preventDefault();
         if (busy) return;
         const email = form.email.trim().toLowerCase();
-        if (!/^[^\s@]+@gla\.ac\.in$/i.test(email)) {
-            alert('E-mail must be a @gla.ac.in address.');
+        if (!isAllowedEmail(email)) {
+            alert(`E-mail must be a ${ALLOWED_EMAIL_SUFFIX} address.`);
             return;
         }
         const clash = mentors.find(m => String(m.email).toLowerCase() === email && m.id !== editing?.id);
@@ -441,9 +442,9 @@ export default function MentorMasterData() {
                                         className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Preshit Desai" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">E-mail (@gla.ac.in)</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">E-mail ({ALLOWED_EMAIL_SUFFIX})</label>
                                     <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. name@gla.ac.in" />
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder={`e.g. ${emailPlaceholder('name')}`} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>

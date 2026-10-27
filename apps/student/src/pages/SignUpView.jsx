@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Lock, Mail, Shield, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getApiBaseUrl } from '../lib/apiBase';
+import { ALLOWED_EMAIL_SUFFIX, EMAIL_DOMAIN_ERROR, emailPlaceholder } from '../lib/emailPolicy';
 
 export const SignUpView = () => {
     const navigate = useNavigate();
@@ -44,8 +45,8 @@ export const SignUpView = () => {
             return;
         }
 
-        if (!email.trim().toLowerCase().endsWith('@gla.ac.in')) {
-            setError('Only @gla.ac.in email addresses are permitted.');
+        if (!email.trim().toLowerCase().endsWith(ALLOWED_EMAIL_SUFFIX)) {
+            setError(EMAIL_DOMAIN_ERROR);
             setLoading(false);
             return;
         }
@@ -73,7 +74,7 @@ export const SignUpView = () => {
             // their mailbox. Send the student to their inbox instead.
             setSuccessMessage(
                 payload.message
-                || 'Almost done — check your GLA inbox and click the confirmation link to activate your account.'
+                || 'Almost done — check your inbox and click the confirmation link to activate your account.'
             );
             setTimeout(() => navigate('/student/login'), 4000);
         } catch (err) {
@@ -106,8 +107,8 @@ export const SignUpView = () => {
             <div className="w-full md:w-1/2 p-10 md:p-12 lg:p-16 flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-800 text-white animate-gradient">
                 <div className="absolute inset-0 mix-blend-overlay opacity-30" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E")`}}></div>
                 <div className="relative z-10 flex flex-col items-center text-center">
-                    <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-24 h-24 object-contain mb-8 drop-shadow-2xl bg-white p-3 rounded-2xl shadow-xl" onError={(e) => { e.target.style.display = 'none' }} />
-                    <h2 className="text-3xl font-black mb-3 tracking-tight">GLA University</h2>
+                    <img src="/procksi-mark.png" alt="Procksi" className="w-24 h-24 object-contain mb-8 drop-shadow-2xl bg-white p-3 rounded-2xl shadow-xl" onError={(e) => { e.target.style.display = 'none' }} />
+                    <h2 className="text-3xl font-black mb-3 tracking-tight">Procksi</h2>
                     <p className="text-indigo-100/90 font-medium">Student Registration</p>
                     
                     <div className="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-lg text-left w-full transform -rotate-1 hover:rotate-0 transition-transform">
@@ -155,7 +156,7 @@ export const SignUpView = () => {
                         <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Registered Email</label>
                         <div className="relative">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="name.lastname@gla.ac.in"
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder={emailPlaceholder('name.lastname')}
                                 className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium dark:text-white outline-none transition-all shadow-sm" />
                         </div>
                     </div>

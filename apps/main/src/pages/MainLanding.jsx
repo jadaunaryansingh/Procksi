@@ -60,17 +60,17 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
     const logoSize = useTransform(smoothProgress, [0.75, 0.95], [64, 40]); // w-16 to w-10
 
     // Text sizes and margins
-    const glaSize = useTransform(smoothProgress, [0.75, 0.95], ["1.5rem", "1.25rem"]); // text-2xl to text-xl
-    const glaTracking = useTransform(smoothProgress, [0.75, 0.95], ["0.1em", "-0.025em"]); // tracking-widest to tracking-tight
+    const brandSize = useTransform(smoothProgress, [0.75, 0.95], ["1.5rem", "1.25rem"]); // text-2xl to text-xl
+    const brandTracking = useTransform(smoothProgress, [0.75, 0.95], ["0.1em", "-0.025em"]); // tracking-widest to tracking-tight
     
-    const pmsSize = useTransform(smoothProgress, [0.75, 0.95], ["2.5rem", "0.625rem"]); // scaled down from 3.2rem
-    const pmsTracking = useTransform(smoothProgress, [0.75, 0.95], ["-0.02em", "0.1em"]); // slightly tighter initially
-    const pmsTransform = useTransform(smoothProgress, [0.75, 0.95], ["none", "uppercase"]);
-    const pmsWidth = useTransform(smoothProgress, [0.75, 0.95], ["12em", "35em"]); // forces wrap initially, then single line
+    const procksiSize = useTransform(smoothProgress, [0.75, 0.95], ["2.5rem", "0.625rem"]); // scaled down from 3.2rem
+    const procksiTracking = useTransform(smoothProgress, [0.75, 0.95], ["-0.02em", "0.1em"]); // slightly tighter initially
+    const procksiTransform = useTransform(smoothProgress, [0.75, 0.95], ["none", "uppercase"]);
+    const procksiWidth = useTransform(smoothProgress, [0.75, 0.95], ["12em", "35em"]); // forces wrap initially, then single line
 
     // Navbar specific adjustments
-    const navbarTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [0, 1]); // the "GLA University" native colors
-    const heroTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [1, 0]); // the "PMS PORTAL" big colors
+    const navbarTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [0, 1]); // the "Procksi" native colors
+    const heroTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [1, 0]); // the "PROCKSI" big colors
 
     return (
         <div className="bg-slate-900 text-white min-h-screen relative font-sans selection:bg-indigo-500/30">
@@ -99,28 +99,28 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                 className="pointer-events-none flex flex-row items-start gap-4"
             >
                 <motion.img 
-                    src="/GLA_University_logo.png" 
-                    alt="GLA Logo" 
+                    src="/procksi-mark.png" 
+                    alt="Procksi" 
                     style={{ width: logoSize, height: logoSize }}
                     className="object-contain drop-shadow-md" 
                 />
                 <div className="flex flex-col">
-                    {/* GLA University Text */}
+                    {/* Procksi Text */}
                     <div className="relative">
                         <motion.span 
                             style={{ 
-                                fontSize: glaSize, 
-                                letterSpacing: glaTracking,
+                                fontSize: brandSize, 
+                                letterSpacing: brandTracking,
                                 opacity: heroTextOpacity 
                             }} 
                             className="font-bold uppercase text-white whitespace-nowrap block"
                         >
-                            GLA University
+                            Procksi
                         </motion.span>
                         <motion.span 
                             style={{ 
-                                fontSize: glaSize, 
-                                letterSpacing: glaTracking,
+                                fontSize: brandSize, 
+                                letterSpacing: brandTracking,
                                 opacity: navbarTextOpacity,
                                 position: 'absolute',
                                 top: 0,
@@ -128,7 +128,7 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                             }} 
                             className={`font-black leading-none whitespace-nowrap block transition-colors duration-500 ${isMagicDeckInView ? 'text-white' : 'text-slate-900 dark:text-white'}`}
                         >
-                            GLA University
+                            Procksi
                         </motion.span>
                     </div>
 
@@ -136,12 +136,12 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                     <div className="relative">
                         <motion.span 
                             style={{ 
-                                fontSize: pmsSize, 
-                                letterSpacing: pmsTracking,
+                                fontSize: procksiSize, 
+                                letterSpacing: procksiTracking,
                                 color: brandColor,
                                 textShadow: brandGlow,
                                 opacity: heroTextOpacity,
-                                width: pmsWidth
+                                width: procksiWidth
                             }} 
                             className="font-black leading-tight block mt-2"
                         >
@@ -149,14 +149,14 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                         </motion.span>
                         <motion.span 
                             style={{ 
-                                fontSize: pmsSize, 
-                                letterSpacing: pmsTracking,
-                                textTransform: pmsTransform,
+                                fontSize: procksiSize, 
+                                letterSpacing: procksiTracking,
+                                textTransform: procksiTransform,
                                 opacity: navbarTextOpacity,
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
-                                width: pmsWidth
+                                width: procksiWidth
                             }} 
                             className={`font-bold mt-1 block transition-colors duration-500 ${isMagicDeckInView ? 'text-indigo-300' : 'text-indigo-600 dark:text-indigo-400'}`}
                         >
@@ -204,7 +204,7 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                             Select Your Workspace
                         </h2>
                         <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                            Choose your role to access the dedicated tools and dashboards for the GLA Project Management System.
+                            Choose your role to access the dedicated tools and dashboards for Procksi.
                         </p>
                     </motion.div>
 
@@ -271,13 +271,13 @@ export const MainLanding = ({ isDark, toggleTheme }) => {
                 <footer className="relative z-10 bg-white dark:bg-[#020617] border-t border-slate-200 dark:border-slate-800 py-8 text-slate-500 text-xs mt-auto">
                     <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="flex items-center gap-3">
-                            <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-6 h-6 grayscale opacity-70" />
+                            <img src="/procksi-mark.png" alt="Procksi" className="w-6 h-6 grayscale opacity-70" />
                             <div className="flex flex-col">
-                                <span className="font-bold text-slate-700 dark:text-slate-300">GLA University</span>
-                                <span className="text-[10px] tracking-widest uppercase">PMS Portal</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">Procksi</span>
+                                <span className="text-[10px] tracking-widest uppercase">Project Management Platform</span>
                             </div>
                         </div>
-                        <div>© {new Date().getFullYear()} GLA Project Management System. All rights reserved.</div>
+                        <div>© {new Date().getFullYear()} Procksi. All rights reserved.</div>
                     </div>
                 </footer>
             </div>

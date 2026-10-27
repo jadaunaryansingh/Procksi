@@ -72,7 +72,7 @@ def canonical_email(email: Optional[str]) -> str:
 
 
 def canonical_student_id(student_id: Optional[str]) -> str:
-    """Uppercase and strip separators so 'gla-2021/001' == 'GLA2021001'."""
+    """Uppercase and strip separators so 'uni-2021/001' == 'UNI2021001'."""
     if student_id is None:
         return ""
     return _ID_STRIP_RE.sub("", str(student_id).strip().upper())

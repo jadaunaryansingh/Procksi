@@ -10,7 +10,7 @@ import ThemeToggle from '../ThemeToggle';
 import { panelAPI, evaluationAPI } from '../../services/api';
 import { getStoredUserInfo, panelInitials, requirePanelId, getMentorName } from '../../services/session';
 import { useGlobalFilters } from '../../context/useGlobalFilters';
-import { usePmsChatEnabled } from '../../hooks/usePmsChatEnabled';
+import { useProcksiChatEnabled } from '../../hooks/useProcksiChatEnabled';
 import { useWalkthrough } from '../../hooks/useWalkthrough';
 import WalkthroughOverlay from '../Walkthrough/WalkthroughOverlay';
 import { TOUR_STEPS, TOUR_LABELS } from '../Walkthrough/steps';
@@ -19,10 +19,10 @@ const PanelLayout = ({ onLogout }) => {
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const pmsChatEnabled = usePmsChatEnabled();
+  const procksiChatEnabled = useProcksiChatEnabled();
   const walkthrough = useWalkthrough({
     tours: TOUR_STEPS,
-    prefix: 'pms-panel-walkthrough-v1',
+    prefix: 'procksi-panel-walkthrough-v1',
     rootPath: '/panel',
   });
   const tourLabel = TOUR_LABELS[location.pathname.replace(/\/+$/, '') || '/panel'];
@@ -196,8 +196,8 @@ const PanelLayout = ({ onLogout }) => {
                 body,
                 tag: point.tag,
                 requireInteraction: true,
-                icon: '/GLA_University_logo.png',
-                badge: '/favicon.svg',
+                icon: '/procksi-mark.png',
+                badge: '/procksi-icon-192.png',
                 actions: [
                   { action: 'extend-5',  title: '+5 Minutes'  },
                   { action: 'extend-10', title: '+10 Minutes' },
@@ -296,7 +296,7 @@ const PanelLayout = ({ onLogout }) => {
     { name: 'My Teams', path: '/panel/my-teams', icon: UserCircle2 },
     { name: 'My Slots', path: '/panel/slots', icon: CalendarClock },
     { name: 'Parameters', path: '/panel/parameters', icon: BookOpen },
-    { name: 'PMS-Chat', path: '/panel/pms-chat', icon: MessageSquare },
+    { name: 'Procksi Chat', path: '/panel/procksi-chat', icon: MessageSquare },
     { name: 'Missed', path: '/panel/missed', icon: FileX },
   ];
 
@@ -305,11 +305,11 @@ const PanelLayout = ({ onLogout }) => {
       <div className="p-4 flex items-center justify-between">
         <div className={`flex items-center transition-all duration-300 overflow-hidden ${sidebarCollapsed ? 'w-auto opacity-100 md:w-0 md:opacity-0 md:group-hover/sidebar:w-[150px] md:group-hover/sidebar:opacity-100' : 'w-[150px] opacity-100'}`}>
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-md border border-slate-200 dark:border-slate-700/50 overflow-hidden shrink-0 mr-3">
-            <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
+            <img src="/procksi-mark.png" alt="Procksi" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
           </div>
           <div className="flex flex-col">
               <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">Panel Portal</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider">GLA UNIVERSITY</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider">PROCKSI</span>
           </div>
         </div>
         <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden md:flex p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors shrink-0">
@@ -333,8 +333,8 @@ const PanelLayout = ({ onLogout }) => {
 
       <nav data-tour="sidebar-nav" className="flex-1 px-3 space-y-1 mt-2 overflow-y-auto overflow-x-hidden pb-4">
         {navItems.map((item) => {
-          // PMS-Chat is disabled: greyed, inert, and no unread badge.
-          const isDisabled = item.path === '/panel/pms-chat' && !pmsChatEnabled;
+          // Procksi Chat is disabled: greyed, inert, and no unread badge.
+          const isDisabled = item.path === '/panel/procksi-chat' && !procksiChatEnabled;
           return (
           <NavLink
             key={item.path}
@@ -343,7 +343,7 @@ const PanelLayout = ({ onLogout }) => {
             data-tour={`nav-${item.path.split('/').pop()}`}
             aria-disabled={isDisabled}
             tabIndex={isDisabled ? -1 : undefined}
-            title={isDisabled ? 'PMS-Chat is currently unavailable' : undefined}
+            title={isDisabled ? 'Procksi Chat is currently unavailable' : undefined}
             onClick={(e) => {
               // NavLink has no disabled attribute, so cancel the navigation here.
               if (isDisabled) { e.preventDefault(); return; }
@@ -363,7 +363,7 @@ const PanelLayout = ({ onLogout }) => {
               <>
                 <span className="relative shrink-0">
                     <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                    {item.path.endsWith('/pms-chat') && pmsChatEnabled && chatUnread > 0 && (
+                    {item.path.endsWith('/procksi-chat') && procksiChatEnabled && chatUnread > 0 && (
                         // Pinned to the icon rather than the row end, so the count
                         // stays visible when the rail is collapsed to icons only.
                         <span aria-label={`${chatUnread} unread`}

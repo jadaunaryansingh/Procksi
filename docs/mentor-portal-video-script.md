@@ -131,14 +131,14 @@ then the two tabs.
 
 ---
 
-## Scene 7 — PMS-Chat (3:11–3:34)
+## Scene 7 — Procksi-Chat (3:11–3:34)
 
-**ON SCREEN:** PMS-Chat page. Show the channel filters, then the
+**ON SCREEN:** Procksi-Chat page. Show the channel filters, then the
 conversation list with My Teams, Announcements, and Groups.
 **AVATAR:** Warmer, conversational.
 
 > **NARRATION**
-> PMS-Chat keeps every conversation in one place. Filter to your
+> Procksi-Chat keeps every conversation in one place. Filter to your
 > coordinator, to your teams, or to announcements.
 >
 > Message a team directly, reach the coordinator when something needs
@@ -200,7 +200,7 @@ reads a live number aloud for this reason. If you later re-record against a
 populated account, this script still fits — but if you want the avatar to
 cite real figures, that copy has to be rewritten against the new capture.
 
-**One screen to re-record.** PMS-Chat is enabled in local development only.
+**One screen to re-record.** Procksi-Chat is enabled in local development only.
 It is greyed out in the deployed portals, so this scene must be captured
 locally, and viewers on the live site will not see that menu item until the
 feature is turned on in production.

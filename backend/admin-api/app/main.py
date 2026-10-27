@@ -37,6 +37,16 @@ except ImportError:
 import supabase._sync.client as _sync_mod
 import supabase._async.client as _async_mod
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
+def _master_admin_email() -> str:
+    return os.getenv("MASTER_ADMIN_EMAIL", "").strip().lower()
+
+
 _sync_client_class = getattr(_sync_mod, "SyncClient", getattr(_sync_mod, "Client", None))
 _ORIG_INIT_SYNC = _sync_client_class.__init__
 _ORIG_INIT_ASYNC = _async_mod.AsyncClient.__init__
@@ -260,13 +270,13 @@ async def run_startup_migrations():
             "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS body text",  # future-proof
             "ALTER TABLE public.communication_history ADD COLUMN IF NOT EXISTS body text",
             "ALTER TABLE public.deadlines ADD COLUMN IF NOT EXISTS start_date text",
-            # PMS-Chat availability, one flag per portal so each can be turned on
+            # Procksi Chat availability, one flag per portal so each can be turned on
             # independently. Defaults to false: a new semester starts with chat
             # off and the coordinator opts in.
-            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS pms_chat_student boolean default false",
-            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS pms_chat_mentor boolean default false",
-            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS pms_chat_panel boolean default false",
-            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS pms_chat_admin boolean default false",
+            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS procksi_chat_student boolean default false",
+            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS procksi_chat_mentor boolean default false",
+            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS procksi_chat_panel boolean default false",
+            "ALTER TABLE public.semester_config ADD COLUMN IF NOT EXISTS procksi_chat_admin boolean default false",
         ]
 
         for sql in migrations:
@@ -320,7 +330,7 @@ async def run_startup_migrations():
 
     # This one sends real email and places real Twilio calls, so it can be held
     # back on a non-production instance. Defaults to on — production is unchanged.
-    if os.getenv("PMS_PRESENTATION_REMINDERS_ENABLED", "1") != "0":
+    if os.getenv("PROCKSI_PRESENTATION_REMINDERS_ENABLED", "1") != "0":
         try:
             import asyncio
             from app.presentation_reminder_service import start_presentation_reminder_scheduler
@@ -329,7 +339,7 @@ async def run_startup_migrations():
         except Exception as e:
             print(f"[startup] Failed to launch presentation reminder scheduler: {e}")
     else:
-        print("[startup] Presentation reminder service disabled via PMS_PRESENTATION_REMINDERS_ENABLED=0.")
+        print("[startup] Presentation reminder service disabled via PROCKSI_PRESENTATION_REMINDERS_ENABLED=0.")
 
     try:
         import asyncio
@@ -418,22 +428,9 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
-    "https://student.glapms.in",
-    "https://admin.glapms.in",
-    "https://mentor.glapms.in",
-    "https://panel.glapms.in",
-    "https://glapms.in",
-    "https://www.glapms.in",
-    "http://student.glapms.in",
-    "http://admin.glapms.in",
-    "http://mentor.glapms.in",
-    "http://panel.glapms.in",
-    "http://glapms.in",
-    "http://www.glapms.in",
 ]
 
-# Extra origins (comma-separated) for hosts outside *.glapms.in, e.g. the
-# *.vercel.app deployment URLs. Same convention as student-api/mentor-api.
+# Production origins (comma-separated), e.g. the deployed frontend URLs. Same convention as student-api/mentor-api.
 for _origin in os.getenv("FRONTEND_URL", "").split(","):
     if _origin.strip() and _origin.strip() not in ALLOWED_ORIGINS:
         ALLOWED_ORIGINS.append(_origin.strip())
@@ -547,13 +544,13 @@ def fix_milestones_constraint() -> dict[str, Any]:
 @app.post("/api/auth/login")
 def login(payload: LoginPayload) -> dict[str, Any]:
     email_clean = payload.email.strip().lower()
-    master_email = os.getenv("MASTER_ADMIN_EMAIL", "aiml_project_coordinator@gla.ac.in").strip().lower()
+    master_email = os.getenv("MASTER_ADMIN_EMAIL", "").strip().lower()
     master_password = os.getenv("MASTER_ADMIN_PASSWORD")
 
-    if not email_clean.endswith("@gla.ac.in") and email_clean != master_email:
+    if not email_clean.endswith(_allowed_email_suffix()) and email_clean != master_email:
         raise HTTPException(
             status_code=403,
-            detail="Only @gla.ac.in email addresses are permitted."
+            detail=f"Only {_allowed_email_suffix()} email addresses are permitted."
         )
 
     # Ensure master admin exists in Supabase Auth
@@ -696,8 +693,8 @@ def logout(request: FastAPIRequest) -> dict[str, str]:
 @app.post("/api/auth/forgot-password")
 def forgot_password(payload: ForgotPasswordPayload) -> dict[str, Any]:
     email_clean = payload.email.strip().lower()
-    if not email_clean.endswith("@gla.ac.in") and email_clean != "aiml_project_coordinator@gla.ac.in":
-        raise HTTPException(status_code=403, detail="Only @gla.ac.in email addresses are permitted.")
+    if not email_clean.endswith(_allowed_email_suffix()) and email_clean != _master_admin_email():
+        raise HTTPException(status_code=403, detail=f"Only {_allowed_email_suffix()} email addresses are permitted.")
 
     import smtplib
     from email.mime.text import MIMEText
@@ -717,7 +714,7 @@ def forgot_password(payload: ForgotPasswordPayload) -> dict[str, Any]:
             u_email = u.email if hasattr(u, "email") else (u.get("email") if isinstance(u, dict) else None)
             if u_email and u_email.strip().lower() == payload.email.strip().lower():
                 u_app_meta = u.app_metadata if hasattr(u, "app_metadata") else (u.get("app_metadata") or {})
-                if u_email.strip().lower() == "aiml_project_coordinator@gla.ac.in" or (u_app_meta and u_app_meta.get("role") == "admin"):
+                if u_email.strip().lower() == _master_admin_email() or (u_app_meta and u_app_meta.get("role") == "admin"):
                     user = u
                     break
         
@@ -728,17 +725,17 @@ def forgot_password(payload: ForgotPasswordPayload) -> dict[str, Any]:
         token = reset_tokens.issue(payload.email.strip().lower(), portal="admin")
 
         # Send email
-        admin_base_url = (os.getenv("ADMIN_PORTAL_URL") or "https://admin.glapms.in").rstrip("/")
+        admin_base_url = (os.getenv("ADMIN_PORTAL_URL") or "").rstrip("/")
         reset_link = f"{admin_base_url}/admin/reset-password?token={token}"
         html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #4f46e5; margin: 0;">GLA University</h2>
+        <h2 style="color: #4f46e5; margin: 0;">Procksi</h2>
         <p style="color: #6b7280; font-size: 14px; margin: 5px 0 0 0;">Project Management System</p>
     </div>
     <div style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
         <h3 style="color: #111827; margin-top: 0;">Password Reset Request</h3>
-        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Admin Portal of the GLA Project Management System. Click the button below to set a new password. This link is valid for 15 minutes.</p>
+        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Admin Portal of Procksi. Click the button below to set a new password. This link is valid for 15 minutes.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="{reset_link}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Reset Password</a>
         </div>
@@ -842,7 +839,7 @@ def get_admins() -> dict[str, Any]:
 
                 role = u_app_meta.get("role") if isinstance(u_app_meta, dict) else getattr(u_app_meta, "role", None)
 
-                if u_email.strip().lower() == "aiml_project_coordinator@gla.ac.in" or role == "admin":
+                if u_email.strip().lower() == _master_admin_email() or role == "admin":
                     u_id = u.get("id") if is_dict else getattr(u, "id", None)
                     
                     created_at_val = u.get("created_at") if is_dict else getattr(u, "created_at", None)
@@ -922,7 +919,7 @@ def delete_admin(user_id: str) -> dict[str, Any]:
                 target_email = u.email if hasattr(u, "email") else u.get("email")
                 break
 
-        if target_email and target_email.strip().lower() == "aiml_project_coordinator@gla.ac.in":
+        if target_email and target_email.strip().lower() == _master_admin_email():
             raise HTTPException(status_code=400, detail="The master admin account cannot be deleted.")
 
         service_client.auth.admin.delete_user(user_id)
@@ -2695,13 +2692,17 @@ async def get_working_access_token(sc) -> str:
 
 
 def _resolve_google_redirect_uri(request: FastAPIRequest | None = None) -> str:
-    if request:
-        origin = request.headers.get("origin") or request.headers.get("referer") or ""
-        if "admin.glapms.in" in origin:
-            return "https://admin.glapms.in/auth/google/callback"
-    if GOOGLE_REDIRECT_URI and "localhost" in GOOGLE_REDIRECT_URI:
+    """GOOGLE_REDIRECT_URI, else ADMIN_PORTAL_URL + /auth/google/callback."""
+    if GOOGLE_REDIRECT_URI:
         return GOOGLE_REDIRECT_URI
-    return "https://admin.glapms.in/auth/google/callback"
+    return f"{(os.getenv('ADMIN_PORTAL_URL') or '').rstrip('/')}/auth/google/callback"
+
+
+def _admin_schedule_url() -> str:
+    """The admin Schedule page, on the same origin Google redirects back to."""
+    import urllib.parse
+    parsed = urllib.parse.urlparse(_resolve_google_redirect_uri())
+    return f"{parsed.scheme}://{parsed.netloc}/admin/schedule"
 
 
 async def _persist_google_oauth(tokens: dict) -> str:
@@ -2710,12 +2711,7 @@ async def _persist_google_oauth(tokens: dict) -> str:
     sc.table("google_credentials").upsert(
         {"id": "primary", "credentials_json": json.dumps(tokens)}
     ).execute()
-    frontend_url = "https://admin.glapms.in/admin/schedule"
-    if GOOGLE_REDIRECT_URI and "localhost" in GOOGLE_REDIRECT_URI:
-        import urllib.parse
-        parsed = urllib.parse.urlparse(GOOGLE_REDIRECT_URI)
-        frontend_url = f"{parsed.scheme}://{parsed.netloc}/admin/schedule"
-    return f"{frontend_url}?googleConnected=true"
+    return f"{_admin_schedule_url()}?googleConnected=true"
 
 
 @app.get("/api/events/google-auth-url")
@@ -2773,10 +2769,10 @@ async def google_auth_callback(code: str, request: FastAPIRequest) -> Any:
         target = await _persist_google_oauth(tokens)
         return RedirectResponse(url=target)
     except Exception as e:
-        return RedirectResponse(url=f"https://admin.glapms.in/admin/schedule?error={urllib.parse.quote(str(e))}")
+        return RedirectResponse(url=f"{_admin_schedule_url()}?error={urllib.parse.quote(str(e))}")
 
 
-# Mirror route: Google Cloud Console has https://admin.glapms.in/auth/google/callback registered.
+# Mirror route: Google Cloud Console has <admin portal>/auth/google/callback registered.
 # Nginx routes this path to the backend (not the frontend SPA), so we handle it here directly.
 @app.get("/auth/google/callback")
 async def google_auth_callback_mirror(code: str = None, error: str = None) -> Any:
@@ -2784,12 +2780,8 @@ async def google_auth_callback_mirror(code: str = None, error: str = None) -> An
     import urllib.parse
     from fastapi.responses import RedirectResponse
 
-    err_home = "https://admin.glapms.in/admin/schedule"
-    redirect_uri_used = "https://admin.glapms.in/auth/google/callback"
-    if GOOGLE_REDIRECT_URI and "localhost" in GOOGLE_REDIRECT_URI:
-        parsed = urllib.parse.urlparse(GOOGLE_REDIRECT_URI)
-        err_home = f"{parsed.scheme}://{parsed.netloc}/admin/schedule"
-        redirect_uri_used = GOOGLE_REDIRECT_URI
+    err_home = _admin_schedule_url()
+    redirect_uri_used = _resolve_google_redirect_uri()
 
     if error:
         return RedirectResponse(url=f"{err_home}?error={urllib.parse.quote(error)}")
@@ -2913,7 +2905,7 @@ async def _ensure_meet_for_slot(sc, slot: dict) -> dict:
     meet_link, new_event_id = await create_google_meet_event(
         access_token=access_token,
         calendar_id=GOOGLE_CALENDAR_ID,
-        summary=f"PMS Presentation - {slot.get('team')}",
+        summary=f"Procksi Presentation - {slot.get('team')}",
         start_iso=start_iso,
         end_iso=end_iso,
         attendees=attendees,
@@ -2988,7 +2980,7 @@ async def generate_meet_link(payload: GenerateMeetLinkPayload) -> dict[str, Any]
         start_iso, end_iso = parse_time_slot(payload.date, payload.time)
         meet_link, _event_id = await create_google_meet_event(
             access_token=access_token, calendar_id=GOOGLE_CALENDAR_ID,
-            summary=f"PMS Presentation - {payload.team}", start_iso=start_iso, end_iso=end_iso,
+            summary=f"Procksi Presentation - {payload.team}", start_iso=start_iso, end_iso=end_iso,
             attendees=_team_attendee_emails(sc, payload.team), send_updates="all",
         )
         return {"meetLink": meet_link, "slot_id": payload.slot_id,
@@ -3357,7 +3349,7 @@ class AdminChatCommandPayload(BaseModel):
 
 def _post_report_as_bot(conversation_id: int, report: dict, requested_by: str) -> dict[str, Any]:
     """
-    Write a finished report into the thread as a message from PMSbot.
+    Write a finished report into the thread as a message from ProcksiBot.
 
     A report is a message, not a private lookup: it is stored, everyone in the
     thread sees it, and it stays there. The person who ran the command is seeded
@@ -3388,7 +3380,7 @@ async def admin_chat_command(
 ) -> dict[str, Any]:
     """
     Execute a slash command from the coordinator's chat composer. The result is
-    posted into the open conversation as a message from PMSbot, so it is stored
+    posted into the open conversation as a message from ProcksiBot, so it is stored
     and everyone in that thread sees it.
 
     Scope rule, shared by all four portals: a report reads only conversations
@@ -5153,7 +5145,7 @@ async def check_and_sync_remote_status(team_id, job_id: str, team_ref: str = Non
             async with httpx.AsyncClient(timeout=8.0, follow_redirects=False) as client:
                 res = await client.get(
                     github_api_url(owner, repo_name),
-                    headers={"User-Agent": "PMS-Repo-Checker/1.0", "Accept": "application/vnd.github+json"},
+                    headers={"User-Agent": "Procksi-Repo-Checker/1.0", "Accept": "application/vnd.github+json"},
                 )
                 if res.status_code == 404:
                     err_msg = "Analysis Failed: Repository is private or does not exist on GitHub. Please ensure your repository is set to Public."
@@ -6103,7 +6095,7 @@ async def notify_pending_teams(payload: NotifyPendingTeamsPayload):
         from app.email_notifier import _send_smtp_chunked
 
         sender_email = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-        student_portal_url = (os.getenv("STUDENT_PORTAL_URL") or "https://glapms.in").rstrip("/")
+        student_portal_url = (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
 
         total_recipients = 0
         teams_notified_count = 0
@@ -6119,12 +6111,12 @@ async def notify_pending_teams(payload: NotifyPendingTeamsPayload):
             project_title = (t.get("title") or "").strip()
 
             if cat == "ps":
-                subject = payload.custom_subject or "IMPORTANT: Problem Statement Selection Pending - GLA PMS"
+                subject = payload.custom_subject or "IMPORTANT: Problem Statement Selection Pending - Procksi"
                 msg_custom = f"<p>{payload.custom_message}</p>" if payload.custom_message else ""
                 html_body = f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
                     <div style="background-color: #4f46e5; padding: 16px; text-align: center; border-radius: 8px 8px 0 0;">
-                        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">GLA Project Management System</h2>
+                        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">Procksi</h2>
                     </div>
                     <div style="padding: 24px; color: #334155; line-height: 1.6;">
                         <p>Dear <strong>{leader_name}</strong> and Team Members ({team_label}),</p>
@@ -6139,17 +6131,17 @@ async def notify_pending_teams(payload: NotifyPendingTeamsPayload):
                             <a href="{student_portal_url}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">Log In & Select Problem Statement</a>
                         </div>
                         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-                        <p style="font-size: 12px; color: #64748b;">This is an automated notification sent by GLA PMS Administration Team.</p>
+                        <p style="font-size: 12px; color: #64748b;">This is an automated notification sent by Procksi Administration Team.</p>
                     </div>
                 </div>
                 """
             else:
-                subject = payload.custom_subject or "IMPORTANT: GitHub Repository Submission Pending - GLA PMS"
+                subject = payload.custom_subject or "IMPORTANT: GitHub Repository Submission Pending - Procksi"
                 msg_custom = f"<p>{payload.custom_message}</p>" if payload.custom_message else ""
                 html_body = f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
                     <div style="background-color: #0284c7; padding: 16px; text-align: center; border-radius: 8px 8px 0 0;">
-                        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">GLA Project Management System</h2>
+                        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">Procksi</h2>
                     </div>
                     <div style="padding: 24px; color: #334155; line-height: 1.6;">
                         <p>Dear <strong>{leader_name}</strong> and Team Members ({team_label}),</p>
@@ -6164,7 +6156,7 @@ async def notify_pending_teams(payload: NotifyPendingTeamsPayload):
                             <a href="{student_portal_url}" style="background-color: #0284c7; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">Submit GitHub Repository</a>
                         </div>
                         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-                        <p style="font-size: 12px; color: #64748b;">This is an automated notification sent by GLA PMS Administration Team.</p>
+                        <p style="font-size: 12px; color: #64748b;">This is an automated notification sent by Procksi Administration Team.</p>
                     </div>
                 </div>
                 """

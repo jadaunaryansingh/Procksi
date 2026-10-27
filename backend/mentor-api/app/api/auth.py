@@ -22,6 +22,12 @@ from app.models.user import User
 from app.schemas.auth import MentorLogin, MentorSignup, RefreshRequest, TokenResponse
 from app.schemas.common import ok
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
@@ -33,7 +39,7 @@ def normalize_email(value) -> str:
     match, so it must be fed a canonical value: previously the domain check
     lowercased the address but the lookup used the raw input, which meant a
     student could register as a mentor just by capitalising a letter of their
-    own email — 'Samarth.Verma_cs.aiml24@gla.ac.in' passed the domain rule and
+    own email — 'Samarth.Verma_cs.aiml24@example.edu' passed the domain rule and
     missed the students table entirely.
 
     Every address already in students/mentors is stored stripped + lowercase, so
@@ -210,8 +216,8 @@ async def signup(payload: MentorSignup, db: AsyncSession = Depends(get_db)):
     and must be approved by an administrator before they can log in.
     """
     email = normalize_email(payload.email)
-    if not email.endswith("@gla.ac.in"):
-        raise _forbidden("Only @gla.ac.in email addresses are permitted.")
+    if not email.endswith(_allowed_email_suffix()):
+        raise _forbidden(f"Only {_allowed_email_suffix()} email addresses are permitted.")
 
     if rest_db.is_configured():
         try:
@@ -252,14 +258,14 @@ async def login(payload: MentorLogin, db: AsyncSession = Depends(get_db)):
     Uses Supabase REST if configured, otherwise falls back to direct database queries.
     """
     email = normalize_email(payload.email)
-    if not email.endswith("@gla.ac.in"):
+    if not email.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "success": False,
                 "error": {
                     "code": "AUTH_FORBIDDEN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )
@@ -617,14 +623,14 @@ async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depend
 
     email_clean = normalize_email(body.email)
 
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "success": False,
                 "error": {
                     "code": "AUTH_FORBIDDEN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )
@@ -640,17 +646,17 @@ async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depend
     token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     # Send email
-    mentor_base_url = (os.getenv("MENTOR_PORTAL_URL") or getattr(settings, "MENTOR_PORTAL_URL", None) or "https://mentor.glapms.in").rstrip("/")
+    mentor_base_url = (os.getenv("MENTOR_PORTAL_URL") or getattr(settings, "MENTOR_PORTAL_URL", None) or "").rstrip("/")
     reset_link = f"{mentor_base_url}/reset-password?token={token}"
     html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #4f46e5; margin: 0;">GLA University</h2>
+        <h2 style="color: #4f46e5; margin: 0;">Procksi</h2>
         <p style="color: #6b7280; font-size: 14px; margin: 5px 0 0 0;">Project Management System (Mentor Portal)</p>
     </div>
     <div style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
         <h3 style="color: #111827; margin-top: 0;">Password Reset Request</h3>
-        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Mentor Portal of the GLA Project Management System. Click the button below to set a new password. This link is valid for 15 minutes.</p>
+        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Mentor Portal of Procksi. Click the button below to set a new password. This link is valid for 15 minutes.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="{reset_link}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Reset Password</a>
         </div>

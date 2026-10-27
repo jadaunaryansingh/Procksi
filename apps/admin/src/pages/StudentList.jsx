@@ -6,6 +6,7 @@ import { api } from '../services/api';
 import { useGlobalFilters } from '../context/useGlobalFilters';
 import { apiDeleteRows, apiUpsertTable, apiFetchTable } from '../lib/api';
 import { Trash2 } from 'lucide-react';
+import { emailPlaceholder } from '../lib/emailPolicy';
 
 export default function StudentList() {
     const { filterRows } = useGlobalFilters();
@@ -699,7 +700,7 @@ export default function StudentList() {
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 mb-2">Email Address</label>
-                                    <input type="email" required value={editStudentForm.email} onChange={(e) => setEditStudentForm(prev => ({...prev, email: e.target.value}))} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. student@gla.ac.in" />
+                                    <input type="email" required value={editStudentForm.email} onChange={(e) => setEditStudentForm(prev => ({...prev, email: e.target.value}))} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder={`e.g. ${emailPlaceholder('student')}`} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>

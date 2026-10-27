@@ -1,6 +1,6 @@
-# Project Management System (PMS) - GLA University
+# Project Management System (Procksi) - Procksi
 
-A comprehensive, enterprise-grade **Project Management System (PMS)** built for GLA University. The platform is designed as a unified monorepo containing 4 React web applications (`apps/`) and 4 FastAPI backend microservices (`backend/`), backed by PostgreSQL/Supabase DB, Redis caching, AI Agents, and automated multi-channel communication services.
+A comprehensive, enterprise-grade **Project Management System (Procksi)** built for Procksi. The platform is designed as a unified monorepo containing 4 React web applications (`apps/`) and 4 FastAPI backend microservices (`backend/`), backed by PostgreSQL/Supabase DB, Redis caching, AI Agents, and automated multi-channel communication services.
 
 ---
 
@@ -37,7 +37,7 @@ A comprehensive, enterprise-grade **Project Management System (PMS)** built for 
 ## 📂 Monorepo Structure
 
 ```text
-PMS Latest/
+Procksi Latest/
 ├── apps/
 │   ├── admin/             # Admin Portal (React + Vite, Port 3000)
 │   ├── panel/             # Panel Portal (React + Vite, Port 3001)
@@ -56,7 +56,7 @@ PMS Latest/
 │           ├── api/auth.py                       # Mentor Auth & Phone Persistence
 │           └── models/mentor.py                  # Mentor ORM Schema (with Phone)
 ├── docker-compose.yml     # Multi-container orchestrator
-└── start_pms.bat          # Windows local environment launcher
+└── start_procksi.bat          # Windows local environment launcher
 ```
 
 ---
@@ -168,7 +168,7 @@ flowchart TD
 1. **+5 Minutes Overdue**: Sends a **1st Reminder Email** with action link to Panel Portal.
 2. **+10 Minutes Overdue**: Sends a **2nd Urgent Alert Email** notifying evaluator that students and panel members are waiting.
 3. **+15 Minutes Overdue**: Places an **Automated Twilio Voice Call** to the faculty evaluator's mobile phone number using inline TwiML:
-   > *"Hello Professor. This is an urgent automated reminder from the GLA University Project Management System. Your scheduled presentation evaluation slot for Team {team_id} started 15 minutes ago. Please join and initiate your evaluation session on the Panel Portal immediately. Thank you."*
+   > *"Hello Professor. This is an urgent automated reminder from the Procksi Project Management System. Your scheduled presentation evaluation slot for Team {team_id} started 15 minutes ago. Please join and initiate your evaluation session on the Panel Portal immediately. Thank you."*
 
 ### Smart Evaluation Status Check:
 Before placing any call or sending an email, the scheduler cross-references all 4 status tables:
@@ -225,7 +225,7 @@ docker compose up --build
 Execute the unified batch script:
 
 ```cmd
-start_pms.bat
+start_procksi.bat
 ```
 
 ---
@@ -240,4 +240,4 @@ The backend features startup **DDL auto-migrations** executed directly on SQLAlc
 ---
 
 ## 📝 License & Rights
-Developed for **GLA University Project Management System**. All rights reserved.
+Developed for **Procksi Project Management System**. All rights reserved.

@@ -19,20 +19,30 @@ from app.models.admin import Admin
 from app.schemas.auth import AdminLogin, TokenResponse, RefreshRequest
 from app.schemas.common import ok
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
+def _master_admin_email() -> str:
+    return os.getenv("MASTER_ADMIN_EMAIL", "").strip().lower()
+
+
 router = APIRouter(prefix="/api/admin", tags=["Auth"])
 
 
 @router.post("/login")
 async def admin_login(payload: AdminLogin):
     email_clean = payload.email.strip().lower()
-    if not email_clean.endswith("@gla.ac.in") and email_clean != "aiml_project_coordinator@gla.ac.in":
+    if not email_clean.endswith(_allowed_email_suffix()) and email_clean != _master_admin_email():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "success": False,
                 "error": {
                     "code": "AUTH_FORBIDDEN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )
@@ -141,14 +151,14 @@ async def forgot_password(body: StudentForgotPasswordRequest, db: AsyncSession =
 
     email_clean = body.email.strip().lower()
 
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         return JSONResponse(
             status_code=200,
             content={
                 "success": False,
                 "error": {
                     "code": "AUTH_FORBIDDEN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )
@@ -176,17 +186,17 @@ async def forgot_password(body: StudentForgotPasswordRequest, db: AsyncSession =
     token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     # Send email
-    student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "https://student.glapms.in").rstrip("/")
+    student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "").rstrip("/")
     reset_link = f"{student_base_url}/student/reset-password?token={token}"
     html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #4f46e5; margin: 0;">GLA University</h2>
+        <h2 style="color: #4f46e5; margin: 0;">Procksi</h2>
         <p style="color: #6b7280; font-size: 14px; margin: 5px 0 0 0;">Project Management System (Student Portal)</p>
     </div>
     <div style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
         <h3 style="color: #111827; margin-top: 0;">Password Reset Request</h3>
-        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Student Portal of the GLA Project Management System. Click the button below to set a new password. This link is valid for 15 minutes.</p>
+        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Student Portal of Procksi. Click the button below to set a new password. This link is valid for 15 minutes.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="{reset_link}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Reset Password</a>
         </div>
@@ -342,14 +352,14 @@ async def signup(body: StudentSignupRequest, db: AsyncSession = Depends(get_db))
 
     email_clean = body.email.strip().lower()
 
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
                 "success": False,
                 "error": {
                     "code": "INVALID_DOMAIN",
-                    "message": "Only @gla.ac.in email addresses are permitted.",
+                    "message": f"Only {_allowed_email_suffix()} email addresses are permitted.",
                 },
             },
         )
@@ -457,10 +467,10 @@ async def signup(body: StudentSignupRequest, db: AsyncSession = Depends(get_db))
 
     try:
         from app.services.email_service import build_professional_email_wrapper, send_html_email_async
-        student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "https://student.glapms.in").rstrip("/")
-        subject = "Confirm your GLA Project Management System account"
+        student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "").rstrip("/")
+        subject = "Confirm your Procksi account"
         body = f"""
-        <p>A student account was created for this address on the GLA Project Management System.</p>
+        <p>A student account was created for this address on Procksi.</p>
         <p><strong>One step remains:</strong> open the confirmation email Supabase has just sent you and click the link. Your account becomes active once confirmed.</p>
         <p>If you did not request this, you can ignore both emails — the account cannot be used until the link is followed.</p>
         """
@@ -478,7 +488,7 @@ async def signup(body: StudentSignupRequest, db: AsyncSession = Depends(get_db))
 
     return {
         "success": True,
-        "message": "Almost done — check your GLA inbox and click the confirmation link to activate your account.",
+        "message": "Almost done — check your inbox and click the confirmation link to activate your account.",
         "requires_email_confirmation": True,
     }
 

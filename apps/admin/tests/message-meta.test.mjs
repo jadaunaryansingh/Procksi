@@ -88,8 +88,8 @@ test('groupByDay tolerates empty and missing input', () => {
 });
 
 test('humanizeSenderId drops the course-and-year suffix', () => {
-    assert.equal(humanizeSenderId('kushagra.kulshrestha_cs.aiml24@gla.ac.in'), 'Kushagra Kulshrestha');
-    assert.equal(humanizeSenderId('yashi.gla_cs.aiml24@gla.ac.in'), 'Yashi Gla');
+    assert.equal(humanizeSenderId('kushagra.kulshrestha_cs.aiml24@example.edu'), 'Kushagra Kulshrestha');
+    assert.equal(humanizeSenderId('yashi.x_cs.aiml24@example.edu'), 'Yashi X');
 });
 
 test('humanizeSenderId leaves a roll number alone', () => {
@@ -103,10 +103,10 @@ test('humanizeSenderId returns empty string for nothing', () => {
 
 test('buildPeopleIndex indexes email, id and roll, all lowercased', () => {
     const index = buildPeopleIndex([
-        { id: '2415500262', name: 'Kushagra Kulshrestha', email: 'Kushagra.Kulshrestha_cs.aiml24@gla.ac.in' },
+        { id: '2415500262', name: 'Kushagra Kulshrestha', email: 'Kushagra.Kulshrestha_cs.aiml24@example.edu' },
         { roll: '2415500128', name: 'Bharti Singh' },
     ]);
-    assert.equal(index.get('kushagra.kulshrestha_cs.aiml24@gla.ac.in'), 'Kushagra Kulshrestha');
+    assert.equal(index.get('kushagra.kulshrestha_cs.aiml24@example.edu'), 'Kushagra Kulshrestha');
     assert.equal(index.get('2415500262'), 'Kushagra Kulshrestha');
     assert.equal(index.get('2415500128'), 'Bharti Singh');
 });
@@ -118,30 +118,30 @@ test('buildPeopleIndex skips rows with no name', () => {
 
 test('senderName shows staff by role, never by personal address', () => {
     const people = buildPeopleIndex([]);
-    assert.equal(senderName({ sender_role: 'admin', sender_id: 'coordinator@gla.ac.in' }, people), 'Coordinator');
-    assert.equal(senderName({ sender_role: 'mentor', sender_id: 'm@gla.ac.in' }, people), 'Mentor');
-    assert.equal(senderName({ sender_role: 'panel', sender_id: 'p@gla.ac.in' }, people), 'Panel');
+    assert.equal(senderName({ sender_role: 'admin', sender_id: 'coordinator@example.edu' }, people), 'Coordinator');
+    assert.equal(senderName({ sender_role: 'mentor', sender_id: 'm@example.edu' }, people), 'Mentor');
+    assert.equal(senderName({ sender_role: 'panel', sender_id: 'p@example.edu' }, people), 'Panel');
 });
 
 test('senderName names a student from the index', () => {
     const people = buildPeopleIndex([
-        { id: '2415500262', name: 'Kushagra Kulshrestha', email: 'kushagra.kulshrestha_cs.aiml24@gla.ac.in' },
+        { id: '2415500262', name: 'Kushagra Kulshrestha', email: 'kushagra.kulshrestha_cs.aiml24@example.edu' },
     ]);
     assert.equal(
-        senderName({ sender_role: 'student', sender_id: 'kushagra.kulshrestha_cs.aiml24@gla.ac.in' }, people),
+        senderName({ sender_role: 'student', sender_id: 'kushagra.kulshrestha_cs.aiml24@example.edu' }, people),
         'Kushagra Kulshrestha',
     );
 });
 
 test('senderName matches a student regardless of address casing', () => {
-    const people = buildPeopleIndex([{ id: '1', name: 'Bharti Singh', email: 'bharti@gla.ac.in' }]);
-    assert.equal(senderName({ sender_role: 'student', sender_id: 'Bharti@GLA.ac.in' }, people), 'Bharti Singh');
+    const people = buildPeopleIndex([{ id: '1', name: 'Bharti Singh', email: 'bharti@example.edu' }]);
+    assert.equal(senderName({ sender_role: 'student', sender_id: 'Bharti@example.edu' }, people), 'Bharti Singh');
 });
 
 test('senderName falls back to the address when the student is unknown', () => {
     const people = buildPeopleIndex([]);
     assert.equal(
-        senderName({ sender_role: 'student', sender_id: 'venu.gopal_cs.aiml24@gla.ac.in' }, people),
+        senderName({ sender_role: 'student', sender_id: 'venu.gopal_cs.aiml24@example.edu' }, people),
         'Venu Gopal',
     );
 });
@@ -178,17 +178,17 @@ test('deliveryState reports a rejected message as failed', () => {
 test('deliveryState treats the sender in read_by as not yet read', () => {
     // read_by is seeded with the sender's own id at insert, so their presence
     // there must never count as somebody having read the message.
-    const message = { sender_id: 'me@gla.ac.in', read_by: ['me@gla.ac.in'] };
+    const message = { sender_id: 'me@example.edu', read_by: ['me@example.edu'] };
     assert.equal(deliveryState(message), DELIVERY.SENT);
 });
 
 test('deliveryState reports read once another party appears in read_by', () => {
-    const message = { sender_id: 'me@gla.ac.in', read_by: ['me@gla.ac.in', 'them@gla.ac.in'] };
+    const message = { sender_id: 'me@example.edu', read_by: ['me@example.edu', 'them@example.edu'] };
     assert.equal(deliveryState(message), DELIVERY.READ);
 });
 
 test('deliveryState ignores casing and padding when comparing readers', () => {
-    const message = { sender_id: 'Me@GLA.ac.in', read_by: ['  me@gla.ac.in  '] };
+    const message = { sender_id: 'Me@example.edu', read_by: ['  me@example.edu  '] };
     assert.equal(deliveryState(message), DELIVERY.SENT);
 });
 

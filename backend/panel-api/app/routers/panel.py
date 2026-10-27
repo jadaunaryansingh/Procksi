@@ -757,7 +757,7 @@ def get_semesters(user: Annotated[dict, Depends(get_current_user)]):
 
 
 # ---------------------------------------------------------------------------
-# PMS-Chat
+# Procksi Chat
 #
 # A panel member sees their own direct thread with the coordinator, plus
 # broadcasts. Panel-to-team threads are created only when a panel writes to a
@@ -848,7 +848,7 @@ def get_panel_chat_unread(user: Annotated[dict, Depends(get_current_user)]):
                 .select("conversation_id,sender_id,read_by")
                 .in_("conversation_id", ids).execute().data) or []
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat unread query failed: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat unread query failed: {exc}")
         return empty
 
     panel_id, email = _panel_identity(user)
@@ -897,7 +897,7 @@ def get_panel_chat_messages(
              .update({"read_by": updated}).eq("id", int(m["id"])).execute())
             m["read_by"] = updated
         except Exception as exc:
-            logging.getLogger(__name__).warning(f"PMS-Chat could not mark message read: {exc}")
+            logging.getLogger(__name__).warning(f"Procksi Chat could not mark message read: {exc}")
 
     return {"status": "success", "data": [{
         "id": m.get("id"),
@@ -907,7 +907,7 @@ def get_panel_chat_messages(
         # Drives the delivery ticks: a reader other than the sender means read.
         "read_by": m.get("read_by") or [],
         "body": m.get("body"),
-        # PMSbot's reports carry their structured payload here. Nothing else
+        # ProcksiBot's reports carry their structured payload here. Nothing else
         # writes it, so it is null for every message a person typed.
         "metadata": m.get("metadata"),
         "created_at": m.get("created_at"),
@@ -953,7 +953,7 @@ class PanelChatCommandPayload(BaseModel):
 
 def _post_report_as_bot(conversation_id: int, report: dict, requested_by: str) -> dict:
     """
-    Write a finished report into the thread as a message from PMSbot.
+    Write a finished report into the thread as a message from ProcksiBot.
 
     A report is a message, not a private lookup: it is stored, everyone in the
     thread sees it, and it stays there. The person who ran the command is seeded
@@ -988,7 +988,7 @@ def run_panel_chat_command(
 ):
     """
     Execute a slash command. The result is posted into the open conversation as
-    a message from PMSbot, so it is stored and everyone in that thread sees it.
+    a message from ProcksiBot, so it is stored and everyone in that thread sees it.
 
     Scope rule, shared by all four portals: a report reads only conversations
     the caller could already open. For a panel that means its own coordinator
@@ -1167,9 +1167,9 @@ def run_panel_chat_command(
     }, email or "")
 
 
-@router.get("/pms-chat-enabled")
-def get_pms_chat_enabled():
-    """Whether PMS-Chat is switched on for the panel portal this semester.
+@router.get("/procksi-chat-enabled")
+def get_procksi_chat_enabled():
+    """Whether Procksi Chat is switched on for the panel portal this semester.
 
     Unauthenticated and read-only: the portal shell needs this before it knows
     who the user is, and the answer is a single boolean.
@@ -1183,11 +1183,11 @@ def get_pms_chat_enabled():
     try:
         client = get_supabase_service()
         if client is None:
-            logging.getLogger(__name__).warning("pms-chat-enabled: no service client; defaulting to enabled")
+            logging.getLogger(__name__).warning("procksi-chat-enabled: no service client; defaulting to enabled")
             return {"enabled": True, "reason": "no-service-client"}
         res = (
             client.table("semester_config")
-            .select("pms_chat_panel")
+            .select("procksi_chat_panel")
             .eq("is_active", True)
             .execute()
         )
@@ -1196,19 +1196,19 @@ def get_pms_chat_enabled():
             # See the mentor portal's copy: a silent fail-open makes a stale or
             # misconfigured backend look exactly like the feature being on.
             logging.getLogger(__name__).warning(
-                "pms-chat-enabled: no active semester_config row; defaulting to enabled"
+                "procksi-chat-enabled: no active semester_config row; defaulting to enabled"
             )
             return {"enabled": True, "reason": "no-active-semester"}
         # Multiple batches (B.Tech years) can be active at once; enable if any
         # active batch has it on. A missing column (None everywhere) counts as
         # on, matching the fail-open default.
-        if all(r.get("pms_chat_panel") is None for r in rows):
+        if all(r.get("procksi_chat_panel") is None for r in rows):
             logging.getLogger(__name__).warning(
-                "pms-chat-enabled: pms_chat_panel column missing; defaulting to enabled"
+                "procksi-chat-enabled: procksi_chat_panel column missing; defaulting to enabled"
             )
             return {"enabled": True, "reason": "column-missing"}
-        enabled = any(r.get("pms_chat_panel") in (None, True) for r in rows)
+        enabled = any(r.get("procksi_chat_panel") in (None, True) for r in rows)
         return {"enabled": enabled, "reason": "config"}
     except Exception as exc:
-        logging.getLogger(__name__).warning("pms-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
+        logging.getLogger(__name__).warning("procksi-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
         return {"enabled": True, "reason": "lookup-failed"}

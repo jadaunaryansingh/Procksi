@@ -10,11 +10,11 @@ from fastapi.responses import JSONResponse
 from app.api import auth, student, student_portal, semester, proposal, team, mentor, schedule, evaluation, result, communication, governance, panel
 from app.core.config import settings
 
-logger = logging.getLogger("pms.scheduler")
+logger = logging.getLogger("procksi.scheduler")
 
 # How often the Communication Agent checks for due scheduled sends.
-_SCHEDULER_POLL_SECONDS = int(os.getenv("PMS_SCHEDULER_POLL_SECONDS", "60"))
-_SCHEDULER_ENABLED = os.getenv("PMS_SCHEDULER_ENABLED", "1") != "0"
+_SCHEDULER_POLL_SECONDS = int(os.getenv("PROCKSI_SCHEDULER_POLL_SECONDS", "60"))
+_SCHEDULER_ENABLED = os.getenv("PROCKSI_SCHEDULER_ENABLED", "1") != "0"
 
 
 async def _scheduler_loop() -> None:
@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="PMS Backend",
+    title="Procksi Backend",
     description="Project Management System – Admin Dashboard API",
     version="1.0.0",
     lifespan=lifespan,
@@ -81,18 +81,6 @@ localhost_origins = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
-    "https://student.glapms.in",
-    "https://admin.glapms.in",
-    "https://mentor.glapms.in",
-    "https://panel.glapms.in",
-    "https://glapms.in",
-    "https://www.glapms.in",
-    "http://student.glapms.in",
-    "http://admin.glapms.in",
-    "http://mentor.glapms.in",
-    "http://panel.glapms.in",
-    "http://glapms.in",
-    "http://www.glapms.in",
 ]
 
 for origin in localhost_origins:
@@ -102,7 +90,6 @@ for origin in localhost_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https?://(.*\.)?glapms\.in(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -163,4 +150,4 @@ app.include_router(panel.router)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "PMS Backend"}
+    return {"status": "ok", "service": "Procksi Backend"}

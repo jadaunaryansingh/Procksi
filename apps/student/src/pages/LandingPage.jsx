@@ -57,10 +57,10 @@ export default function LandingPage({ onGetStarted, isDark, toggleTheme, hideLog
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-4">
                     {/* Brand */}
                     <div className={`flex items-center gap-3 shrink-0 transition-opacity duration-500 ${hideLogo ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                        <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-10 h-10 object-contain drop-shadow-sm" />
+                        <img src="/procksi-mark.png" alt="Procksi" className="w-10 h-10 object-contain drop-shadow-sm" />
                         <div className="flex flex-col">
-                            <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">GLA University</span>
-                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase mt-1">PMS Portal</span>
+                            <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">Procksi</span>
+                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase mt-1">Project Management Platform</span>
                         </div>
                     </div>
                     
@@ -105,7 +105,7 @@ export default function LandingPage({ onGetStarted, isDark, toggleTheme, hideLog
                             className="flex-1 w-full max-w-2xl text-center lg:text-left z-10"
                         >
                             <motion.div variants={itemVariants} className="mb-4 inline-block">
-                                <span className="text-sm font-bold text-slate-600 dark:text-slate-300 tracking-tight">GLA PMS: Elevating College Cohorts</span>
+                                <span className="text-sm font-bold text-slate-600 dark:text-slate-300 tracking-tight">Procksi: Elevating College Cohorts</span>
                             </motion.div>
                             
                             <motion.div variants={itemVariants}>
@@ -219,8 +219,8 @@ export default function LandingPage({ onGetStarted, isDark, toggleTheme, hideLog
                                 transition={{ delay: 0.6 }}
                                 className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 flex flex-col items-center gap-2 transform rotate-3"
                             >
-                                <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-10 h-10 object-contain" />
-                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">GLA Community</span>
+                                <img src="/procksi-mark.png" alt="Procksi" className="w-10 h-10 object-contain" />
+                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">Procksi Community</span>
                             </motion.div>
 
                             {/* Floating Bottom Left Team Avatars */}
@@ -484,14 +484,14 @@ export default function LandingPage({ onGetStarted, isDark, toggleTheme, hideLog
             <footer className="relative z-10 bg-white dark:bg-[#020617] border-t border-slate-200 dark:border-slate-800 py-8 text-slate-500 text-xs">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-3">
-                        <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-6 h-6 grayscale opacity-70" />
+                        <img src="/procksi-mark.png" alt="Procksi" className="w-6 h-6 grayscale opacity-70" />
                         <div className="flex flex-col">
-                            <span className="font-bold text-slate-700 dark:text-slate-300">GLA University</span>
-                            <span className="text-[10px] tracking-widest uppercase">PMS Portal</span>
+                            <span className="font-bold text-slate-700 dark:text-slate-300">Procksi</span>
+                            <span className="text-[10px] tracking-widest uppercase">Project Management Platform</span>
                         </div>
                     </div>
                     
-                    <div>© {new Date().getFullYear()} GLA Project Management System. All rights reserved.</div>
+                    <div>© {new Date().getFullYear()} Procksi. All rights reserved.</div>
                     
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-slate-800 dark:hover:text-white transition-colors">Privacy Policy</a>

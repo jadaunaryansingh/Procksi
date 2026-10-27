@@ -87,7 +87,7 @@ export const TopNav = ({
                         {getTitle()}
                     </h2>
                     <span className="text-xs font-extrabold tracking-wide uppercase bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent hidden sm:block">
-                        GLA University – Project Management System
+                        Procksi – Project Management Platform
                     </span>
                 </div>
             </div>

@@ -59,7 +59,7 @@ These SQL scripts will populate your Supabase database with test data for the Pa
 
 After running all scripts, use these credentials:
 
-- **Email:** `panel01@gla.ac.in`
+- **Email:** `panel01@example.edu`
 - **Password:** `panel123`
 - **Panel ID:** `P01`
 
@@ -105,7 +105,7 @@ After running all scripts, use these credentials:
 
 ## 🔧 **Testing Checklist**
 
-1. **Login** ✓ - Use panel01@gla.ac.in / panel123
+1. **Login** ✓ - Use panel01@example.edu / panel123
 2. **Dashboard** ✓ - Should show active slots and progress
 3. **My Slots** ✓ - All teams visible with correct status
 4. **Active Evaluation** ✓ - Evaluate one of the active teams
@@ -124,7 +124,7 @@ After running all scripts, use these credentials:
 - Make sure you're running scripts in the correct order
 
 ### **No data showing in frontend**
-- Verify login credentials: panel01@gla.ac.in / panel123
+- Verify login credentials: panel01@example.edu / panel123
 - Check that Panel ID is "P01" in the application
 - Ensure all scripts ran successfully without errors
 

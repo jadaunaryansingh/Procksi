@@ -79,7 +79,7 @@ export const ProfileView = () => {
             const userId = session?.user?.id || 'unknown';
             const ext = file.name.split('.').pop();
             const filePath = `avatars/${userId}/${Date.now()}.${ext}`;
-            const bucket = 'PMS';
+            const bucket = 'Procksi';
 
             const { error: uploadError } = await supabase.storage
                 .from(bucket)

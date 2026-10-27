@@ -8,7 +8,7 @@ export const TODAY = new Date('2026-03-04T10:00:00');
 export const MOCK_STUDENT = {
   id: 'STU101',
   name: 'Alex Johnson',
-  email: 'alex.j@gla.ac.in',
+  email: 'alex.j@example.edu',
   avatar: 'https://i.pravatar.cc/150?u=STU101',
   role: 'Student'
 };
@@ -30,7 +30,7 @@ export const MOCK_NOTIFICATIONS = [
 ];
 
 export const MOCK_MILESTONES = [
-  { id: 1, title: 'Project Scope & Requirements', deadline: '2026-03-25T23:59:59', status: 'completed', github: 'https://github.com/alexj/pms-project', file: 'scope_v1.pdf', commits: 12, lastCommit: '2 hours ago' },
+  { id: 1, title: 'Project Scope & Requirements', deadline: '2026-03-25T23:59:59', status: 'completed', github: 'https://github.com/alexj/procksi-project', file: 'scope_v1.pdf', commits: 12, lastCommit: '2 hours ago' },
   { id: 2, title: 'Mid-Term Presentation', deadline: '2026-04-15T23:59:59', status: 'pending', github: '', file: null, commits: 0, lastCommit: null },
   { id: 3, title: 'Final Code Submission', deadline: '2026-05-10T23:59:59', status: 'pending', github: '', file: null, commits: 0, lastCommit: null },
 ];
@@ -44,7 +44,7 @@ export const MOCK_MENTOR = {
   name: 'Prof. Sarah Jenkins',
   department: 'Computer Science and Engineering',
   expertise: ['Artificial Intelligence', 'Machine Learning', 'Data Science'],
-  email: 'sarah.jenkins@gla.ac.in',
+  email: 'sarah.jenkins@example.edu',
   phone: '+91-9876543210',
   office: 'Room 304, Academic Block 1',
   availability: 'Mon, Wed, Fri: 2:00 PM - 4:00 PM',

@@ -13,7 +13,7 @@ import { teamLabel } from '../lib/teamUtils';
 const EMPTY_ABSENT = { name: '', roll: '', team: '', reason: '', status: 'Pending' };
 const EMPTY_MAKEUP = { date: '', time: '', panel: '', room: '', capacity: 20, enrolled: 0, meetLink: '' };
 
-const CONFIG_KEY = 'pms-schedule-config';
+const CONFIG_KEY = 'procksi-schedule-config';
 const DEFAULT_CONFIG = {
     rooms: [
         { id: 1, name: 'Seminar Hall 1',   capacity: 30 },

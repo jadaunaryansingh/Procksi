@@ -19,9 +19,9 @@ ENV = os.path.join(ROOT, "backend", "admin-api", ".env")
 
 # (migration file, probe path, human description)
 CHECKS = [
-    ("202608240001_pms_chat_toggles.sql",
-     "semester_config?select=pms_chat_student,pms_chat_mentor,pms_chat_panel,pms_chat_admin&limit=1",
-     "semester_config.pms_chat_* columns"),
+    ("202608240001_procksi_chat_toggles.sql",
+     "semester_config?select=procksi_chat_student,procksi_chat_mentor,procksi_chat_panel,procksi_chat_admin&limit=1",
+     "semester_config.procksi_chat_* columns"),
     ("202608240002_email_deliveries.sql",
      "email_deliveries?select=id&limit=1",
      "email_deliveries table"),

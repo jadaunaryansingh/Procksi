@@ -33,7 +33,7 @@ function uuidv4() {
 
 const dispatchSemesterConfigChanged = () => {
     if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('pms-semester-config-changed'));
+        window.dispatchEvent(new CustomEvent('procksi-semester-config-changed'));
     }
 };
 

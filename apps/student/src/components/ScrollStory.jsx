@@ -49,7 +49,7 @@ const ScrollStory = ({ smoothProgress }) => {
         // Frames live on the CDN (main-site S3/CloudFront bucket), not in this
         // portal's own build, so we don't ship 151 MB of PNGs in the EC2 image.
         // Override the origin with VITE_SCROLL_FRAMES_BASE if needed.
-        const base = import.meta.env.VITE_SCROLL_FRAMES_BASE || 'https://glapms.in';
+        const base = import.meta.env.VITE_SCROLL_FRAMES_BASE || '';
         const loadedImages = [];
 
         for (let i = 0; i < frameCount; i++) {

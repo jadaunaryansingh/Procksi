@@ -70,7 +70,7 @@ def _seed_teams_projects_github(client) -> None:
         if not res_gh.data:
             client.table("github_data").insert({
                 "team_id": tid,
-                "repository_url": f"https://github.com/gla-pms/team-{tid}-project",
+                "repository_url": f"https://github.com/procksi/team-{tid}-project",
                 "default_branch": "main",
                 "open_pull_requests": 0,
                 "commit_count_30d": 12 + tid,
@@ -106,10 +106,10 @@ def _seed_demo_alerts(client, panel_id: str) -> None:
 def _seed_demo_panel(client) -> None:
     """Create demo panel record + user + slots. Only called when SEED_DEMO_DATA=true."""
     panel_id = "P01"
-    email = "panel01@gla.ac.in"
+    email = "panel01@example.edu"
 
     # Remove stale user if email changed
-    client.table("users").delete().eq("email", "panel@gla.ac.in").execute()
+    client.table("users").delete().eq("email", "panel@example.edu").execute()
 
     # Ensure Panel metadata row in 'panels' table
     res_panel = client.table("panels").select("id").eq("id", panel_id).execute()

@@ -55,18 +55,18 @@ export const AnimatedLandingPage = ({ onGetStarted, isDark, toggleTheme }) => {
     const logoSize = useTransform(smoothProgress, [0.75, 0.95], [64, 40]); // w-16 to w-10
 
     // Text sizes and margins
-    const glaSize = useTransform(smoothProgress, [0.75, 0.95], ["1.5rem", "1.25rem"]); // text-2xl to text-xl
-    const glaTracking = useTransform(smoothProgress, [0.75, 0.95], ["0.1em", "-0.025em"]); // tracking-widest to tracking-tight
+    const brandSize = useTransform(smoothProgress, [0.75, 0.95], ["1.5rem", "1.25rem"]); // text-2xl to text-xl
+    const brandTracking = useTransform(smoothProgress, [0.75, 0.95], ["0.1em", "-0.025em"]); // tracking-widest to tracking-tight
     
-    const pmsSize = useTransform(smoothProgress, [0.75, 0.95], ["2.5rem", "0.625rem"]); // scaled down from 3.2rem
-    const pmsTracking = useTransform(smoothProgress, [0.75, 0.95], ["-0.02em", "0.1em"]); // slightly tighter initially
-    const pmsTransform = useTransform(smoothProgress, [0.75, 0.95], ["none", "uppercase"]);
-    const pmsWidth = useTransform(smoothProgress, [0.75, 0.95], ["12em", "35em"]); // forces wrap initially, then single line
+    const procksiSize = useTransform(smoothProgress, [0.75, 0.95], ["2.5rem", "0.625rem"]); // scaled down from 3.2rem
+    const procksiTracking = useTransform(smoothProgress, [0.75, 0.95], ["-0.02em", "0.1em"]); // slightly tighter initially
+    const procksiTransform = useTransform(smoothProgress, [0.75, 0.95], ["none", "uppercase"]);
+    const procksiWidth = useTransform(smoothProgress, [0.75, 0.95], ["12em", "35em"]); // forces wrap initially, then single line
 
     
     // Navbar specific adjustments
-    const navbarTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [0, 1]); // the "GLA University" native colors
-    const heroTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [1, 0]); // the "PMS PORTAL" big colors
+    const navbarTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [0, 1]); // the "Procksi" native colors
+    const heroTextOpacity = useTransform(smoothProgress, [0.85, 0.95], [1, 0]); // the "PROCKSI" big colors
 
     // Z-index needs to be high to go over navbar
     return (
@@ -85,29 +85,29 @@ export const AnimatedLandingPage = ({ onGetStarted, isDark, toggleTheme }) => {
                 className="pointer-events-none flex flex-row items-start gap-4"
             >
                 <motion.img 
-                    src="/GLA_University_logo.png" 
-                    alt="GLA Logo" 
+                    src="/procksi-mark.png" 
+                    alt="Procksi" 
                     style={{ width: logoSize, height: logoSize }}
                     className="object-contain drop-shadow-md" 
                 />
                 <div className="flex flex-col">
-                    {/* GLA University Text */}
+                    {/* Procksi Text */}
                     <div className="relative">
                         <motion.span 
                             style={{ 
-                                fontSize: glaSize, 
-                                letterSpacing: glaTracking,
+                                fontSize: brandSize, 
+                                letterSpacing: brandTracking,
                                 opacity: heroTextOpacity 
                             }} 
                             className="font-bold uppercase text-white whitespace-nowrap block"
                         >
-                            GLA University
+                            Procksi
                         </motion.span>
-                        {/* The Navbar version of GLA University that fades in */}
+                        {/* The Navbar version of Procksi that fades in */}
                         <motion.span 
                             style={{ 
-                                fontSize: glaSize, 
-                                letterSpacing: glaTracking,
+                                fontSize: brandSize, 
+                                letterSpacing: brandTracking,
                                 opacity: navbarTextOpacity,
                                 position: 'absolute',
                                 top: 0,
@@ -115,7 +115,7 @@ export const AnimatedLandingPage = ({ onGetStarted, isDark, toggleTheme }) => {
                             }} 
                             className="font-black text-slate-900 dark:text-white leading-none whitespace-nowrap block"
                         >
-                            GLA University
+                            Procksi
                         </motion.span>
                     </div>
 
@@ -123,12 +123,12 @@ export const AnimatedLandingPage = ({ onGetStarted, isDark, toggleTheme }) => {
                     <div className="relative">
                         <motion.span 
                             style={{ 
-                                fontSize: pmsSize, 
-                                letterSpacing: pmsTracking,
+                                fontSize: procksiSize, 
+                                letterSpacing: procksiTracking,
                                 color: brandColor,
                                 textShadow: brandGlow,
                                 opacity: heroTextOpacity,
-                                width: pmsWidth
+                                width: procksiWidth
                             }} 
                             className="font-black leading-tight block mt-2"
                         >
@@ -137,14 +137,14 @@ export const AnimatedLandingPage = ({ onGetStarted, isDark, toggleTheme }) => {
                         {/* The Navbar version that fades in */}
                         <motion.span 
                             style={{ 
-                                fontSize: pmsSize, 
-                                letterSpacing: pmsTracking,
-                                textTransform: pmsTransform,
+                                fontSize: procksiSize, 
+                                letterSpacing: procksiTracking,
+                                textTransform: procksiTransform,
                                 opacity: navbarTextOpacity,
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
-                                width: pmsWidth
+                                width: procksiWidth
                             }} 
                             className="font-bold text-indigo-600 dark:text-indigo-400 mt-1 block"
                         >

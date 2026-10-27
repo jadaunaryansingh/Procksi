@@ -174,18 +174,18 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             GOOGLE_CLIENT_ID=53268196905-gfa2r4klrqrtpgt9r9s4mjhmmgunjlrr.apps.googleusercontent.com
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            GOOGLE_REDIRECT_URI=https://admin.glapms.in/auth/google/callback
+            GOOGLE_REDIRECT_URI=https://admin.your-domain.com/auth/google/callback
             GOOGLE_CALENDAR_ID=primary
             MAIL_SERVER=smtp.gmail.com
             MAIL_PORT=587
-            MAIL_USERNAME=aiml_project_coordinator@gla.ac.in
+            MAIL_USERNAME=aiml_project_coordinator@example.edu
             MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
-            MAIL_FROM=aiml_project_coordinator@gla.ac.in
-            MAIL_FROM_NAME="GLA PMS Portal"
-            STUDENT_PORTAL_URL=https://student.glapms.in
-            ADMIN_PORTAL_URL=https://admin.glapms.in
-            MENTOR_PORTAL_URL=https://mentor.glapms.in
-            PANEL_PORTAL_URL=https://panel.glapms.in
+            MAIL_FROM=aiml_project_coordinator@example.edu
+            MAIL_FROM_NAME="Procksi Portal"
+            STUDENT_PORTAL_URL=https://student.your-domain.com
+            ADMIN_PORTAL_URL=https://admin.your-domain.com
+            MENTOR_PORTAL_URL=https://mentor.your-domain.com
+            PANEL_PORTAL_URL=https://panel.your-domain.com
             ADMIN_API_KEY=${{ secrets.ADMIN_API_KEY }}
             # No VITE_ADMIN_API_KEY: baking this into the admin bundle (Vite
             # inlines VITE_* at build time) is what let incident 2026-09-03 §2.8
@@ -198,13 +198,13 @@ jobs:
             # container needs. Public-hostname routing lives in the CF Zero Trust
             # dashboard. See deploy/cloudflared/README.md.
             CLOUDFLARE_TUNNEL_TOKEN=${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
-            # PMS-Chat build-time kill switch. Vite inlines VITE_* at build
+            # Procksi-Chat build-time kill switch. Vite inlines VITE_* at build
             # time, so this decides whether the feature exists in the bundle at
             # all. Left unset (or anything other than "true") the portals ship
-            # with PMS-Chat off regardless of the per-portal switches an admin
+            # with Procksi-Chat off regardless of the per-portal switches an admin
             # sets, which are only consulted once the build allows the feature.
-            # Set the PMS_CHAT repository variable to "true" to ship it.
-            VITE_PMS_CHAT=${{ vars.PMS_CHAT }}
+            # Set the PROCKSI_CHAT repository variable to "true" to ship it.
+            VITE_PROCKSI_CHAT=${{ vars.PROCKSI_CHAT }}
             ENVEOF
 
             # Sync root .env to all backend API directories to overwrite any stale local .env files

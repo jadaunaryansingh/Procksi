@@ -67,7 +67,7 @@ def probe(host, port, user, pwd, send_to=None):
         try:
             msg = (
                 f"From: {user}\r\nTo: {send_to}\r\n"
-                "Subject: PMS SMTP probe\r\n\r\n"
+                "Subject: Procksi SMTP probe\r\n\r\n"
                 "SMTP credentials are working.\r\n"
             )
             server.sendmail(user, [send_to], msg)

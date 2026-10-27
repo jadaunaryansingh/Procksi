@@ -8,6 +8,12 @@ from app.supabase_client import get_supabase_service
 from app.schemas import LoginRequest, SignupRequest, Token, UserPublic
 from app.security import create_access_token, verify_password, hash_password
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -42,10 +48,10 @@ def _get_mentor_name(client, panel_id: str | None) -> str | None:
 @router.post("/signup")
 def signup(body: SignupRequest):
     email_clean = normalize_email(body.email)
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only @gla.ac.in email addresses are permitted."
+            detail=f"Only {_allowed_email_suffix()} email addresses are permitted."
         )
 
     client = get_supabase_service()
@@ -115,10 +121,10 @@ def signup(body: SignupRequest):
 @router.post("/login", response_model=Token)
 def login(body: LoginRequest):
     email_clean = normalize_email(body.email)
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only @gla.ac.in email addresses are permitted."
+            detail=f"Only {_allowed_email_suffix()} email addresses are permitted."
         )
 
     client = get_supabase_service()
@@ -237,10 +243,10 @@ class ResetPasswordRequest(BaseModel):
 @router.post("/forgot-password")
 def forgot_password(body: ForgotPasswordRequest):
     email_clean = normalize_email(body.email)
-    if not email_clean.endswith("@gla.ac.in"):
+    if not email_clean.endswith(_allowed_email_suffix()):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only @gla.ac.in email addresses are permitted."
+            detail=f"Only {_allowed_email_suffix()} email addresses are permitted."
         )
     import os
     import time
@@ -281,17 +287,17 @@ def forgot_password(body: ForgotPasswordRequest):
     token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     # Send email
-    panel_base_url = (os.getenv("PANEL_PORTAL_URL") or getattr(settings, "panel_portal_url", None) or "https://panel.glapms.in").rstrip("/")
+    panel_base_url = (os.getenv("PANEL_PORTAL_URL") or getattr(settings, "panel_portal_url", None) or "").rstrip("/")
     reset_link = f"{panel_base_url}/reset-password?token={token}"
     html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #10b981; margin: 0;">GLA University</h2>
+        <h2 style="color: #10b981; margin: 0;">Procksi</h2>
         <p style="color: #6b7280; font-size: 14px; margin: 5px 0 0 0;">Project Management System (Panel Portal)</p>
     </div>
     <div style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
         <h3 style="color: #111827; margin-top: 0;">Password Reset Request</h3>
-        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Panel/Mentor Portal of the GLA Project Management System. Click the button below to set a new password. This link is valid for 15 minutes.</p>
+        <p style="color: #374151; font-size: 16px; line-height: 1.5;">You requested to reset your password for the Panel/Mentor Portal of Procksi. Click the button below to set a new password. This link is valid for 15 minutes.</p>
         <div style="text-align: center; margin: 30px 0;">
             <a href="{reset_link}" style="background-color: #10b981; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Reset Password</a>
         </div>

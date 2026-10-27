@@ -60,12 +60,12 @@ _OPENAI_MODEL = "gpt-4.1-mini"
 # thread should not be able to run up a bill or a latency spike.
 _MAX_MESSAGES_TO_SCAN = 400
 
-# PMSbot's identity in conversation_messages. 'bot' is a sender_role of its own
+# ProcksiBot's identity in conversation_messages. 'bot' is a sender_role of its own
 # so a report can never be mistaken for something a person typed, and the id is
 # fixed so every portal renders the same author.
 BOT_SENDER_ROLE = "bot"
-BOT_SENDER_ID = "pmsbot"
-BOT_DISPLAY_NAME = "PMSbot"
+BOT_SENDER_ID = "procksibot"
+BOT_DISPLAY_NAME = "ProcksiBot"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ def _looks_like_question(body: str) -> bool:
 
 def human_messages(messages: List[dict]) -> List[dict]:
     """
-    Drop PMSbot's own posts.
+    Drop ProcksiBot's own posts.
 
     Reports are stored in the thread like any other message, so without this
     every report would be counted as team communication by the next one — and

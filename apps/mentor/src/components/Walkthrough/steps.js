@@ -12,8 +12,8 @@
  * that would land off-screen.
  *
  * Deliberately excluded: GitHub Analytics Hub, Presentations, History and
- * PMS-Chat. This is orientation -- it names where things live rather than
- * teaching every screen. PMS-Chat additionally sits behind PMS_CHAT_ENABLED
+ * Procksi Chat. This is orientation -- it names where things live rather than
+ * teaching every screen. Procksi Chat additionally sits behind PROCKSI_CHAT_ENABLED
  * and is a disabled, greyed-out nav item in production, so a step pointing
  * at it would highlight something the mentor cannot click.
  */

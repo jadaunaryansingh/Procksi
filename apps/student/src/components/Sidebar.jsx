@@ -7,7 +7,7 @@ import {
     Bell, UserCircle, Presentation, ClipboardCheck, Award, Activity, ClipboardList, Github
 } from 'lucide-react';
 import { useChatUnread } from '../hooks/useChatUnread';
-import { usePmsChatEnabled } from '../hooks/usePmsChatEnabled';
+import { useProcksiChatEnabled } from '../hooks/useProcksiChatEnabled';
 
 export const Sidebar = ({
     user,
@@ -17,7 +17,7 @@ export const Sidebar = ({
     setMobileMenuOpen,
     handleLogout
 }) => {
-    const pmsChatEnabled = usePmsChatEnabled();
+    const procksiChatEnabled = useProcksiChatEnabled();
     const chatUnread = useChatUnread();
     const navItems = [
         { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', path: '/student/dashboard' },
@@ -26,7 +26,7 @@ export const Sidebar = ({
         { id: 'preferences', icon: ClipboardList, label: 'Project Preferences', path: '/student/preferences' },
         { id: 'milestones', icon: Award, label: 'Synopsis Submission', path: '/student/milestones' },
         { id: 'mentor', icon: UserCircle, label: 'Mentor', path: '/student/mentor' },
-        { id: 'pms-chat', icon: MessageSquare, label: 'PMS-Chat', path: '/student/pms-chat' },
+        { id: 'procksi-chat', icon: MessageSquare, label: 'Procksi Chat', path: '/student/procksi-chat' },
         { id: 'presentations', icon: Presentation, label: 'Presentation Schedule', path: '/student/presentations' },
         { id: 'evaluations', icon: ClipboardCheck, label: 'Evaluation', path: '/student/evaluations' },
         { id: 'results', icon: ClipboardCheck, label: 'Results', path: '/student/results' },
@@ -41,10 +41,10 @@ export const Sidebar = ({
                     ? 'w-auto opacity-100 md:w-0 md:opacity-0 md:group-hover/sidebar:w-[150px] md:group-hover/sidebar:opacity-100'
                     : 'w-[150px] opacity-100'
                     }`}>
-                    <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-8 h-8 object-contain shrink-0 mr-3 drop-shadow-sm" />
+                    <img src="/procksi-mark.png" alt="Procksi" className="w-8 h-8 object-contain shrink-0 mr-3 drop-shadow-sm" />
                     <div className="flex flex-col">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">GLA University</span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">PMS PORTAL</span>
+                        <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">Procksi</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">STUDENT PORTAL</span>
                     </div>
                 </div>
                 <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden md:flex p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0">
@@ -72,9 +72,9 @@ export const Sidebar = ({
             <nav data-tour="sidebar-nav" className="flex-1 px-3 space-y-1 mt-2 overflow-y-auto">
                 {navItems.map(item => {
                     const Icon = item.icon;
-                    // PMS-Chat is disabled: greyed, inert, and no unread badge.
-                    const isDisabled = item.id === 'pms-chat' && !pmsChatEnabled;
-                    const badge = (item.id === 'pms-chat' && pmsChatEnabled) ? chatUnread : 0;
+                    // Procksi Chat is disabled: greyed, inert, and no unread badge.
+                    const isDisabled = item.id === 'procksi-chat' && !procksiChatEnabled;
+                    const badge = (item.id === 'procksi-chat' && procksiChatEnabled) ? chatUnread : 0;
                     return (
                         <NavLink
                             key={item.id}
@@ -82,7 +82,7 @@ export const Sidebar = ({
                             data-tour={`nav-${item.id}`}
                             aria-disabled={isDisabled}
                             tabIndex={isDisabled ? -1 : undefined}
-                            title={isDisabled ? 'PMS-Chat is currently unavailable' : undefined}
+                            title={isDisabled ? 'Procksi Chat is currently unavailable' : undefined}
                             onClick={(e) => {
                                 // NavLink has no disabled attribute, so the navigation
                                 // has to be cancelled here.

@@ -211,7 +211,7 @@ def _team_dict(t: dict) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# In-app notifications (PMS portals)
+# In-app notifications (Procksi portals)
 # ─────────────────────────────────────────────────────────────────────────────
 def _student_email_map(client) -> Dict[str, str]:
     """student id (str) → email, for resolving a team's members to recipients."""

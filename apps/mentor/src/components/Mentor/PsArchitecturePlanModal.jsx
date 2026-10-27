@@ -709,7 +709,7 @@ export default function PsArchitecturePlanModal({ ps, onClose, onGenerateAi, aiG
                                 AI
                             </div>
                             <h4 className="text-xs font-bold tracking-tight text-white flex items-center gap-2">
-                                PMS Architecture Blueprint
+                                Procksi Architecture Blueprint
                                 <span className="px-2 py-0.5 rounded-full bg-[#6C3CE1]/20 border border-[#6C3CE1]/40 text-[#8B5CF6] text-[10px] font-mono font-bold uppercase">
                                     {String(currentPs.id).startsWith('PS-') ? currentPs.id : `PS-${currentPs.id}`}
                                 </span>

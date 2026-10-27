@@ -1,4 +1,4 @@
-# PMS database security auditor
+# Procksi database security auditor
 
 Audits the Supabase/Postgres layer the way an attacker probes it: every table's
 RLS state and policies, role grants, `SECURITY DEFINER` functions, RLS-bypassing
@@ -36,7 +36,7 @@ From the repo root. Config resolves from CLI flags → environment →
 # Full audit (static + live probe + auth), read-only:
 python -m scripts.security_audit \
   --dsn "postgresql://postgres.<ref>:<PASSWORD>@aws-1-...pooler.supabase.com:6543/postgres" \
-  --admin-emails "aiml_project_coordinator@gla.ac.in,admin@gla.ac.in" \
+  --admin-emails "aiml_project_coordinator@example.edu,admin@example.edu" \
   --md security_audit.md --json security_audit.json
 
 # Black-box only (no DB): enumerate tables via the secret key, probe as anon:

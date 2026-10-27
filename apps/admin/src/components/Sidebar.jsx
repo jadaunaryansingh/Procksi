@@ -9,7 +9,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useChatUnread } from '../hooks/useChatUnread';
 
-import { PMS_CHAT_ENABLED } from '../config/features';
+import { PROCKSI_CHAT_ENABLED } from '../config/features';
 
 const navItems = [
     { id: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -25,7 +25,7 @@ const navItems = [
     { id: '/admin/mentors', icon: UserCircle, label: 'Mentor Allocation' },
     { id: '/admin/schedule', icon: Calendar, label: 'Presentation Schedule' },
     { id: '/admin/presentation-cycles', icon: Target, label: 'Presentation Cycles' },
-    { id: '/admin/pms-chat', icon: UserPlus, label: 'PMS-Chat' },
+    { id: '/admin/procksi-chat', icon: UserPlus, label: 'Procksi Chat' },
     { id: '/admin/evaluations', icon: Activity, label: 'Evaluations' },
     { id: '/admin/results', icon: Award, label: 'Results' },
     { id: '/admin/communication', icon: Mail, label: 'Communication' },
@@ -50,11 +50,11 @@ export const Sidebar = ({
             <div className="p-4 flex items-center justify-between">
                 <div className={`flex items-center transition-all duration-300 overflow-hidden ${sidebarCollapsed ? 'w-auto opacity-100 md:w-0 md:opacity-0 md:group-hover/sidebar:w-[150px] md:group-hover/sidebar:opacity-100' : 'w-[150px] opacity-100'}`}>
                     <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0 mr-3 shadow-md border border-slate-200 dark:border-slate-700/50 overflow-hidden">
-                      <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
+                      <img src="/procksi-mark.png" alt="Procksi" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
                     </div>
                     <div className="flex flex-col">
                         <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">Admin Portal</span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">GLA UNIVERSITY</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">PROCKSI</span>
                     </div>
                 </div>
                 <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden md:flex p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0">
@@ -80,18 +80,18 @@ export const Sidebar = ({
                 {navItems.map(item => {
                     const Icon = item.icon;
                     const isActive = activeTab === item.id || activeTab.startsWith(item.id + '/');
-                    // PMS-Chat is disabled: greyed, inert, and no unread badge.
-                    const isDisabled = item.id === '/admin/pms-chat' && !PMS_CHAT_ENABLED;
+                    // Procksi Chat is disabled: greyed, inert, and no unread badge.
+                    const isDisabled = item.id === '/admin/procksi-chat' && !PROCKSI_CHAT_ENABLED;
                     return (
                         <button key={item.id} disabled={isDisabled} aria-disabled={isDisabled}
-                            title={isDisabled ? 'PMS-Chat is currently unavailable' : undefined}
+                            title={isDisabled ? 'Procksi Chat is currently unavailable' : undefined}
                             onClick={() => { if (isDisabled) return; navigate(item.id); setMobileMenuOpen(false); }}
                             className={`w-full flex items-center py-2.5 px-3 rounded-xl text-sm font-medium transition-all group relative ${isDisabled
                                 ? 'opacity-40 cursor-not-allowed text-slate-400 dark:text-slate-600'
                                 : isActive ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                             <span className="relative shrink-0">
                                 <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                                {item.id === '/admin/pms-chat' && PMS_CHAT_ENABLED && chatUnread > 0 && (
+                                {item.id === '/admin/procksi-chat' && PROCKSI_CHAT_ENABLED && chatUnread > 0 && (
                                     // Pinned to the icon rather than the row end, so the count
                                     // stays visible when the rail is collapsed to icons only.
                                     <span aria-label={`${chatUnread} unread`}

@@ -22,7 +22,7 @@ def _now() -> str:
 
 def render_console(report: AuditReport, cfg) -> None:
     counts = report.counts()
-    _console.rule("[bold]PMS database security audit")
+    _console.rule("[bold]Procksi database security audit")
     _console.print(
         f"[dim]{_now()}  project={cfg.project_ref or '?'}  "
         f"schemas={','.join(cfg.schemas)}  "
@@ -66,7 +66,7 @@ def render_console(report: AuditReport, cfg) -> None:
 def to_markdown(report: AuditReport, cfg) -> str:
     counts = report.counts()
     lines: list[str] = []
-    lines.append("# PMS database security audit\n")
+    lines.append("# Procksi database security audit\n")
     lines.append(f"- **Run (UTC):** {_now()}")
     lines.append(f"- **Project:** `{cfg.project_ref or '?'}`  ")
     lines.append(f"- **Schemas:** `{', '.join(cfg.schemas)}`")

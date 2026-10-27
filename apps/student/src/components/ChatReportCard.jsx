@@ -10,7 +10,7 @@ import { X, Loader2, Bot, ClipboardCheck, Users, MessageSquare, Github, AlertTri
  *   ChatReportCard    — the transient composer affordance. It shows the option
  *                       picker, the "working" state, and any failure. It is
  *                       never the report itself.
- *   ChatReportMessage — a stored report, posted into the thread by PMSbot and
+ *   ChatReportMessage — a stored report, posted into the thread by ProcksiBot and
  *                       read back out of conversation_messages like any other
  *                       message. Everyone in the thread sees it, and it stays.
  *
@@ -193,7 +193,7 @@ export const ReportBody = ({ data }) => {
 };
 
 /**
- * A stored report, in the thread, authored by PMSbot.
+ * A stored report, in the thread, authored by ProcksiBot.
  *
  * `message` is a conversation_messages row. The structured payload lives in
  * metadata.report; message.body holds a plain-text rendering of the same thing
@@ -208,7 +208,7 @@ export const ChatReportMessage = ({ message, timeLabel }) => {
             <div className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 flex items-center gap-2">
                 <Bot className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-300" />
                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-300">
-                    PMSbot
+                    ProcksiBot
                 </p>
                 <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 font-mono">
                     /report · {title}
@@ -260,7 +260,7 @@ export const ChatReportCard = ({ state, onChoose, onDismiss }) => {
                 {loading && (
                     <p className="flex items-center gap-2 text-sm font-bold text-slate-400">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Working — PMSbot will post the report in this chat…
+                        Working — ProcksiBot will post the report in this chat…
                     </p>
                 )}
 

@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DESKTOP_STEPS, MOBILE_STEPS } from '../components/Walkthrough/steps';
 
-export const WALKTHROUGH_KEY = 'pms-mentor-walkthrough-v1';
+export const WALKTHROUGH_KEY = 'procksi-mentor-walkthrough-v1';
 
 /** Matches Tailwind's `md`. Below this the sidebar is a drawer. */
 const MOBILE_QUERY = '(max-width: 767px)';

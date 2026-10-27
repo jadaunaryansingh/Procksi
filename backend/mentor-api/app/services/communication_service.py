@@ -56,7 +56,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "The project semester has officially begun. Over the coming weeks you will "
             "form teams, select a problem statement, and be paired with a faculty mentor.\n\n"
             "Please watch your inbox and the student portal for the next steps.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": [],
     },
@@ -69,7 +69,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "It's time to form your project teams (maximum 3 members per team). "
             "One member should log in to the portal and add the other members' details.\n\n"
             "Please complete team formation before {deadline}.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": ["deadline"],
     },
@@ -83,7 +83,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "with your team and submit your selection (with a short description) on the "
             "portal before {deadline}.\n\n"
             "Teams submitting a custom proposal should upload it in the same step.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": ["deadline"],
     },
@@ -96,7 +96,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "The admin requests to add {student_name} to your team. "
             "If you agree, please log in to the portal and add this student's details "
             "to finalize your team.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": ["team_name", "student_name"],
     },
@@ -108,7 +108,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "Dear Team {team_name},\n\n"
             "Your custom project proposal has been approved. Please log in to the portal "
             "and enter your final project description to proceed.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": ["team_name"],
     },
@@ -121,7 +121,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "Your custom project proposal was not approved this time. Please select a "
             "problem statement from the department's standard list on the portal before "
             "the deadline.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": ["team_name"],
     },
@@ -134,7 +134,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
             "We invite you to join as a Mentor. Please register on the "
             "Mentor Portal and select your domains for mentoring from the listed project "
             "domains. Your guidance is invaluable to our students' success.\n\n"
-            "Regards,\nPMS Admin"
+            "Regards,\nProcksi Admin"
         ),
         "params": [],
     },

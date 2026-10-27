@@ -1,4 +1,4 @@
-export const PANEL_GLOBAL_FILTERS_KEY = 'pms-panel-global-filters';
+export const PANEL_GLOBAL_FILTERS_KEY = 'procksi-panel-global-filters';
 
 export const DEFAULT_GLOBAL_FILTERS = {
     search: '',

@@ -136,7 +136,7 @@ And in `apiUpsertTable` (line ~222), add `'conversation_messages'` to the inline
 
 ```bash
 cd /Users/samarthverma/Project_Management_System
-./stop_pms.sh && ./start_pms.sh
+./stop_procksi.sh && ./start_procksi.sh
 sleep 12
 curl -s -o /dev/null -w "docs %{http_code}\n" http://localhost:8000/docs
 ```
@@ -363,7 +363,7 @@ import {
     summariseThreads,
 } from '../src/lib/delegateThreads.js';
 
-const ADMIN = 'aiml_project_coordinator@gla.ac.in';
+const ADMIN = 'aiml_project_coordinator@example.edu';
 
 const messages = [
     { id: 1, conversation_id: 10, sender_role: 'admin', sender_id: ADMIN, body: 'Kickoff', read_by: [], created_at: '2026-08-01T10:00:00Z' },

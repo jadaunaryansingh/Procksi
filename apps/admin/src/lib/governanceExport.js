@@ -254,6 +254,6 @@ export function downloadGovernanceExcel(args = {}) {
     });
 
     const stamp = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `GLA_PMS_Governance_Master_${stamp}.xlsx`);
+    XLSX.writeFile(wb, `Procksi_Governance_Master_${stamp}.xlsx`);
     return { totalRows, sheetCount: list.length, stats };
 }

@@ -46,7 +46,7 @@ def connect(dsn: str, timeout: float = 15.0) -> Iterator[psycopg.Connection]:
         autocommit=True,
         prepare_threshold=None,
         connect_timeout=int(timeout),
-        application_name="pms_security_audit",
+        application_name="procksi_security_audit",
     )
     attempts = [
         lambda: psycopg.connect(dsn, **common),

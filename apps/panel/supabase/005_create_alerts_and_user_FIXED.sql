@@ -55,13 +55,13 @@ BEGIN
     UPDATE users SET
         role = 'panel',
         panel_id = 'P01'
-    WHERE email = 'panel01@gla.ac.in';
+    WHERE email = 'panel01@example.edu';
 
     -- If no rows were affected, insert new user
     IF NOT FOUND THEN
         -- Password hash for 'panel123' - you may need to adjust this
         INSERT INTO users (email, hashed_password, role, panel_id) VALUES
-        ('panel01@gla.ac.in', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXwtO8ZjPEPG', 'panel', 'P01');
+        ('panel01@example.edu', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXwtO8ZjPEPG', 'panel', 'P01');
     END IF;
 END $$;
 
@@ -89,7 +89,7 @@ SELECT
     role,
     panel_id
 FROM users
-WHERE email = 'panel01@gla.ac.in';
+WHERE email = 'panel01@example.edu';
 
 -- Final summary of all data
 SELECT 'Data Summary' as category, '' as detail

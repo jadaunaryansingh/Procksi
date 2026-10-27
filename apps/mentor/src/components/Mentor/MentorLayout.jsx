@@ -7,7 +7,7 @@ import ThemeToggle from '../ThemeToggle';
 import { useAuth } from '../../context/useAuth';
 import { api } from '../../services/api';
 import { useGlobalFilters } from '../../context/useGlobalFilters';
-import { usePmsChatEnabled } from '../../hooks/usePmsChatEnabled';
+import { useProcksiChatEnabled } from '../../hooks/useProcksiChatEnabled';
 import { useWalkthrough } from '../../hooks/useWalkthrough';
 import WalkthroughOverlay from '../Walkthrough/WalkthroughOverlay';
 
@@ -16,7 +16,7 @@ const MentorLayout = () => {
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const pmsChatEnabled = usePmsChatEnabled();
+  const procksiChatEnabled = useProcksiChatEnabled();
   const walkthrough = useWalkthrough();
 
   const {
@@ -75,7 +75,7 @@ const MentorLayout = () => {
     { name: 'GitHub Analytics Hub', path: '/mentor/analyzer', icon: BrainCircuit },
     { name: 'Synopsis Submissions', path: '/mentor/milestones', icon: Award },
     { name: 'Presentations', path: '/mentor/presentations', icon: Presentation },
-    { name: 'PMS-Chat', path: '/mentor/pms-chat', icon: MessageSquare },
+    { name: 'Procksi Chat', path: '/mentor/procksi-chat', icon: MessageSquare },
     { name: 'Evaluations', path: '/mentor/evaluation', icon: FileSignature },
     { name: 'History', path: '/mentor/history', icon: HistoryIcon },
   ];
@@ -85,11 +85,11 @@ const MentorLayout = () => {
       <div className="p-4 flex items-center justify-between">
         <div className={`flex items-center transition-all duration-300 overflow-hidden ${sidebarCollapsed ? 'w-auto opacity-100 md:w-0 md:opacity-0 md:group-hover/sidebar:w-[150px] md:group-hover/sidebar:opacity-100' : 'w-[150px] opacity-100'}`}>
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-md border border-slate-200 dark:border-slate-700/50 overflow-hidden shrink-0 mr-3">
-            <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
+            <img src="/procksi-mark.png" alt="Procksi" className="w-full h-full object-contain p-0.5" onError={(e) => { e.target.style.display = 'none' }} />
           </div>
           <div className="flex flex-col">
               <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">Mentor Portal</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider">GLA UNIVERSITY</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider">PROCKSI</span>
           </div>
         </div>
         <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden md:flex p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors shrink-0">
@@ -113,8 +113,8 @@ const MentorLayout = () => {
 
       <nav data-tour="sidebar-nav" className="shrink-0 px-3 space-y-1 mt-2 overflow-x-hidden pb-4">
         {navItems.map((item) => {
-          // PMS-Chat is disabled: greyed, inert, and no unread badge.
-          const isDisabled = item.path === '/mentor/pms-chat' && !pmsChatEnabled;
+          // Procksi Chat is disabled: greyed, inert, and no unread badge.
+          const isDisabled = item.path === '/mentor/procksi-chat' && !procksiChatEnabled;
           return (
           <NavLink
             key={item.path}
@@ -123,7 +123,7 @@ const MentorLayout = () => {
             data-tour={`nav-${item.path.split('/').pop()}`}
             aria-disabled={isDisabled}
             tabIndex={isDisabled ? -1 : undefined}
-            title={isDisabled ? 'PMS-Chat is currently unavailable' : undefined}
+            title={isDisabled ? 'Procksi Chat is currently unavailable' : undefined}
             onClick={(e) => {
               // NavLink has no disabled attribute, so cancel the navigation here.
               if (isDisabled) { e.preventDefault(); return; }
@@ -143,7 +143,7 @@ const MentorLayout = () => {
               <>
                 <span className="relative shrink-0">
                     <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                    {item.path.endsWith('/pms-chat') && pmsChatEnabled && chatUnread > 0 && (
+                    {item.path.endsWith('/procksi-chat') && procksiChatEnabled && chatUnread > 0 && (
                         // Pinned to the icon rather than the row end, so the count
                         // stays visible when the rail is collapsed to icons only.
                         <span aria-label={`${chatUnread} unread`}

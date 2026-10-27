@@ -15,7 +15,7 @@
  * states (no slots scheduled, no missed submissions) degrade to a shorter
  * tour instead of a broken one.
  *
- * PMS-Chat has no steps: it sits behind PMS_CHAT_ENABLED and is a disabled,
+ * Procksi Chat has no steps: it sits behind PROCKSI_CHAT_ENABLED and is a disabled,
  * greyed-out nav item in production.
  */
 

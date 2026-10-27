@@ -46,21 +46,21 @@ description = EXCLUDED.description;
 
 -- Insert GitHub data for all teams
 INSERT INTO github_data (team_id, repository_url, default_branch, open_pull_requests, commit_count_30d, last_commit_at) VALUES
-(101, 'https://github.com/gla-university/team-101', 'main', 1, 28, NOW() - INTERVAL '1 day'),
-(102, 'https://github.com/gla-university/team-102', 'main', 3, 19, NOW() - INTERVAL '2 days'),
-(103, 'https://github.com/gla-university/team-103', 'main', 2, 24, NOW() - INTERVAL '1 day'),
-(104, 'https://github.com/gla-university/team-104', 'main', 1, 21, NOW() - INTERVAL '3 days'),
-(105, 'https://github.com/gla-university/team-105', 'main', 0, 22, NOW() - INTERVAL '2 days'),
-(106, 'https://github.com/gla-university/team-106', 'main', 2, 20, NOW() - INTERVAL '4 days'),
-(107, 'https://github.com/gla-university/team-107', 'main', 4, 16, NOW() - INTERVAL '5 days'),
-(108, 'https://github.com/gla-university/team-108', 'main', 1, 14, NOW() - INTERVAL '6 days'),
-(109, 'https://github.com/gla-university/team-109', 'main', 2, 15, NOW() - INTERVAL '7 days'),
-(110, 'https://github.com/gla-university/team-110', 'main', 3, 13, NOW() - INTERVAL '8 days'),
-(111, 'https://github.com/gla-university/team-111', 'main', 0, 18, NOW() - INTERVAL '2 days'),
-(112, 'https://github.com/gla-university/team-112', 'main', 1, 17, NOW() - INTERVAL '3 days'),
-(113, 'https://github.com/gla-university/team-113', 'main', 2, 19, NOW() - INTERVAL '1 day'),
-(114, 'https://github.com/gla-university/team-114', 'main', 1, 16, NOW() - INTERVAL '2 days'),
-(115, 'https://github.com/gla-university/team-115', 'main', 0, 11, NOW() - INTERVAL '5 days')
+(101, 'https://github.com/procksi/team-101', 'main', 1, 28, NOW() - INTERVAL '1 day'),
+(102, 'https://github.com/procksi/team-102', 'main', 3, 19, NOW() - INTERVAL '2 days'),
+(103, 'https://github.com/procksi/team-103', 'main', 2, 24, NOW() - INTERVAL '1 day'),
+(104, 'https://github.com/procksi/team-104', 'main', 1, 21, NOW() - INTERVAL '3 days'),
+(105, 'https://github.com/procksi/team-105', 'main', 0, 22, NOW() - INTERVAL '2 days'),
+(106, 'https://github.com/procksi/team-106', 'main', 2, 20, NOW() - INTERVAL '4 days'),
+(107, 'https://github.com/procksi/team-107', 'main', 4, 16, NOW() - INTERVAL '5 days'),
+(108, 'https://github.com/procksi/team-108', 'main', 1, 14, NOW() - INTERVAL '6 days'),
+(109, 'https://github.com/procksi/team-109', 'main', 2, 15, NOW() - INTERVAL '7 days'),
+(110, 'https://github.com/procksi/team-110', 'main', 3, 13, NOW() - INTERVAL '8 days'),
+(111, 'https://github.com/procksi/team-111', 'main', 0, 18, NOW() - INTERVAL '2 days'),
+(112, 'https://github.com/procksi/team-112', 'main', 1, 17, NOW() - INTERVAL '3 days'),
+(113, 'https://github.com/procksi/team-113', 'main', 2, 19, NOW() - INTERVAL '1 day'),
+(114, 'https://github.com/procksi/team-114', 'main', 1, 16, NOW() - INTERVAL '2 days'),
+(115, 'https://github.com/procksi/team-115', 'main', 0, 11, NOW() - INTERVAL '5 days')
 ON CONFLICT (team_id) DO UPDATE SET
 repository_url = EXCLUDED.repository_url,
 default_branch = EXCLUDED.default_branch,

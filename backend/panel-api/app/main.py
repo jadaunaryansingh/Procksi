@@ -65,22 +65,9 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:3002",
     "http://localhost:3003",
     "http://127.0.0.1:3003",
-    "https://student.glapms.in",
-    "https://admin.glapms.in",
-    "https://mentor.glapms.in",
-    "https://panel.glapms.in",
-    "https://glapms.in",
-    "https://www.glapms.in",
-    "http://student.glapms.in",
-    "http://admin.glapms.in",
-    "http://mentor.glapms.in",
-    "http://panel.glapms.in",
-    "http://glapms.in",
-    "http://www.glapms.in",
 ]
 
-# Extra origins (comma-separated) for hosts outside *.glapms.in, e.g. the
-# *.vercel.app deployment URLs. Same convention as student-api/mentor-api.
+# Production origins (comma-separated), e.g. the deployed frontend URLs. Same convention as student-api/mentor-api.
 for _origin in os.getenv("FRONTEND_URL", "").split(","):
     if _origin.strip() and _origin.strip() not in ALLOWED_ORIGINS:
         ALLOWED_ORIGINS.append(_origin.strip())

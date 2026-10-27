@@ -384,12 +384,12 @@ async def get_proposals_map(db: AsyncSession, alloc_ids: List[str], semester_ids
 
 # Deliberately short. A reachable database answers these queries in well under
 # a second, so anything slower is a blocked port rather than a slow query.
-SQL_FALLBACK_TIMEOUT = float(os.getenv("PMS_MENTOR_SQL_TIMEOUT", "5"))
+SQL_FALLBACK_TIMEOUT = float(os.getenv("PROCKSI_MENTOR_SQL_TIMEOUT", "5"))
 
 # Once the port is known to be blocked it stays blocked for the whole session,
 # so re-probing on every request would charge each page the timeout again.
 # Short enough that recovery (VPN, network change) is picked up on its own.
-SQL_RETRY_COOLDOWN = float(os.getenv("PMS_MENTOR_SQL_COOLDOWN", "120"))
+SQL_RETRY_COOLDOWN = float(os.getenv("PROCKSI_MENTOR_SQL_COOLDOWN", "120"))
 
 _direct_db_down_until = 0.0
 
@@ -1118,7 +1118,7 @@ async def get_team_details(
             "domain": v.get("domain") or "General",
             "status": v.get("validationStatus") or v.get("status") or "Pending",
             "semester_id": team_sem_id,
-            "github_url": f"https://github.com/PMS-2026/team-{num_id}" if num_id > 0 else "",
+            "github_url": f"https://github.com/Procksi-2026/team-{num_id}" if num_id > 0 else "",
             "members": members,
             "proposal": proposal_data,
             "schedules": formatted_schedules,
@@ -3361,7 +3361,7 @@ async def delete_mentor_milestone(
 
 
 # ---------------------------------------------------------------------------
-# PMS-Chat
+# Procksi Chat
 #
 # A mentor sees:
 #   * their own direct thread with the coordinator
@@ -3384,7 +3384,7 @@ async def _mentor_team_ids(db: AsyncSession, mentor) -> List[str]:
     try:
         return await get_mentor_alloc_ids(db, str(mentor.name or ""))
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat: could not resolve mentor teams: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat: could not resolve mentor teams: {exc}")
         return []
 
 
@@ -3412,7 +3412,7 @@ async def _mentor_visible_conversations(db: AsyncSession, mentor) -> List[dict]:
     try:
         rows = await rest_db.select("conversations") or []
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat conversations unavailable: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat conversations unavailable: {exc}")
         return []
 
     visible = []
@@ -3485,7 +3485,7 @@ async def get_mentor_chat_unread(
         # conversations table the same way.
         rows = await rest_db.select("conversation_messages") or []
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat unread unavailable: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat unread unavailable: {exc}")
         return ok(data=empty)
 
     needle = str(getattr(mentor, "email", "") or getattr(mentor, "id", "") or "").strip().lower()
@@ -3535,7 +3535,7 @@ async def get_mentor_chat_messages(
             await rest_db.update("conversation_messages", {"id": int(m["id"])}, {"read_by": updated})
             m["read_by"] = updated
         except Exception as exc:
-            logging.getLogger(__name__).warning(f"PMS-Chat could not mark message read: {exc}")
+            logging.getLogger(__name__).warning(f"Procksi Chat could not mark message read: {exc}")
 
     return ok(data=[{
         "id": m.get("id"),
@@ -3545,7 +3545,7 @@ async def get_mentor_chat_messages(
         # Drives the delivery ticks: a reader other than the sender means read.
         "read_by": m.get("read_by") or [],
         "body": m.get("body"),
-        # PMSbot's reports carry their structured payload here. Nothing else
+        # ProcksiBot's reports carry their structured payload here. Nothing else
         # writes it, so it is null for every message a person typed.
         "metadata": m.get("metadata"),
         "created_at": m.get("created_at"),
@@ -3634,7 +3634,7 @@ class MentorChatCommandPayload(BaseModel):
 
 async def _post_report_as_bot(conversation_id: int, report: dict, requested_by: str) -> dict:
     """
-    Write a finished report into the thread as a message from PMSbot.
+    Write a finished report into the thread as a message from ProcksiBot.
 
     A report is a message, not a private lookup: it is stored, everyone in the
     thread sees it, and it stays there. The person who ran the command is seeded
@@ -3666,7 +3666,7 @@ async def run_mentor_chat_command(
 ):
     """
     Execute a slash command. Unlike a template, this does work: the result is
-    posted into the open conversation as a message from PMSbot, so it is stored
+    posted into the open conversation as a message from ProcksiBot, so it is stored
     and everyone in that thread sees it.
 
     Scope rule, shared by all four portals: a report only ever reads
@@ -3806,9 +3806,9 @@ async def run_mentor_chat_command(
     }, requested_by)
 
 
-@router.get("/pms-chat-enabled")
-async def get_pms_chat_enabled():
-    """Whether PMS-Chat is switched on for the mentor portal this semester.
+@router.get("/procksi-chat-enabled")
+async def get_procksi_chat_enabled():
+    """Whether Procksi Chat is switched on for the mentor portal this semester.
 
     Unauthenticated and read-only: the portal shell needs this before it knows
     who the user is, and the answer is a single boolean.
@@ -3826,7 +3826,7 @@ async def get_pms_chat_enabled():
         from app.core import rest_db
 
         rows = await rest_db.select(
-            "semester_config", columns="pms_chat_mentor", eq={"is_active": "true"}
+            "semester_config", columns="procksi_chat_mentor", eq={"is_active": "true"}
         )
         if not rows:
             # Logged, and reported in the payload: an unconfigured lookup and a
@@ -3834,16 +3834,16 @@ async def get_pms_chat_enabled():
             # so a stale or misconfigured backend looks exactly like the
             # feature being switched on.
             logger.warning(
-                "pms-chat-enabled: no active semester_config row; defaulting to enabled"
+                "procksi-chat-enabled: no active semester_config row; defaulting to enabled"
             )
             return {"enabled": True, "reason": "no-active-semester"}
-        value = rows[0].get("pms_chat_mentor")
+        value = rows[0].get("procksi_chat_mentor")
         if value is None:
             logger.warning(
-                "pms-chat-enabled: pms_chat_mentor column missing; defaulting to enabled"
+                "procksi-chat-enabled: procksi_chat_mentor column missing; defaulting to enabled"
             )
             return {"enabled": True, "reason": "column-missing"}
         return {"enabled": bool(value), "reason": "config"}
     except Exception as exc:
-        logger.warning("pms-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
+        logger.warning("procksi-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
         return {"enabled": True, "reason": "lookup-failed"}

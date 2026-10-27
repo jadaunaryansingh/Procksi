@@ -323,8 +323,8 @@ const TimeBoundEvaluation = () => {
                 body,
                 tag: point.tag,
                 requireInteraction: true,
-                icon: '/GLA_University_logo.png',
-                badge: '/favicon.svg',
+                icon: '/procksi-mark.png',
+                badge: '/procksi-icon-192.png',
                 actions: [
                   { action: 'extend-5',  title: '+5 Minutes'  },
                   { action: 'extend-10', title: '+10 Minutes' },

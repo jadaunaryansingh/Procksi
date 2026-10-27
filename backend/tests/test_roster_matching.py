@@ -18,11 +18,11 @@ def test_canonical_email_gmail_dots_and_tags_stripped():
     assert canonical_email("Rohit.Sharma+gla@gmail.com") == "rohitsharma@gmail.com"
     assert canonical_email("a.b.c@googlemail.com") == "abc@gmail.com"
     # Non-gmail domains keep dots (institutional addresses).
-    assert canonical_email("rohit.sharma@gla.ac.in") == "rohit.sharma@gla.ac.in"
+    assert canonical_email("rohit.sharma@example.edu") == "rohit.sharma@example.edu"
 
 
 def test_canonical_student_id_strips_separators_and_uppercases():
-    assert canonical_student_id("gla-2021/001") == "GLA2021001"
+    assert canonical_student_id("uni-2021/001") == "UNI2021001"
     assert canonical_student_id(" bca_1234 ") == "BCA1234"
     assert canonical_student_id(None) == ""
 
@@ -41,4 +41,4 @@ def test_name_comparator_in_unit_range_and_symmetric():
 
 def test_id_similarity_catches_transposition():
     assert id_similarity("BCA1234", "BCA1243") > 0.88
-    assert id_similarity("GLA2021001", "ZZ7777") < 0.7
+    assert id_similarity("UNI2021001", "ZZ7777") < 0.7

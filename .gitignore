@@ -31,7 +31,7 @@ venv/
 logs/
 
 # Local credentials / secrets (never commit)
-PMS_RUN_AND_CREDENTIALS.txt
+PROCKSI_RUN_AND_CREDENTIALS.txt
 
 # .env backups (contain secrets)
 .env.bak.*

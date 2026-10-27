@@ -63,7 +63,7 @@ class RosterThresholds:
 class RosterConfig:
     """Format-gate rules. Defaults are deliberately permissive so legitimate
     uploads are never hard-rejected on a guessed institutional pattern — tighten
-    ``roll_pattern`` / ``allowed_years`` once the real GLA format is confirmed."""
+    ``roll_pattern`` / ``allowed_years`` once the real Procksi format is confirmed."""
 
     # Permissive default: >=5 alphanumerics after canonicalization.
     roll_pattern: str = r"^[A-Z0-9]{5,20}$"

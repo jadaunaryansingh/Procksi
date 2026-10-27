@@ -1,6 +1,6 @@
 # Security incident & full remediation — 2026-09-03
 
-GLA PMS · Supabase project `rmmkjczuwsuxcnrdtkrh`
+Procksi · Supabase project `rmmkjczuwsuxcnrdtkrh`
 
 This document records the 2026-09-03 compromise, **every** issue found in a full
 sweep of the database / auth / API surface, what has been fixed, and what the
@@ -11,7 +11,7 @@ Re-verify at any time:
 
 ```
 python -m scripts.security_audit --dsn "<fresh Postgres URI>" --md audit.md \
-  --admin-emails "aiml_project_coordinator@gla.ac.in,admin@gla.ac.in"
+  --admin-emails "aiml_project_coordinator@example.edu,admin@example.edu"
 ```
 
 ---
@@ -23,18 +23,18 @@ authorization model to act as an administrator.
 
 | When (UTC) | Event |
 |---|---|
-| 2026-08-12 → 09-02 | Reconnaissance: `directuser-evil@evil.com`, `idorprobe-student@gla.ac.in`, `__sec_probe_*@evil.com` (13 accounts). |
-| 2026-09-03 12:07 | `glapms.nuke.1788437237@emalupe.com` registered. |
-| 2026-09-03 12:10 | `glapmsnuke1788437392@emalupe.com` registered **with `data:{role:"admin"}`** in the signup body → passed the admin portal's auth check. |
+| 2026-08-12 → 09-02 | Reconnaissance: `directuser-evil@evil.com`, `idorprobe-student@example.edu`, `__sec_probe_*@evil.com` (13 accounts). |
+| 2026-09-03 12:07 | `glaprocksi.nuke.1788437237@emalupe.com` registered. |
+| 2026-09-03 12:10 | `attacker@emalupe.com` registered **with `data:{role:"admin"}`** in the signup body → passed the admin portal's auth check. |
 | 2026-09-03 12:38 | Attacker signs in as admin. |
-| 2026-09-03 ~15:29 | Broadcast email "GLAPMS — your data is exposed" sent from the coordinator address to students via the admin communication system. |
+| 2026-09-03 ~15:29 | Broadcast email "Procksi — your data is exposed" sent from the coordinator address to students via the admin communication system. |
 | 2026-09-03 ~18:09 | Taunt injected as a panel "Deadlines" alert after the team banned some accounts. |
 | 2026-09-03 ~16:00 | This remediation applied. |
 
 ### Confirmed capability of the attacker
-- **Admin API access** to `admin.glapms.in` (send mail as coordinator, read/modify all admin data).
+- **Admin API access** to `admin.your-domain.com` (send mail as coordinator, read/modify all admin data).
 - **Full read/write on ~35 core tables** as any signed-up user (see 2.1).
-- **Read/overwrite/delete of every Storage object** in the `PMS` bucket (see 2.3).
+- **Read/overwrite/delete of every Storage object** in the `Procksi` bucket (see 2.3).
 
 Treat student PII, mentor password hashes, grades, and uploaded documents as
 **breached**. Disclosure is the university's call.
@@ -86,17 +86,17 @@ privileges revoked from both roles on every `public` table (except `SELECT` on
 `chat_events`). `ALTER DEFAULT PRIVILEGES` updated so new tables don't inherit
 them. Backends are unaffected (service role).
 
-### 2.3 Storage `PMS` bucket world-writable — CRITICAL — **FIXED**
+### 2.3 Storage `Procksi` bucket world-writable — CRITICAL — **FIXED**
 
 `storage.objects` had four `public`-role policies (`SELECT/INSERT/UPDATE/DELETE`)
-scoped to `bucket_id = 'PMS'`. Anyone with the publishable key could download,
+scoped to `bucket_id = 'Procksi'`. Anyone with the publishable key could download,
 overwrite or delete every uploaded document. (The bucket itself had already been
 switched to private by the team, but the write policies remained live.)
 
 **Fix** — migration `sec_20260903_storage_and_rpc_lockdown`: all four policies
 dropped. Backends use the service-role key for storage and are unaffected.
 
-Verified: `GET /storage/v1/object/public/PMS/x` → `400 Bucket not found`;
+Verified: `GET /storage/v1/object/public/Procksi/x` → `400 Bucket not found`;
 anon object list → empty.
 
 ### 2.4 Admin portal trusted `user_metadata.role` — CRITICAL — **FIXED (code, needs deploy)**
@@ -104,28 +104,28 @@ anon object list → empty.
 `backend/admin-api/app/auth_guard.py` and `main.py` granted admin when the
 Supabase user's **`user_metadata.role == "admin"`**. `user_metadata` is set by
 the client in the `POST /auth/v1/signup` body, so it is attacker-controlled —
-this is exactly how `glapmsnuke…@emalupe.com` became an admin.
+this is exactly how `attacker…@emalupe.com` became an admin.
 
 **Fix (two parts):**
 - Migration `sec_20260903_admin_role_to_app_metadata`: set
   `app_metadata.role = 'admin'` (server-only, not client-writable) on the two
-  genuine admin accounts (`admin@gla.ac.in`, `aiml_project_coordinator@gla.ac.in`),
+  genuine admin accounts (`admin@example.edu`, `aiml_project_coordinator@example.edu`),
   then stripped `role` / `is_admin` / `claims` from **every** account's
   `user_metadata`.
 - Code (branch `security/incident-2026-09-03-hardening`): `auth_guard.py`,
   `login()`, `get_admins()`, `create_admin()`, `forgot_password()` and the
   master auto-provision now read/write **`app_metadata`**. Added a
   `banned_until` check so disabled accounts are rejected.
-- **After you deploy admin-api:** `admin@gla.ac.in` must log in again (its
-  current access token still references the old metadata). `aiml_project_coordinator@gla.ac.in`
+- **After you deploy admin-api:** `admin@example.edu` must log in again (its
+  current access token still references the old metadata). `aiml_project_coordinator@example.edu`
   is unaffected (matched by the master-email path).
 
 ### 2.5 Attacker & probe accounts still active — HIGH — **FIXED**
 
 **Fix** — migration `sec_20260903_ban_attacker_and_probe_accounts`: 14 accounts
 set `banned_until = 'infinity'` (not deleted — forensics preserved), their
-`auth.sessions` rows deleted. Banned: both `glapms*nuke*@emalupe.com`, and
-`__sec_probe_*` / `*@evil.com` / `idorprobe-student@gla.ac.in` /
+`auth.sessions` rows deleted. Banned: both `glaprocksi*nuke*@emalupe.com`, and
+`__sec_probe_*` / `*@evil.com` / `idorprobe-student@example.edu` /
 `directuser-evil@evil.com`.
 
 ### 2.6 `emit_chat_event()` callable by anyone — HIGH — **FIXED**
@@ -147,7 +147,7 @@ On branch `security/incident-2026-09-03-hardening`:
 | `GET /api/mentor/semesters` (mentor-api) | no auth; full `semester_config` dump | requires `get_current_mentor` |
 | `GET /panel/semesters` (panel-api) | no auth; full `semester_config` dump | requires `get_current_user` |
 
-`/api/*/pms-chat-enabled` endpoints are intentionally public (a single boolean,
+`/api/*/procksi-chat-enabled` endpoints are intentionally public (a single boolean,
 no data) and were left as-is.
 
 ### 2.8 `ADMIN_API_KEY` compiled into the public admin bundle — CRITICAL — **MANUAL**
@@ -224,8 +224,8 @@ the browser, add a *scoped* policy (`USING (… = auth.uid())`) — never
    student-api, mentor-api, panel-api.
 3. **Apply 2.8 and 2.9.**
 4. **Reset credentials** for the 6 `users` rows with `role = 'panel'` and both
-   `admins` rows (`admin@pms.com`, `student@pms.com` — likely seed defaults).
-   Force a password reset on `aiml_project_coordinator@gla.ac.in`.
+   `admins` rows (`admin@procksi.com`, `student@procksi.com` — likely seed defaults).
+   Force a password reset on `aiml_project_coordinator@example.edu`.
 5. **Forensics / scope:** snapshot the DB now; pull Supabase Postgres + Auth +
    Storage logs for 2026-08-12 → now; diff `results`, `governance_audit`,
    `communication_history`, `panels`, `users`, `evaluations` for tampering; keep
@@ -275,7 +275,7 @@ the browser, add a *scoped* policy (`USING (… = auth.uid())`) — never
 |---|---|
 | `GET /rest/v1/students?limit=1` | `401 permission denied for table students` |
 | `POST /rest/v1/rpc/emit_chat_event` | `404 PGRST202` (not exposed) |
-| `GET /storage/v1/object/public/PMS/x` | `400 Bucket not found` |
+| `GET /storage/v1/object/public/Procksi/x` | `400 Bucket not found` |
 | `GET /storage/v1/bucket` | `200 []` (no buckets disclosed) |
 | Permissive `anon`/`authenticated` policies remaining | `chat_events` SELECT only (by design) |
 | `anon`/`authenticated` write grants remaining | 0 |

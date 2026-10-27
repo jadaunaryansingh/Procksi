@@ -95,7 +95,7 @@ async def export_results(
     output.seek(0)
     
     headers = {
-        'Content-Disposition': f'attachment; filename="pms_results_{semester_id}.xlsx"'
+        'Content-Disposition': f'attachment; filename="procksi_results_{semester_id}.xlsx"'
     }
     return StreamingResponse(
         output,

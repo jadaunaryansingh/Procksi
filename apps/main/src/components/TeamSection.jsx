@@ -92,7 +92,7 @@ export default function TeamSection() {
               Meet The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Architects</span>
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              The creative minds and technical wizards behind the PMS Portal.
+              The creative minds and technical wizards behind the Procksi.
             </p>
           </motion.div>
         </div>

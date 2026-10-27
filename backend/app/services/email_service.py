@@ -41,7 +41,7 @@ async def send_proposal_submission_reminder(
         f"This is a reminder that the proposal submission deadline is "
         f"{deadline.strftime('%B %d, %Y at %I:%M %p')}.\n\n"
         f"Please ensure your team has submitted the proposal before the deadline.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -55,7 +55,7 @@ async def send_team_formation_reminder(
         f"This is a reminder that the team formation deadline is "
         f"{deadline.strftime('%B %d, %Y at %I:%M %p')}.\n\n"
         f"Please ensure you have joined or formed a team before the deadline.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -69,7 +69,7 @@ async def send_mentor_allocation_notice(
         f"We are pleased to inform you that your team has been assigned a mentor.\n\n"
         f"Mentor: {mentor_name}\n\n"
         f"Please reach out to your mentor to schedule an introductory meeting.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -89,7 +89,7 @@ async def send_presentation_schedule_notice(
         f"  Time Slot : {time_slot}\n"
         f"  Room      : {room}\n\n"
         f"Please arrive at least 10 minutes before your scheduled time.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -103,6 +103,6 @@ async def send_result_announcement(
         f"Your final evaluation results are now available.\n\n"
         f"  Total Score : {total_score:.2f}\n\n"
         f"Please log in to the Student Dashboard for a detailed breakdown.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)

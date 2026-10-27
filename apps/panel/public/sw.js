@@ -16,7 +16,7 @@ self.addEventListener('notificationclick', (event) => {
   if (action === 'extend-5' || action === 'extend-10') {
     const minutes = action === 'extend-5' ? 5 : 10;
     
-    // Broadcast the extension request to all open PMS windows
+    // Broadcast the extension request to all open Procksi windows
     event.waitUntil(
       self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
         if (clients && clients.length > 0) {

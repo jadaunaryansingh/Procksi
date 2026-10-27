@@ -20,7 +20,7 @@
  * real work rather than reciting all twelve -- orientation should leave a
  * student knowing where to start, not make them memorise a menu.
  *
- * PMS-Chat has no steps: it sits behind PMS_CHAT_ENABLED and is a disabled,
+ * Procksi Chat has no steps: it sits behind PROCKSI_CHAT_ENABLED and is a disabled,
  * greyed-out nav item in production.
  */
 

@@ -3,20 +3,20 @@
 # `--config /etc/cloudflared/config.yml`. Option A (dashboard + token) needs
 # none of this.
 
-# Replace with the UUID printed by `cloudflared tunnel create glapms-ec2`.
+# Replace with the UUID printed by `cloudflared tunnel create procksi-ec2`.
 tunnel: 00000000-0000-0000-0000-000000000000
 credentials-file: /etc/cloudflared/credentials.json
 
 # Route public hostnames to the frontend containers (compose network DNS).
 # Order matters: first match wins, and the final catch-all is required.
 ingress:
-  - hostname: admin.glapms.in
+  - hostname: admin.your-domain.com
     service: http://admin-frontend:80
-  - hostname: panel.glapms.in
+  - hostname: panel.your-domain.com
     service: http://panel-frontend:80
-  - hostname: student.glapms.in
+  - hostname: student.your-domain.com
     service: http://student-frontend:80
-  - hostname: mentor.glapms.in
+  - hostname: mentor.your-domain.com
     service: http://mentor-frontend:80
   # everything else -> 404 (do NOT expose anything unlisted)
   - service: http_status:404

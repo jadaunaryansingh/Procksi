@@ -142,9 +142,6 @@ function applyEvalsToResults(currentResults, evals, activeSemesterId) {
 // believing results were still published.
 const getStudentApiUrl = () => {
     if (import.meta.env.VITE_STUDENT_API_URL) return import.meta.env.VITE_STUDENT_API_URL;
-    if (typeof window !== 'undefined' && window.location.hostname.includes('glapms.in')) {
-        return 'https://student.glapms.in';
-    }
     return 'http://localhost:8002';
 };
 
@@ -549,7 +546,7 @@ export default function Results() {
             doc.text(`Filters Applied: ${[branchFilter && `Branch: ${branchFilter}`, domainFilter && `Domain: ${domainFilter}`, mentorFilter && `Mentor: ${mentorFilter}`].filter(Boolean).join(', ')}`, 14, finalY + 6);
         }
 
-        doc.save(`PMS_Results_Report_${now.toISOString().slice(0,10)}.pdf`);
+        doc.save(`PROCKSI_Results_Report_${now.toISOString().slice(0,10)}.pdf`);
         AuditLogger.logUserAction(getCurrentUser(), 'Downloaded Comprehensive Evaluation Results PDF Report');
     };
 
@@ -643,7 +640,7 @@ export default function Results() {
         });
 
         doc.setTextColor(0);
-        doc.save(`PMS_Report_${r.team || 'team'}_${now.toISOString().slice(0,10)}.pdf`);
+        doc.save(`PROCKSI_Report_${r.team || 'team'}_${now.toISOString().slice(0,10)}.pdf`);
         AuditLogger.logUserAction(getCurrentUser(), `Downloaded individual evaluation report for team ${r.team || 'Unknown Team'}`);
     };
 

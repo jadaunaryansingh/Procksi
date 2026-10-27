@@ -9,7 +9,7 @@ const DEFAULT_BODY = `<h2 style="margin:0 0 12px">Weekly Update</h2>
 <p>Dear <b>{team_name}</b> ({project_title}),</p>
 <p>Your mentor <b>{mentor_name}</b> has shared the attached report. Team leader: {leader_name}.</p>
 <p>Members: {members}</p>
-<p>Best regards,<br/>PMS Admin</p>`;
+<p>Best regards,<br/>Procksi Admin</p>`;
 
 const SEGMENTS = [
     { key: '', label: 'All Teams (no filter)' },
@@ -204,7 +204,7 @@ export default function PerTeamMail() {
                             <div className="flex items-center justify-between p-3.5 bg-indigo-50/60 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-xl">
                                 <div>
                                     <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">Include Portal Redirect Button</label>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Appends redirect button (<b>glapms.in</b>) in outgoing emails</p>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Appends a <b>Procksi student portal</b> button in outgoing emails</p>
                                 </div>
                                 <button 
                                     type="button" 

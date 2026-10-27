@@ -184,7 +184,7 @@ by a `teams_validation.id` slug in a `team` column). Verification stays green:
 - `mentor-api/app/main.py` + `admin-api/app/main.py`: freeze/lock middleware now
   blocks only on a **true system-wide** freeze (every active batch locked),
   not whichever batch sorted first.
-- `panel-api/app/routers/panel.py`: `pms_chat_panel` toggle aggregates across
+- `panel-api/app/routers/panel.py`: `procksi_chat_panel` toggle aggregates across
   active batches. `panel-api/app/db_helpers.py::sync_team_results_from_evaluations`
   resolves the semester from the team, not "first active".
 - `student-api/app/api/student_portal.py`: proposal-submit no longer overrides the
@@ -332,7 +332,7 @@ For each service: copy `team_uid_resolver.py` (backends) or `teamUid.js`
   same treatment (they are copies).
 - Pages: `TeamValidation.jsx`, `Views.jsx`, `ProposalList.jsx`,
   `ProposalViewer.jsx`, `MentorAllocation.jsx`, `Schedule.jsx`, `Results.jsx`,
-  `StudentList.jsx`, `MilestonesManager.jsx`, `PmsChat.jsx` — join teams by
+  `StudentList.jsx`, `MilestonesManager.jsx`, `ProcksiChat.jsx` — join teams by
   `teamUidOf()` from API objects, show `teamDisplayNumber()` for the label.
 
 ## Phase 12 — presentation flow cohort-scoping (2026-08-31, `12_presentation_flow_cohort_scoping.sql`)

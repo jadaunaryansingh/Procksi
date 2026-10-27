@@ -7,6 +7,7 @@ import { useGlobalFilters } from '../context/useGlobalFilters';
 import { getStoredSession } from '../lib/api';
 import PresentationViewDropdown from './PresentationViewDropdown';
 import { getApiBaseUrl } from '../lib/apiBase';
+import { MASTER_ADMIN_EMAIL } from '../lib/emailPolicy';
 
 export const TopNav = ({
     isDark,
@@ -50,8 +51,8 @@ export const TopNav = ({
         semesterOptions,
         updateFilter,
     } = useGlobalFilters();
-    const panelViewUrl = import.meta.env.VITE_PANEL_VIEW_URL || 'https://panel.glapms.in';
-    const mentorViewUrl = import.meta.env.VITE_MENTOR_VIEW_URL || 'https://mentor.glapms.in';
+    const panelViewUrl = import.meta.env.VITE_PANEL_VIEW_URL || '';
+    const mentorViewUrl = import.meta.env.VITE_MENTOR_VIEW_URL || '';
 
 
     useEffect(() => {
@@ -192,7 +193,7 @@ export const TopNav = ({
                         {getTitle()}
                     </h2>
                     <span className="text-xs font-extrabold tracking-wide uppercase bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent hidden sm:block">
-                        PMS Admin Portal
+                        Procksi Admin Portal
                     </span>
                 </div>
             </div>
@@ -384,7 +385,7 @@ export const TopNav = ({
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center space-x-2 shrink-0">
-                                                                    {admin.email === 'aiml_project_coordinator@gla.ac.in' ? (
+                                                                    {admin.email === MASTER_ADMIN_EMAIL ? (
                                                                         <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-500/10 border border-amber-250 dark:border-amber-500/20 text-amber-600 dark:text-amber-450 rounded-md text-[9px] font-black uppercase tracking-wider scale-90">
                                                                             Master
                                                                         </span>

@@ -40,11 +40,11 @@ cards; anchoring the opening step to a "0" reads as broken. Steps 3-4 are
 skipped automatically when their anchor is absent (see Edge cases).
 
 Deliberately excluded: GitHub Analytics Hub, Presentations, History,
-PMS-Chat. Orientation should name where things live, not teach every
+Procksi-Chat. Orientation should name where things live, not teach every
 screen. The Analyzer (1279 lines) and Synopsis Submissions (826 lines) are
 the two screens that genuinely warrant their own coaching tours -- that is
 the "orientation + per-page" scope, and this plan is deliberately not it.
-PMS-Chat is additionally gated off in production by `PMS_CHAT_ENABLED`, so
+Procksi-Chat is additionally gated off in production by `PROCKSI_CHAT_ENABLED`, so
 a step pointing at it would target a disabled, greyed-out nav item.
 
 ## Files
@@ -64,7 +64,7 @@ components changes; no restructuring, no class changes.
 ## How it works
 
 1. On mount inside `MentorLayout`, `useWalkthrough` reads
-   `localStorage['pms-mentor-walkthrough-v1']`.
+   `localStorage['procksi-mentor-walkthrough-v1']`.
 2. Absent -> open at step 0. Present -> stay closed.
 3. Each step resolves its anchor via
    `document.querySelector('[data-tour="..."]')` and reads

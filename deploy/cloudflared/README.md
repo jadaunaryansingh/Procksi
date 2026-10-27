@@ -2,7 +2,7 @@
 
 Replaces the public IP / open ports on the EC2 box. `cloudflared` runs as a
 container (`docker-compose.yml`), makes an **outbound** connection to Cloudflare,
-and Cloudflare routes each `*.glapms.in` hostname to the matching frontend
+and Cloudflare routes each `*.your-domain.com` hostname to the matching frontend
 container over the compose network. Nothing listens on a public port anymore.
 
 ```
@@ -23,7 +23,7 @@ the existing "secrets in CI, written to `.env` on deploy" pattern.
 ### 1. Create the tunnel
 
 Cloudflare **Zero Trust** dashboard → **Networks → Tunnels → Create a tunnel** →
-type **Cloudflared** → name it e.g. `glapms-ec2` → **Save**.
+type **Cloudflared** → name it e.g. `procksi-ec2` → **Save**.
 
 On the "Install connector" screen, copy the **token** (the long string after
 `--token` in the shown command). Don't run their install command — the compose
@@ -35,16 +35,16 @@ Still in the tunnel's config → **Public Hostname** tab → add four routes:
 
 | Subdomain | Domain | Path | Service (Type: HTTP) |
 |---|---|---|---|
-| `admin`   | `glapms.in` | (blank) | `http://admin-frontend:80` |
-| `panel`   | `glapms.in` | (blank) | `http://panel-frontend:80` |
-| `student` | `glapms.in` | (blank) | `http://student-frontend:80` |
-| `mentor`  | `glapms.in` | (blank) | `http://mentor-frontend:80` |
+| `admin`   | `your-domain.com` | (blank) | `http://admin-frontend:80` |
+| `panel`   | `your-domain.com` | (blank) | `http://panel-frontend:80` |
+| `student` | `your-domain.com` | (blank) | `http://student-frontend:80` |
+| `mentor`  | `your-domain.com` | (blank) | `http://mentor-frontend:80` |
 
-Saving each one **auto-creates the DNS CNAME** (`admin.glapms.in →
+Saving each one **auto-creates the DNS CNAME** (`admin.your-domain.com →
 <tunnel-id>.cfargotunnel.com`, proxied). Delete the old A records that pointed
-`*.glapms.in` at the EC2 IP.
+`*.your-domain.com` at the EC2 IP.
 
-Leave `glapms.in` / `www.glapms.in` alone if the landing site (`apps/main`) is
+Leave `your-domain.com` / `www.your-domain.com` alone if the landing site (`apps/main`) is
 deployed elsewhere (Pages/Vercel). To serve it from the box too, add a
 `main-frontend` service and a fifth hostname.
 
@@ -69,10 +69,10 @@ container is plain HTTP on a private network.
 cd ~/Project_Management_System
 docker compose up -d cloudflared
 docker compose logs -f cloudflared          # expect: "Registered tunnel connection" x4
-docker compose exec cloudflared cloudflared tunnel info glapms-ec2
+docker compose exec cloudflared cloudflared tunnel info procksi-ec2
 ```
 
-The tunnel dashboard should show **HEALTHY**. Hit `https://admin.glapms.in`.
+The tunnel dashboard should show **HEALTHY**. Hit `https://admin.your-domain.com`.
 
 ---
 
@@ -82,12 +82,12 @@ Use if you want ingress rules version-controlled instead of in the dashboard.
 
 ```bash
 # one-time, on a machine with cloudflared + `cloudflared login` done:
-cloudflared tunnel create glapms-ec2
+cloudflared tunnel create procksi-ec2
 #   -> writes ~/.cloudflared/<UUID>.json  (the credentials file — treat as a secret)
-cloudflared tunnel route dns glapms-ec2 admin.glapms.in
-cloudflared tunnel route dns glapms-ec2 panel.glapms.in
-cloudflared tunnel route dns glapms-ec2 student.glapms.in
-cloudflared tunnel route dns glapms-ec2 mentor.glapms.in
+cloudflared tunnel route dns procksi-ec2 admin.your-domain.com
+cloudflared tunnel route dns procksi-ec2 panel.your-domain.com
+cloudflared tunnel route dns procksi-ec2 student.your-domain.com
+cloudflared tunnel route dns procksi-ec2 mentor.your-domain.com
 ```
 
 Copy `<UUID>.json` to `deploy/cloudflared/credentials.json` on the box
@@ -126,17 +126,17 @@ The public IP is now dead weight and an attack surface.
   should show only the Docker proxy on `127.0.0.1`.
 - Cloudflare dashboard → the zone → **SSL/TLS → Overview → Full (strict)** is
   fine (edge ↔ browser); the tunnel hop needs no cert.
-- **DNS:** every `*.glapms.in` record must be **Proxied** (orange cloud). There
+- **DNS:** every `*.your-domain.com` record must be **Proxied** (orange cloud). There
   should be no `A`/`AAAA` record pointing at the EC2 IP anywhere in the zone.
 
 ## Gate the admin surface with Cloudflare Access (recommended, ties to the incident)
 
 Zero Trust → **Access → Applications → Add → Self-hosted**:
 
-- **`admin.glapms.in`** — policy: Allow, emails ending `@gla.ac.in` (or an
+- **`admin.your-domain.com`** — policy: Allow, emails ending `@example.edu` (or an
   explicit list). One-time PIN or Google IdP. This puts a login in front of the
   admin portal at the edge, before any request reaches the container.
-- **`panel.glapms.in` path `/admin/sync/*`** — separate application, policy:
+- **`panel.your-domain.com` path `/admin/sync/*`** — separate application, policy:
   Allow only a service token (for admin-api → panel-api calls) or your admin
   emails. Closes the baked-`ADMIN_API_KEY` exposure at the edge until the
   frontend refactor lands (see `SECURITY_INCIDENT_2026-09-03.md` §2.8).
@@ -150,9 +150,9 @@ tunnel.
 
 ## Notes
 
-- `GOOGLE_REDIRECT_URI=https://admin.glapms.in/auth/google/callback` is
+- `GOOGLE_REDIRECT_URI=https://admin.your-domain.com/auth/google/callback` is
   unchanged — Cloudflare serves that hostname with its edge cert.
-- CORS: backends already allow the `https://*.glapms.in` origins.
+- CORS: backends already allow the `https://*.your-domain.com` origins.
 - `cloudflared` auto-reconnects; `restart: unless-stopped` covers box reboots.
 - Bump the pinned image (`cloudflare/cloudflared:2024.10.1`) periodically.
 - Metrics/health: `docker compose exec cloudflared cloudflared --version`; add

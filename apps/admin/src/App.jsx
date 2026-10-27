@@ -29,10 +29,10 @@ import AbsentStudents from './pages/AbsentStudents';
 import ExtraActivities from './pages/ExtraActivities';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import RepoAnalysis from './pages/RepoAnalysis';
-import PmsChat from './pages/PmsChat';
+import ProcksiChat from './pages/ProcksiChat';
 import { apiLogout, clearSession, getStoredSession, storeSession, setSessionExpiredHandler } from './lib/api';
 import { GlobalFilterProvider } from './context/GlobalFilterContext';
-import { PMS_CHAT_ENABLED } from './config/features';
+import { PROCKSI_CHAT_ENABLED } from './config/features';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(() => Boolean(getStoredSession()?.user));
@@ -118,7 +118,7 @@ function App() {
             <Route path="mentors" element={<MentorAllocation />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="presentation-cycles" element={<PresentationCycles />} />
-            <Route path="pms-chat" element={PMS_CHAT_ENABLED ? <PmsChat /> : <Navigate to="/admin/dashboard" replace />} />
+            <Route path="procksi-chat" element={PROCKSI_CHAT_ENABLED ? <ProcksiChat /> : <Navigate to="/admin/dashboard" replace />} />
             <Route path="evaluations" element={<Evaluations />} />
             
             <Route path="results" element={<Results />} />

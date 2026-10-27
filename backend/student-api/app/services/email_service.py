@@ -56,7 +56,7 @@ async def send_proposal_submission_reminder(
         f"This is a reminder that the proposal submission deadline is "
         f"{deadline.strftime('%B %d, %Y at %I:%M %p')}.\n\n"
         f"Please ensure your team has submitted the proposal before the deadline.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -70,7 +70,7 @@ async def send_team_formation_reminder(
         f"This is a reminder that the team formation deadline is "
         f"{deadline.strftime('%B %d, %Y at %I:%M %p')}.\n\n"
         f"Please ensure you have joined or formed a team before the deadline.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -153,7 +153,7 @@ async def send_mentor_allocation_notice(
         f"We are pleased to inform you that your team has been assigned a mentor.\n\n"
         f"Mentor: {mentor_name}\n\n"
         f"Please reach out to your mentor to schedule an introductory meeting.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -174,7 +174,7 @@ async def send_presentation_schedule_notice(
         f"  Time Slot : {time_slot}\n"
         f"  Room      : {room}\n\n"
         f"Please arrive at least 10 minutes before your scheduled time.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -189,7 +189,7 @@ async def send_result_announcement(
         f"Your final evaluation results are now available.\n\n"
         f"  Total Score : {total_score:.2f}\n\n"
         f"Please log in to the Student Dashboard for a detailed breakdown.\n\n"
-        f"Regards,\nPMS Admin"
+        f"Regards,\nProcksi Admin"
     )
     await send_mail(subject=subject, recipients=recipients, body=body)
 
@@ -211,7 +211,7 @@ def send_html_email_async(subject: str, recipients: list[str], html_body: str):
             user = (os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
             pwd = (os.getenv("MAIL_PASSWORD") or "").replace(" ", "").strip()
             sender = (os.getenv("MAIL_FROM") or user).strip()
-            sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+            sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
             port = int(os.getenv("MAIL_PORT", "587"))
             
             clean_recipients = list(set(r.strip() for r in recipients if r and "@" in str(r)))
@@ -242,7 +242,7 @@ def build_professional_email_wrapper(
     title: str,
     recipient_greeting: str,
     main_html: str,
-    badge_text: str = "GLA PMS NOTIFICATION",
+    badge_text: str = "PROCKSI NOTIFICATION",
     action_text: str = None,
     action_url: str = None
 ) -> str:
@@ -281,7 +281,7 @@ def build_professional_email_wrapper(
                                             {title}
                                         </h1>
                                         <p style="color: #94a3b8; font-size: 12px; margin: 4px 0 0 0; font-weight: 500;">
-                                            GLA University • Project Management System
+                                            Procksi • Project Management Platform
                                         </p>
                                     </td>
                                 </tr>
@@ -304,7 +304,7 @@ def build_professional_email_wrapper(
                     <tr>
                         <td style="background-color: #f1f5f9; padding: 20px 32px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="font-size: 12px; color: #64748b; margin: 0 0 6px 0; font-weight: 600;">
-                                Official Automated Communication • GLA Project Management System
+                                Official Automated Communication • Procksi
                             </p>
                             <p style="font-size: 11px; color: #94a3b8; margin: 0;">
                                 If you have questions regarding this notification, please contact your department coordinator.
@@ -319,7 +319,7 @@ def build_professional_email_wrapper(
 </html>"""
 
 def get_student_portal_url() -> str:
-    return (os.getenv("STUDENT_PORTAL_URL") or "https://glapms.in").rstrip("/")
+    return (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
 
 def notify_team_formed(recipients: list[str], team_name: str, leader_name: str, btech_year: str = None):
     if not recipients:
@@ -327,7 +327,7 @@ def notify_team_formed(recipients: list[str], team_name: str, leader_name: str, 
     t_name = format_clean_team_name(team_name, btech_year=btech_year)
     subject = f"Team Formed Successfully - {t_name}"
     body = f"""
-    <p>Your project team <b>{t_name}</b> has been created on the GLA Project Management System by <b>{leader_name}</b>.</p>
+    <p>Your project team <b>{t_name}</b> has been created on Procksi by <b>{leader_name}</b>.</p>
     <p>You can now manage team members, reserve problem statements, and submit project proposals from your Student Dashboard.</p>
     """
     html_body = build_professional_email_wrapper(

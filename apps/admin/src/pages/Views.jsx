@@ -14,6 +14,7 @@ import { useGlobalFilters } from '../context/useGlobalFilters';
 import { teamDisplayLabel, resolveTeamNumber } from '../lib/globalFilters';
 import { sameTeam } from '../lib/teamUid';
 import { getApiBaseUrl } from '../lib/apiBase';
+import { emailPlaceholder } from '../lib/emailPolicy';
 
 export default function Views() {
     const { semesterMap, filterRows } = useGlobalFilters();
@@ -1452,7 +1453,7 @@ export default function Views() {
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 mb-2">Email Address</label>
-                                    <input type="email" required value={newMentorForm.email} onChange={(e) => setNewMentorForm(prev => ({...prev, email: e.target.value}))} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. aksingh@gla.ac.in" />
+                                    <input type="email" required value={newMentorForm.email} onChange={(e) => setNewMentorForm(prev => ({...prev, email: e.target.value}))} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" placeholder={`e.g. ${emailPlaceholder('aksingh')}`} />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 mb-2">Expertise Domains (Comma Separated)</label>

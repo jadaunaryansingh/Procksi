@@ -49,7 +49,7 @@ async def seed():
             description="Define project goals, modules, and stack.",
             deadline=datetime.strptime("2026-03-25 23:59:59", "%Y-%m-%d %H:%M:%S"),
             status="completed",
-            github_url="https://github.com/PMS-2026/team-aa4bfacd"
+            github_url="https://github.com/Procksi-2026/team-aa4bfacd"
         )
         m2 = Milestone(
             id=uuid.uuid4(),

@@ -4,7 +4,7 @@ Plain text, ready to paste. Replace the bracketed placeholders before sending.
 
 ---
 
-**Subject:** Your Mentor Portal access — GLA Project Management System
+**Subject:** Your Mentor Portal access — Procksi
 
 ---
 
@@ -16,8 +16,8 @@ Portal.
 
 **Getting in**
 
-1. Go to https://mentor.glapms.in
-2. Choose "Sign up" and register with your **@gla.ac.in** address. Please use
+1. Go to https://mentor.your-domain.com
+2. Choose "Sign up" and register with your **@example.edu** address. Please use
    the same address this email was sent to — the portal matches you against
    the mentor list we have already uploaded, and a different address will not
    be recognised.
@@ -51,4 +51,4 @@ second account.
 Regards,
 [Your name]
 [Role]
-Department of CSE (AI & ML), GLA University
+Department of CSE (AI & ML), Procksi

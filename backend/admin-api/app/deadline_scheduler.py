@@ -31,8 +31,8 @@ logger = logging.getLogger("deadline_scheduler")
 
 # How often the background loop sweeps for due deadlines. Reminders are
 # day-granular and de-duplicated over a 20h window, so hourly is ample.
-POLL_SECONDS = int(os.getenv("PMS_DEADLINE_POLL_SECONDS", str(60 * 60)))
-ENABLED = os.getenv("PMS_DEADLINE_SCHEDULER_ENABLED", "1") != "0"
+POLL_SECONDS = int(os.getenv("PROCKSI_DEADLINE_POLL_SECONDS", str(60 * 60)))
+ENABLED = os.getenv("PROCKSI_DEADLINE_SCHEDULER_ENABLED", "1") != "0"
 
 # Don't re-send the same deadline reminder inside this window.
 DEDUP_HOURS = 20
@@ -181,7 +181,7 @@ async def start_deadline_scheduler() -> None:
     """Background loop. Runs each sweep off the event loop because the Supabase
     client is synchronous and would otherwise block every request handler."""
     if not ENABLED:
-        logger.info("Deadline scheduler disabled via PMS_DEADLINE_SCHEDULER_ENABLED=0.")
+        logger.info("Deadline scheduler disabled via PROCKSI_DEADLINE_SCHEDULER_ENABLED=0.")
         return
 
     logger.info("Deadline scheduler started (every %ss).", POLL_SECONDS)

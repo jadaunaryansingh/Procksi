@@ -17,31 +17,31 @@ from __future__ import annotations
 from app.validators.roster_validator import RosterThresholds, RosterValidator
 
 EXISTING = [
-    {"student_id": "GLA2021001", "name": "Rohit Sharma", "email": "rohit.sharma@gla.ac.in"},
-    {"student_id": "GLA2021002", "name": "Anita Verma", "email": "anita.verma@gla.ac.in"},
-    {"student_id": "GLA2021003", "name": "Lakshmi Nair", "email": "lakshmi.nair@gla.ac.in"},
-    {"student_id": "GLA2021004", "name": "Mohammed Irfan", "email": "mohammed.irfan@gla.ac.in"},
-    {"student_id": "BCA1234", "name": "Suresh Kumar", "email": "suresh.kumar@gla.ac.in"},
+    {"student_id": "UNI2021001", "name": "Rohit Sharma", "email": "rohit.sharma@example.edu"},
+    {"student_id": "UNI2021002", "name": "Anita Verma", "email": "anita.verma@example.edu"},
+    {"student_id": "UNI2021003", "name": "Lakshmi Nair", "email": "lakshmi.nair@example.edu"},
+    {"student_id": "UNI2021004", "name": "Mohammed Irfan", "email": "mohammed.irfan@example.edu"},
+    {"student_id": "BCA1234", "name": "Suresh Kumar", "email": "suresh.kumar@example.edu"},
 ]
 
 # (row, expected_label). "flag" = should be caught (dup/near-dup); "allow" = clean new.
 LABELED: list[tuple[dict, str]] = [
     # --- genuinely new, clean people (allow) ---
-    ({"student_id": "GLA2021050", "name": "Vikram Rao", "email": "vikram.rao@gla.ac.in"}, "allow"),
-    ({"student_id": "GLA2021051", "name": "Priya Menon", "email": "priya.menon@gla.ac.in"}, "allow"),
-    ({"student_id": "GLA2021052", "name": "Arjun Reddy", "email": "arjun.reddy@gla.ac.in"}, "allow"),
-    ({"student_id": "GLA2021053", "name": "Sneha Pillai", "email": "sneha.pillai@gla.ac.in"}, "allow"),
-    ({"student_id": "GLA2021054", "name": "Karan Mehta", "email": "karan.mehta@gla.ac.in"}, "allow"),
+    ({"student_id": "UNI2021050", "name": "Vikram Rao", "email": "vikram.rao@example.edu"}, "allow"),
+    ({"student_id": "UNI2021051", "name": "Priya Menon", "email": "priya.menon@example.edu"}, "allow"),
+    ({"student_id": "UNI2021052", "name": "Arjun Reddy", "email": "arjun.reddy@example.edu"}, "allow"),
+    ({"student_id": "UNI2021053", "name": "Sneha Pillai", "email": "sneha.pillai@example.edu"}, "allow"),
+    ({"student_id": "UNI2021054", "name": "Karan Mehta", "email": "karan.mehta@example.edu"}, "allow"),
     # Common surname, different person — must NOT false-flag against Suresh Kumar.
-    ({"student_id": "GLA2021055", "name": "Anil Kumar", "email": "anil.kumar@gla.ac.in"}, "allow"),
+    ({"student_id": "UNI2021055", "name": "Anil Kumar", "email": "anil.kumar@example.edu"}, "allow"),
     # --- duplicates / near-duplicates (flag) ---
-    ({"student_id": "GLA2021001", "name": "Rohit Sharma", "email": "new1@gla.ac.in"}, "flag"),   # exact id
-    ({"student_id": "NEW9001", "name": "Someone", "email": "anita.verma@gla.ac.in"}, "flag"),      # exact email
-    ({"student_id": "NEW9002", "name": "Rohith Sharma", "email": "rohith.sharma@gla.ac.in"}, "flag"),  # typo name
-    ({"student_id": "NEW9003", "name": "Anitha Verma", "email": "anitha.verma@gla.ac.in"}, "flag"),    # translit
-    ({"student_id": "NEW9004", "name": "Laxmi Nair", "email": "laxmi.nair@gla.ac.in"}, "flag"),        # translit
-    ({"student_id": "NEW9005", "name": "Rohit Sharma", "email": "rohit.s.alt@gla.ac.in"}, "flag"),     # same person, new id
-    ({"student_id": "BCA1243", "name": "Suresh Kumar", "email": "suresh.k2@gla.ac.in"}, "flag"),       # id typo + name
+    ({"student_id": "UNI2021001", "name": "Rohit Sharma", "email": "new1@example.edu"}, "flag"),   # exact id
+    ({"student_id": "NEW9001", "name": "Someone", "email": "anita.verma@example.edu"}, "flag"),      # exact email
+    ({"student_id": "NEW9002", "name": "Rohith Sharma", "email": "rohith.sharma@example.edu"}, "flag"),  # typo name
+    ({"student_id": "NEW9003", "name": "Anitha Verma", "email": "anitha.verma@example.edu"}, "flag"),    # translit
+    ({"student_id": "NEW9004", "name": "Laxmi Nair", "email": "laxmi.nair@example.edu"}, "flag"),        # translit
+    ({"student_id": "NEW9005", "name": "Rohit Sharma", "email": "rohit.s.alt@example.edu"}, "flag"),     # same person, new id
+    ({"student_id": "BCA1243", "name": "Suresh Kumar", "email": "suresh.k2@example.edu"}, "flag"),       # id typo + name
 ]
 
 

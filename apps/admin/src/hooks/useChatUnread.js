@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { getStoredSession } from '../lib/api';
-import { fetchConversations, fetchMessages } from '../services/pmsChatApi';
-import { unreadCount } from '../lib/pmsChatThreads';
+import { fetchConversations, fetchMessages } from '../services/procksiChatApi';
+import { unreadCount } from '../lib/procksiChatThreads';
 import { subscribeChatEvents } from '../lib/chatRealtime';
 
 // Fallback only. A realtime ping recounts the instant anyone writes a message,
@@ -68,7 +68,7 @@ export function publishChatUnread(total) {
     publish(total);
 }
 
-/** Unread PMS-Chat count for the sidebar badge. */
+/** Unread Procksi Chat count for the sidebar badge. */
 export function useChatUnread() {
     // The count already lives outside React, so this is what
     // useSyncExternalStore is for: subscribe and read in one step. The previous

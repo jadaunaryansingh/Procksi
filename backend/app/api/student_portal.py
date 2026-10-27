@@ -116,7 +116,7 @@ async def get_my_profile(
                 "description": team_obj.description or "",
                 "domain": domain_str,
                 "techStack": tech_stack,
-                "github": f"https://github.com/PMS-2026/team-{str(team_obj.id)[:8]}",
+                "github": f"https://github.com/Procksi-2026/team-{str(team_obj.id)[:8]}",
                 "proposalFile": proposal_file,
                 "status": proposal_status,
                 "members": members_list
@@ -210,7 +210,7 @@ async def get_student_milestones(
     github_url = ""
     proposal_file = None
     if team_id:
-        github_url = f"https://github.com/PMS-2026/team-{str(team_id)[:8]}"
+        github_url = f"https://github.com/Procksi-2026/team-{str(team_id)[:8]}"
         from app.core.supabase_client import supabase_client
         proposal = await supabase_client.get_proposal_by_team_id(team_id)
         if proposal:

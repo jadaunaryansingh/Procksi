@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, Suspense, lazy } from 'react';
 import PanelLayout from './components/Panel/PanelLayout';
 import { GlobalFilterProvider } from './context/GlobalFilterContext';
-import PmsChatRoute from './components/PmsChatRoute';
+import ProcksiChatRoute from './components/ProcksiChatRoute';
 
 // Lazy-load all page components — each page becomes a separate JS chunk that
 // is only downloaded when the user navigates to that route for the first time.
@@ -14,7 +14,7 @@ const MissedSubmissions    = lazy(() => import('./pages/Panel/MissedSubmissions'
 const SecureSubmissionReceipt = lazy(() => import('./pages/Panel/SecureSubmissionReceipt'));
 const MentorTeams          = lazy(() => import('./pages/Panel/MentorTeams'));
 const SlotManagement       = lazy(() => import('./pages/Panel/SlotManagement'));
-const PmsChat              = lazy(() => import('./pages/Panel/PmsChat'));
+const ProcksiChat              = lazy(() => import('./pages/Panel/ProcksiChat'));
 const Login                = lazy(() => import('./pages/Login'));
 const Signup               = lazy(() => import('./pages/Signup'));
 const ResetPassword        = lazy(() => import('./pages/ResetPassword'));
@@ -59,7 +59,7 @@ function App() {
             <Route path="slots" element={<SlotTeamList />} />
             <Route path="my-teams" element={<MentorTeams />} />
             <Route path="parameters" element={<EvaluationParameters />} />
-            <Route path="pms-chat" element={<PmsChatRoute><PmsChat /></PmsChatRoute>} />
+            <Route path="procksi-chat" element={<ProcksiChatRoute><ProcksiChat /></ProcksiChatRoute>} />
             <Route path="evaluation/:teamId" element={<TimeBoundEvaluation />} />
             <Route path="missed" element={<MissedSubmissions />} />
             <Route path="receipt/:teamId" element={<SecureSubmissionReceipt />} />

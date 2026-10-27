@@ -3,7 +3,7 @@ import { getApiBaseUrl } from './apiBase.js';
 
 const API_BASE_URL = getApiBaseUrl();
 
-const SESSION_KEY = 'pms-admin-session';
+const SESSION_KEY = 'procksi-admin-session';
 
 function getJsonOrThrow(response, fallbackMessage) {
     return response
@@ -119,13 +119,13 @@ export function storeSession(sessionPayload) {
     if (sessionPayload?.access_token) {
         localStorage.setItem('access_token', sessionPayload.access_token);
     }
-    window.dispatchEvent(new CustomEvent('pms-auth-changed'));
+    window.dispatchEvent(new CustomEvent('procksi-auth-changed'));
 }
 
 export function clearSession() {
     localStorage.removeItem(SESSION_KEY);
     localStorage.removeItem('access_token');
-    window.dispatchEvent(new CustomEvent('pms-auth-changed'));
+    window.dispatchEvent(new CustomEvent('procksi-auth-changed'));
 }
 
 export async function apiLogin(email, password) {
@@ -143,7 +143,7 @@ export async function apiLogin(email, password) {
 
     if (payload.access_token) {
         localStorage.setItem('access_token', payload.access_token);
-        window.dispatchEvent(new CustomEvent('pms-auth-changed'));
+        window.dispatchEvent(new CustomEvent('procksi-auth-changed'));
     }
 
     return payload;
@@ -220,7 +220,7 @@ export function clearTableCache() {
 }
 
 if (typeof window !== 'undefined') {
-    window.addEventListener('pms-admin-global-filters-changed', () => {
+    window.addEventListener('procksi-admin-global-filters-changed', () => {
         clearTableCache();
         clearSemesterCache();
     });

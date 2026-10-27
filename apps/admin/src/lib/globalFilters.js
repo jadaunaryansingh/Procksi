@@ -1,4 +1,4 @@
-export const ADMIN_GLOBAL_FILTERS_KEY = 'pms-admin-global-filters';
+export const ADMIN_GLOBAL_FILTERS_KEY = 'procksi-admin-global-filters';
 
 export const DEFAULT_GLOBAL_FILTERS = {
     search: '',

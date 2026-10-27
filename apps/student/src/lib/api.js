@@ -88,7 +88,7 @@ export const addExtraActivity = (payload) => apiRequest('/api/student/extra-acti
 export const getAnnouncements = () => apiRequest('/api/student/announcements');
 export const getNotifications = () => apiRequest('/api/student/notifications');
 
-// PMS-Chat. The backend re-derives the team from the session and rejects any
+// Procksi Chat. The backend re-derives the team from the session and rejects any
 // conversation_id the student is not part of, so these are safe to call directly.
 export const getChatConversations = () => apiRequest('/api/student/chat/conversations');
 // Unread totals for the sidebar badge. Kept apart from the conversations call
@@ -113,7 +113,7 @@ export const acceptJoinRequest = (requestId) => apiRequest(`/api/student/join-re
 export const declineJoinRequest = (requestId) => apiRequest(`/api/student/join-requests/${requestId}/decline`, 'POST');
 export const generateAiSuggestions = (payload) => apiRequest('/api/student/problem-statements/generate-ai-suggestions', 'POST', payload);
 export const getTeamGithub = () => apiRequest('/api/student/team/github');
-// Roster of the student's own team. Used by PMS-Chat for the member strip and
+// Roster of the student's own team. Used by Procksi Chat for the member strip and
 // the @-mention picker, both of which only ever address teammates.
 export const getTeamMembers = () => apiRequest('/api/student/team/members');
 

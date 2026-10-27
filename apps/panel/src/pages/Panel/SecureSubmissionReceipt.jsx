@@ -75,7 +75,7 @@ const SecureSubmissionReceipt = () => {
         subject: `Receipt for Team ${receiptData.team_id}`,
         author: 'Panel Portal System',
         keywords: 'evaluation, receipt, submission',
-        creator: 'GLA University Panel Portal'
+        creator: 'Procksi Panel Portal'
       });
 
       // Header

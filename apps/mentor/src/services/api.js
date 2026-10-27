@@ -105,7 +105,7 @@ export const api = {
   delete: (url, config = {}) => apiClient.delete(url, config),
 };
 
-// PMS-Chat. The response interceptor above already unwraps the `{success, data}`
+// Procksi Chat. The response interceptor above already unwraps the `{success, data}`
 // envelope, so `res.data` here is the payload itself, not another envelope.
 // The backend re-derives the mentor's allocated teams on every call and rejects
 // any conversation_id outside them, so these are safe to call directly.
@@ -119,7 +119,7 @@ export const chatAPI = {
   // Pass conversationId to reply, or teamId to open a supervised team's
   // mentor thread for the first time.
   // Slash commands execute server-side; the result is posted into the
-  // conversation as a message from PMSbot rather than returned for display.
+  // conversation as a message from ProcksiBot rather than returned for display.
   runCommand: async ({ command, option = null, teamId = null, conversationId = null }) =>
     (await apiClient.post('/chat/command', {
       command, option, team_id: teamId, conversation_id: conversationId,

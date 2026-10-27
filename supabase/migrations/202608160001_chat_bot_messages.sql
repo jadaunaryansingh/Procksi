@@ -1,4 +1,4 @@
--- PMSbot posts /report results into the thread as a real, stored message.
+-- ProcksiBot posts /report results into the thread as a real, stored message.
 --
 -- Two changes are needed for that:
 --   1. sender_role must admit 'bot'. The four existing values are human roles;

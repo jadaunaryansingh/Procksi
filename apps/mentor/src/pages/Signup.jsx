@@ -5,6 +5,7 @@ import { AlertCircle, Lock, Mail, Shield, User, Briefcase, Check, Loader2, Chevr
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { api } from '../services/api';
+import { emailPlaceholder } from '../lib/emailPolicy';
 
 export default function Signup() {
     const [name, setName] = useState('');
@@ -385,7 +386,7 @@ export default function Signup() {
                             <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Work Email</label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="name@gla.ac.in"
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder={emailPlaceholder('name')}
                                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium dark:text-white outline-none transition-all shadow-sm text-sm" />
                             </div>
                         </div>

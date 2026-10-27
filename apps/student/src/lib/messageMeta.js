@@ -8,7 +8,7 @@
  */
 
 const ROLE_LABELS = {
-    bot: 'PMSbot',
+    bot: 'ProcksiBot',
     admin: 'Coordinator',
     mentor: 'Mentor',
     panel: 'Panel',
@@ -96,7 +96,7 @@ export function groupByDay(messages, now = new Date()) {
 
 /**
  * Best-effort name from a login id. College addresses append a course and year
- * after an underscore (kushagra.kulshrestha_cs.aiml24@gla.ac.in), which is not
+ * after an underscore (first.last_cs.aiml24@example.edu), which is not
  * part of anyone's name.
  */
 export function humanizeSenderId(senderId) {

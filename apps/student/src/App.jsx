@@ -18,7 +18,7 @@ import ResetPasswordView from './pages/ResetPasswordView';
 import LandingPage from './pages/LandingPage';
 import SignUpView from './pages/SignUpView';
 import DashboardOverview from './pages/DashboardOverview';
-import PmsChatView from './pages/PmsChatView';
+import ProcksiChatView from './pages/ProcksiChatView';
 import TeamProposalView from './pages/TeamProposalView';
 import PreferencesView from './pages/PreferencesView';
 import MilestonesView from './pages/MilestonesView';
@@ -32,8 +32,9 @@ import ResultsView from './pages/ResultsView';
 import ExtraActivitiesView from './pages/ExtraActivitiesView';
 import GitHubAnalysisView from './pages/GitHubAnalysisView';
 import { useProfile, clearQueryCache } from './hooks/useStudentData';
-import PmsChatRoute from './components/PmsChatRoute';
+import ProcksiChatRoute from './components/ProcksiChatRoute';
 import { getApiBaseUrl } from './lib/apiBase';
+import { ALLOWED_EMAIL_SUFFIX } from './lib/emailPolicy';
 
 export default function App() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function App() {
   // from an effect (which would render light first and then flip to dark).
   const [isDark, setIsDark] = useState(() => {
     try {
-      return localStorage.getItem('pms-theme') === 'dark';
+      return localStorage.getItem('procksi-theme') === 'dark';
     } catch {
       return false;   // storage blocked (private mode) -> default light
     }
@@ -58,8 +59,8 @@ export default function App() {
   // Theme Management -- keep the <html> class in sync with the state above.
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
-    if (!localStorage.getItem('pms-theme')) {
-      localStorage.setItem('pms-theme', isDark ? 'dark' : 'light');
+    if (!localStorage.getItem('procksi-theme')) {
+      localStorage.setItem('procksi-theme', isDark ? 'dark' : 'light');
     }
   }, [isDark]);
 
@@ -70,14 +71,14 @@ export default function App() {
     // and remember the choice.
     const next = !isDark;
     setIsDark(next);
-    localStorage.setItem('pms-theme', next ? 'dark' : 'light');
+    localStorage.setItem('procksi-theme', next ? 'dark' : 'light');
   };
 
   // Auth monitoring
   useEffect(() => {
     const enforceDomain = async (currentSession) => {
       const email = currentSession?.user?.email?.toLowerCase() || '';
-      if (currentSession && !email.endsWith('@gla.ac.in')) {
+      if (currentSession && !email.endsWith(ALLOWED_EMAIL_SUFFIX)) {
         await supabase.auth.signOut();
         navigate('/student/login?error=domain', { replace: true });
         return null;
@@ -143,7 +144,7 @@ export default function App() {
       setLoading(false);
       if (event === 'SIGNED_OUT') {
         // Let the reminder window pop again on the next sign-in in this tab.
-        sessionStorage.removeItem('pms-reminders-shown');
+        sessionStorage.removeItem('procksi-reminders-shown');
         navigate('/student/login', { replace: true });
       }
       // OAuth gate.
@@ -238,7 +239,7 @@ export default function App() {
           <Route path="team" element={<TeamProposalView />} />
           <Route path="analysis" element={<GitHubAnalysisView />} />
           <Route path="preferences" element={<PreferencesView />} />
-          <Route path="pms-chat" element={<PmsChatRoute><PmsChatView /></PmsChatRoute>} />
+          <Route path="procksi-chat" element={<ProcksiChatRoute><ProcksiChatView /></ProcksiChatRoute>} />
           <Route path="milestones" element={<MilestonesView />} />
           <Route path="feedback" element={<FeedbackView />} />
           <Route path="profile" element={<ProfileView />} />
@@ -277,7 +278,7 @@ function DashboardLayout({
   const { data: profile } = useProfile();
   const walkthrough = useWalkthrough({
     tours: TOUR_STEPS,
-    prefix: 'pms-student-walkthrough-v1',
+    prefix: 'procksi-student-walkthrough-v1',
     rootPath: '/student/dashboard',
   });
   const user = {

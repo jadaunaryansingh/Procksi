@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/admin/communication", tags=["Communication"])
 
 @router.get("/templates")
 async def get_templates(admin=Depends(get_current_admin)):
-    """The canonical PMS lifecycle templates (kickoff, team-formation, etc.)."""
+    """The canonical Procksi lifecycle templates (kickoff, team-formation, etc.)."""
     return ok(data=list_templates())
 
 

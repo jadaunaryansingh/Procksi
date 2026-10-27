@@ -26,7 +26,7 @@ export function GlobalFilterProvider({ children }) {
         // table with no auth at all). Skip the call entirely until a token
         // exists -- e.g. while this provider is mounted under the login
         // screen -- rather than firing a request we know will 401. The
-        // pms-auth-changed listener below re-triggers this once login
+        // procksi-auth-changed listener below re-triggers this once login
         // succeeds.
         if (!getAuthToken()) {
             setSemesters([]);
@@ -60,25 +60,25 @@ export function GlobalFilterProvider({ children }) {
     useEffect(() => {
         loadSemesters();
         const handleAuthChange = () => loadSemesters();
-        window.addEventListener('pms-semester-config-changed', loadSemesters);
-        window.addEventListener('pms-auth-changed', handleAuthChange);
+        window.addEventListener('procksi-semester-config-changed', loadSemesters);
+        window.addEventListener('procksi-auth-changed', handleAuthChange);
         const handleStorageChange = (e) => {
-            if (e.key === 'access_token' || e.key === 'pms-admin-session') {
+            if (e.key === 'access_token' || e.key === 'procksi-admin-session') {
                 loadSemesters();
             }
         };
         window.addEventListener('storage', handleStorageChange);
 
         return () => {
-            window.removeEventListener('pms-semester-config-changed', loadSemesters);
-            window.removeEventListener('pms-auth-changed', handleAuthChange);
+            window.removeEventListener('procksi-semester-config-changed', loadSemesters);
+            window.removeEventListener('procksi-auth-changed', handleAuthChange);
             window.removeEventListener('storage', handleStorageChange);
         };
     }, [loadSemesters]);
 
     useEffect(() => {
         saveStoredGlobalFilters(filters);
-        window.dispatchEvent(new CustomEvent('pms-admin-global-filters-changed', { detail: filters }));
+        window.dispatchEvent(new CustomEvent('procksi-admin-global-filters-changed', { detail: filters }));
     }, [filters]);
 
     useEffect(() => {
@@ -90,7 +90,7 @@ export function GlobalFilterProvider({ children }) {
         };
 
         const handleStorageEvent = (event) => {
-            if (event.key === 'pms-admin-global-filters' && event.newValue) {
+            if (event.key === 'procksi-admin-global-filters' && event.newValue) {
                 try {
                     const newFilters = JSON.parse(event.newValue);
                     if (newFilters && JSON.stringify(newFilters) !== JSON.stringify(filters)) {
@@ -102,11 +102,11 @@ export function GlobalFilterProvider({ children }) {
             }
         };
 
-        window.addEventListener('pms-admin-global-filters-changed', handleCustomEvent);
+        window.addEventListener('procksi-admin-global-filters-changed', handleCustomEvent);
         window.addEventListener('storage', handleStorageEvent);
 
         return () => {
-            window.removeEventListener('pms-admin-global-filters-changed', handleCustomEvent);
+            window.removeEventListener('procksi-admin-global-filters-changed', handleCustomEvent);
             window.removeEventListener('storage', handleStorageEvent);
         };
     }, [filters]);

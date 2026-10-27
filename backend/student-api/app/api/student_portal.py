@@ -995,7 +995,7 @@ async def get_student_schedule(
 
         meet_link = s.get("meetLink") or s.get("meet_link") or None
         if meet_link and "jit.si" in str(meet_link).lower():
-            code = str(meet_link).split("/")[-1].replace("pms-evaluation-", "")
+            code = str(meet_link).split("/")[-1].replace("procksi-evaluation-", "")
             meet_link = f"https://meet.google.com/{code}" if code else "https://meet.google.com/new"
             
         room_val = s.get("room") or s.get("venue") or ""
@@ -1894,7 +1894,7 @@ async def get_student_deadlines(
 # Task 5.6-B: Milestones Table & API
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
-# PMS-Chat
+# Procksi Chat
 #
 # A student has four standing threads, all scoped to THEIR OWN team:
 #   coordinator  admin  <-> team
@@ -1931,7 +1931,7 @@ async def _student_team_id(student) -> Optional[str]:
     roll = str(getattr(student, "id", "") or getattr(student, "student_id", "") or "").strip()
     if not roll:
         logging.getLogger(__name__).warning(
-            f"PMS-Chat: no roll on session object; attrs={sorted(vars(student).keys()) if hasattr(student, '__dict__') else type(student).__name__}"
+            f"Procksi Chat: no roll on session object; attrs={sorted(vars(student).keys()) if hasattr(student, '__dict__') else type(student).__name__}"
         )
         return None
 
@@ -1959,7 +1959,7 @@ async def _student_team_id(student) -> Optional[str]:
         # A student with no matching team is worth surfacing; a successful
         # resolution runs on every chat request and would only be noise.
         logging.getLogger(__name__).warning(
-            f"PMS-Chat: no team matched roll={roll!r} email={getattr(student, 'email', None)!r}"
+            f"Procksi Chat: no team matched roll={roll!r} email={getattr(student, 'email', None)!r}"
         )
     return resolved
 
@@ -2009,7 +2009,7 @@ async def _mark_messages_read(rows: list, viewer_id: str) -> None:
             )
             m["read_by"] = updated
         except Exception as exc:
-            logging.getLogger(__name__).warning(f"PMS-Chat could not mark message read: {exc}")
+            logging.getLogger(__name__).warning(f"Procksi Chat could not mark message read: {exc}")
 
 
 async def _student_sender_names(messages: list) -> dict:
@@ -2038,7 +2038,7 @@ async def _student_sender_names(messages: list) -> dict:
                 f"students?{column}=in.({urllib.parse.quote(quoted, safe='')})&select=id,name,email"
             ) or []
         except Exception as exc:
-            logging.getLogger(__name__).warning(f"PMS-Chat sender name lookup failed: {exc}")
+            logging.getLogger(__name__).warning(f"Procksi Chat sender name lookup failed: {exc}")
             continue
         for r in rows:
             name = str(r.get("name") or "").strip()
@@ -2146,7 +2146,7 @@ async def _student_is_team_leader(student) -> bool:
             str(student.id), getattr(student, "semester_id", None)
         )
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat leader lookup failed: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat leader lookup failed: {exc}")
         return False
 
     if team:
@@ -2181,7 +2181,7 @@ async def _student_groups(student) -> tuple:
             f"conversations?group_key=in.({','.join(keys)})&select=*&order=updated_at.desc"
         ) or []
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat groups unavailable: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat groups unavailable: {exc}")
         return [], []
 
     # Only looked up when a leader-gated group is actually present, so the
@@ -2257,7 +2257,7 @@ async def get_student_chat_conversations(student: Student = Depends(get_current_
     try:
         threads, broadcasts, groups = await _student_threads(student)
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat conversations unavailable: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat conversations unavailable: {exc}")
         return ok(data={"threads": [], "broadcasts": [], "groups": []})
 
     return ok(data={
@@ -2295,7 +2295,7 @@ async def get_student_chat_unread(student: Student = Depends(get_current_student
     try:
         threads, broadcasts, groups = await _student_threads(student)
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat unread unavailable: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat unread unavailable: {exc}")
         return ok(data=empty)
 
     ids = [t["id"] for t in threads if t.get("id") is not None]
@@ -2311,7 +2311,7 @@ async def get_student_chat_unread(student: Student = Depends(get_current_student
             f"conversation_messages?conversation_id=in.({joined})&select=conversation_id,sender_id,read_by"
         ) or []
     except Exception as exc:
-        logging.getLogger(__name__).warning(f"PMS-Chat unread query failed: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat unread query failed: {exc}")
         return ok(data=empty)
 
     by_conversation: dict = {}
@@ -2341,7 +2341,7 @@ async def _assert_student_may_post(student, conversation_id: int) -> None:
         ) or []
     except Exception as exc:
         # A lookup failure must not silently open the gate.
-        logging.getLogger(__name__).warning(f"PMS-Chat post check failed: {exc}")
+        logging.getLogger(__name__).warning(f"Procksi Chat post check failed: {exc}")
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="Could not verify this conversation. Please retry.")
 
@@ -2397,7 +2397,7 @@ async def get_student_chat_messages(
         # address a student signs with is not their name.
         "sender_name": names.get(str(m.get("sender_id") or "").strip().lower()),
         "body": m.get("body"),
-        # PMSbot's reports carry their structured payload here. Nothing else
+        # ProcksiBot's reports carry their structured payload here. Nothing else
         # writes it, so it is null for every message a person typed.
         "metadata": m.get("metadata"),
         "created_at": m.get("created_at"),
@@ -3302,7 +3302,7 @@ async def get_available_students(
     for s in (raw_data or []):
         name_lower = str(s.get("name") or "").lower()
         # Filter out dummy/test/admin records
-        if any(kw in name_lower for kw in ["admin", "pms", "test student", "dummy"]):
+        if any(kw in name_lower for kw in ["admin", "procksi", "test student", "dummy"]):
             continue
 
         # Normalize legacy branch strings if needed
@@ -4280,7 +4280,7 @@ async def save_team_project_details(
                 async with httpx.AsyncClient(timeout=8.0, follow_redirects=False) as client:
                     gh_res = await client.get(
                         api_url(owner, repo),
-                        headers={"User-Agent": "PMS-Repo-Checker/1.0", "Accept": "application/vnd.github+json"},
+                        headers={"User-Agent": "Procksi-Repo-Checker/1.0", "Accept": "application/vnd.github+json"},
                     )
                     if gh_res.status_code == 404:
                         raise HTTPException(
@@ -5083,7 +5083,7 @@ async def trigger_join_request_accepted_emails(invitee_id: str, leader_id: str, 
         <p><b>Joined Student:</b> {invitee.name if invitee else invitee_id}</p>
         <p style="margin-top: 15px;">Please log in to the Student Portal to check your updated team members list and coordinate on project tasks.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;"/>
-        <p style="font-size: 12px; color: #888;">This is an automated notification from the GLA Project Management System.</p>
+        <p style="font-size: 12px; color: #888;">This is an automated notification from Procksi.</p>
     </div>
     """
 
@@ -5408,9 +5408,9 @@ async def get_student_team_github_data(
 
 
 
-@router.get("/pms-chat-enabled")
-async def get_pms_chat_enabled():
-    """Whether PMS-Chat is switched on for the student portal this semester.
+@router.get("/procksi-chat-enabled")
+async def get_procksi_chat_enabled():
+    """Whether Procksi Chat is switched on for the student portal this semester.
 
     Deliberately unauthenticated and read-only: the portal shell needs this
     before it knows who the user is, and the answer is a single boolean that
@@ -5426,23 +5426,23 @@ async def get_pms_chat_enabled():
     try:
         from app.core.supabase_client import supabase_client
         rows = await supabase_client._request(
-            "semester_config?is_active=eq.true&select=pms_chat_student&limit=1"
+            "semester_config?is_active=eq.true&select=procksi_chat_student&limit=1"
         )
         if not rows:
             # See the mentor portal's copy: a silent fail-open makes a stale or
             # misconfigured backend look exactly like the feature being on.
             logging.getLogger(__name__).warning(
-                "pms-chat-enabled: no active semester_config row; defaulting to enabled"
+                "procksi-chat-enabled: no active semester_config row; defaulting to enabled"
             )
             return {"enabled": True, "reason": "no-active-semester"}
-        value = rows[0].get("pms_chat_student")
+        value = rows[0].get("procksi_chat_student")
         if value is None:
             # The column has not been added yet.
             logging.getLogger(__name__).warning(
-                "pms-chat-enabled: pms_chat_student column missing; defaulting to enabled"
+                "procksi-chat-enabled: procksi_chat_student column missing; defaulting to enabled"
             )
             return {"enabled": True, "reason": "column-missing"}
         return {"enabled": bool(value), "reason": "config"}
     except Exception as exc:
-        logging.getLogger(__name__).warning("pms-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
+        logging.getLogger(__name__).warning("procksi-chat-enabled: lookup failed (%s); defaulting to enabled", exc)
         return {"enabled": True, "reason": "lookup-failed"}

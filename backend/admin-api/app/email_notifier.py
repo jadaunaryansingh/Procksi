@@ -13,7 +13,7 @@ from dotenv import load_dotenv, find_dotenv
 root_env = find_dotenv() or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
 load_dotenv(root_env, override=False)   # override=False: docker-compose env vars always win
 if not os.getenv("TWILIO_ACCOUNT_SID"):
-    p = r"c:\Users\ARYAN SINGH JADAUN\Desktop\PMS Latest\.env"
+    p = r"c:\Users\ARYAN SINGH JADAUN\Desktop\Procksi Latest\.env"
     if os.path.exists(p):
         load_dotenv(p, override=False)
 
@@ -23,9 +23,9 @@ logger = logging.getLogger("email_notifier")
 logging.basicConfig(level=logging.INFO)
 
 # --- Portal URLs (env-overridable, fall back to production live domains) ---
-_STUDENT_URL = (os.getenv("STUDENT_PORTAL_URL") or "https://glapms.in").rstrip("/")
-_PANEL_URL   = (os.getenv("PANEL_PORTAL_URL")   or "https://panel.glapms.in").rstrip("/")
-_MENTOR_URL  = (os.getenv("MENTOR_PORTAL_URL")  or "https://mentor.glapms.in").rstrip("/")
+_STUDENT_URL = (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
+_PANEL_URL   = (os.getenv("PANEL_PORTAL_URL")   or "").rstrip("/")
+_MENTOR_URL  = (os.getenv("MENTOR_PORTAL_URL")  or "").rstrip("/")
 
 def get_supabase_client():
     """Helper to return the initialized Supabase service role client."""
@@ -170,7 +170,7 @@ def send_smtp_now(subject: str, recipients: list[str], html_body: str) -> dict:
         return {"sent": [], "failed": []}
 
     sender = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-    sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+    sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
     items = []
     for r in clean:
         msg = MIMEMultipart("alternative")
@@ -203,7 +203,7 @@ def send_smtp_async(subject: str, recipients: list[str], html_body: str):
                 return
 
             sender = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-            sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+            sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
 
             items_to_send = []
             for r in clean_recipients:
@@ -398,7 +398,7 @@ def build_professional_email_wrapper(
     title: str,
     recipient_greeting: str,
     main_html: str,
-    badge_text: str = "GLA PMS NOTIFICATION",
+    badge_text: str = "PROCKSI NOTIFICATION",
     badge_color: str = "#4f46e5",
     action_text: str = None,
     action_url: str = None
@@ -463,7 +463,7 @@ def build_professional_email_wrapper(
                                             {title}
                                         </h1>
                                         <p class="email-header-subtitle" style="color: #94a3b8 !important; font-size: 12px; margin: 4px 0 0 0; font-weight: 500;">
-                                            GLA University • Project Management System
+                                            Procksi • Project Management Platform
                                         </p>
                                     </td>
                                 </tr>
@@ -486,7 +486,7 @@ def build_professional_email_wrapper(
                     <tr>
                         <td style="background-color: #f1f5f9; padding: 20px 32px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="font-size: 12px; color: #64748b; margin: 0 0 6px 0; font-weight: 600;">
-                                Official Automated Communication • GLA Project Management System
+                                Official Automated Communication • Procksi
                             </p>
                             <p style="font-size: 11px; color: #94a3b8; margin: 0;">
                                 If you have questions regarding this notification, please contact your department coordinator.
@@ -510,15 +510,15 @@ def wrap_communication_email(
     include_portal_button: bool = False
 ) -> str:
     """
-    Wraps any communication subject and body into the official GLA PMS email template design.
+    Wraps any communication subject and body into the official Procksi email template design.
     Matches the dark navy header (#0f172a), pill badge, white card body, and signature block.
     """
     if not raw_body:
         raw_body = ""
 
     if include_portal_button and not action_text:
-        action_text = "Open PMS Portal (glapms.in)"
-        action_url = "https://glapms.in"
+        action_text = "Open Procksi"
+        action_url = _STUDENT_URL
 
     # If already a complete HTML document, return as-is
     if "<!doctype html" in raw_body.lower() or "<html" in raw_body.lower():
@@ -532,7 +532,7 @@ def wrap_communication_email(
         l_lower = line.lower()
         if (l_lower.startswith("dear ") or l_lower.startswith("greetings") or l_lower.startswith("hello")) and len(line) < 60:
             greeting = line
-        elif l_lower.startswith("regards,") or l_lower.startswith("best regards,") or l_lower == "pms admin" or l_lower == "regards" or l_lower == "thank you.":
+        elif l_lower.startswith("regards,") or l_lower.startswith("best regards,") or l_lower == "procksi admin" or l_lower == "regards" or l_lower == "thank you.":
             continue
         else:
             body_paragraphs.append(line)
@@ -553,7 +553,7 @@ def wrap_communication_email(
     if not badge_text:
         s_lower = (subject or "").lower()
         if "welcome" in s_lower:
-            badge_text = "WELCOME TO PMS"
+            badge_text = "WELCOME TO PROCKSI"
         elif "proposal" in s_lower:
             badge_text = "PROPOSAL UPDATE"
         elif "team" in s_lower:
@@ -567,7 +567,7 @@ def wrap_communication_email(
         elif "result" in s_lower or "score" in s_lower:
             badge_text = "EVALUATION RESULTS"
         else:
-            badge_text = "GLA PMS NOTIFICATION"
+            badge_text = "PROCKSI NOTIFICATION"
 
     return build_professional_email_wrapper(
         title=subject,
@@ -980,7 +980,7 @@ def trigger_team_created_email(team_id: str, title: str):
     t_name = format_clean_team_name(team_id)
     subject = f"Team Formed - {title}"
     body = f"""
-    <p>Your team <b>"{title}"</b> ({t_name}) has been created on the GLA Project Management System.</p>
+    <p>Your team <b>"{title}"</b> ({t_name}) has been created on Procksi.</p>
     <p>You can now manage team members, select problem statements, and track project deadlines on the Student Portal.</p>
     """
     html_body = build_professional_email_wrapper(
@@ -1189,9 +1189,9 @@ def trigger_student_welcome_email(email: str, name: str):
     subject = "Welcome to the Project Management System"
     body = """
     <p style="margin-top: 0; margin-bottom: 16px;">Greetings!</p>
-    <p style="margin-bottom: 16px; line-height: 1.6;">You have been successfully <strong>enrolled under the Mini Project</strong> for the current semester on the <strong>Project Management System (PMS)</strong>.</p>
+    <p style="margin-bottom: 16px; line-height: 1.6;">You have been successfully <strong>enrolled under the Mini Project</strong> for the current semester on the <strong>Procksi</strong> project management platform.</p>
     <p style="margin-bottom: 16px; line-height: 1.6;">Get ready to explore innovative ideas, apply your technical knowledge, strengthen your problem-solving and research skills, and gain hands-on experience by developing meaningful real-world projects.</p>
-    <p style="margin-bottom: 16px; line-height: 1.6;">You are expected to actively participate in all project activities and strictly adhere to the instructions and timelines communicated through the PMS portal.</p>
+    <p style="margin-bottom: 16px; line-height: 1.6;">You are expected to actively participate in all project activities and strictly adhere to the instructions and timelines communicated through Procksi.</p>
     <p style="margin-bottom: 24px; line-height: 1.6;">Further instructions regarding the Mini Project will be shared shortly.</p>
     
     <div style="margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 16px; color: #475569;">
@@ -1202,10 +1202,10 @@ def trigger_student_welcome_email(email: str, name: str):
     </div>
     """
     html_body = build_professional_email_wrapper(
-        title="Welcome to GLA PMS",
+        title="Welcome to Procksi",
         recipient_greeting="Dear Student,",
         main_html=body,
-        badge_text="WELCOME TO PMS",
+        badge_text="WELCOME TO PROCKSI",
         action_text=None,
         action_url=None
     )
@@ -1219,7 +1219,7 @@ def trigger_mentor_welcome_email(email: str, name: str):
     # actually wired up. See the comment there for why this asks the mentor to
     # sign up rather than log in.
     body = f"""
-    <p>You have been added as a Mentor on the GLA Project Management System (PMS) by the Project Coordinator.</p>
+    <p>You have been added as a Mentor on the Procksi by the Project Coordinator.</p>
     <p>To get started, create your account on the Mentor Portal using this email address — <strong>{email}</strong>. Only addresses on the mentor roster can register, so please use this one.</p>
     <p>Once the Project Coordinator approves your account, you will be able to view your allocated student teams, track their milestone progress, and record presentation grades.</p>
     """
@@ -1227,7 +1227,7 @@ def trigger_mentor_welcome_email(email: str, name: str):
         title=f"Welcome, {name}!",
         recipient_greeting=f"Dear {name},",
         main_html=body,
-        badge_text="WELCOME TO PMS",
+        badge_text="WELCOME TO PROCKSI",
         action_text="Create Your Account",
         action_url=f"{_MENTOR_URL}/signup"
     )
@@ -1251,14 +1251,14 @@ def trigger_batch_student_welcome_emails(students: list[dict]):
             return
 
         sender = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-        sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+        sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
 
         subject = "Welcome to the Project Management System"
         body = """
     <p style="margin-top: 0; margin-bottom: 16px;">Greetings!</p>
-    <p style="margin-bottom: 16px; line-height: 1.6;">You have been successfully <strong>enrolled under the Mini Project</strong> for the current semester on the <strong>Project Management System (PMS)</strong>.</p>
+    <p style="margin-bottom: 16px; line-height: 1.6;">You have been successfully <strong>enrolled under the Mini Project</strong> for the current semester on the <strong>Procksi</strong> project management platform.</p>
     <p style="margin-bottom: 16px; line-height: 1.6;">Get ready to explore innovative ideas, apply your technical knowledge, strengthen your problem-solving and research skills, and gain hands-on experience by developing meaningful real-world projects.</p>
-    <p style="margin-bottom: 16px; line-height: 1.6;">You are expected to actively participate in all project activities and strictly adhere to the instructions and timelines communicated through the PMS portal.</p>
+    <p style="margin-bottom: 16px; line-height: 1.6;">You are expected to actively participate in all project activities and strictly adhere to the instructions and timelines communicated through Procksi.</p>
     <p style="margin-bottom: 24px; line-height: 1.6;">Further instructions regarding the Mini Project will be shared shortly.</p>
     
     <div style="margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 16px; color: #475569;">
@@ -1269,10 +1269,10 @@ def trigger_batch_student_welcome_emails(students: list[dict]):
     </div>
     """
         html_body = build_professional_email_wrapper(
-            title="Welcome to GLA PMS",
+            title="Welcome to Procksi",
             recipient_greeting="Dear Student,",
             main_html=body,
-            badge_text="WELCOME TO PMS",
+            badge_text="WELCOME TO PROCKSI",
             action_text=None,
             action_url=None
         )
@@ -1311,7 +1311,7 @@ def trigger_batch_mentor_welcome_emails(mentors: list[dict]):
             return
 
         sender = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-        sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+        sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
 
         items_to_send = []
         for item in clean_mentors:
@@ -1326,7 +1326,7 @@ def trigger_batch_mentor_welcome_emails(mentors: list[dict]):
             # form no credentials work on. Approval is a separate, later step,
             # and is mentioned so a pending account does not read as a fault.
             body = f"""
-            <p>You have been added as a Mentor on the GLA Project Management System (PMS) by the Project Coordinator.</p>
+            <p>You have been added as a Mentor on the Procksi by the Project Coordinator.</p>
             <p>To get started, create your account on the Mentor Portal using this email address — <strong>{m_email}</strong>. Only addresses on the mentor roster can register, so please use this one.</p>
             <p>Once the Project Coordinator approves your account, you will be able to view your allocated student teams, track their milestone progress, and record presentation grades.</p>
             """
@@ -1334,7 +1334,7 @@ def trigger_batch_mentor_welcome_emails(mentors: list[dict]):
                 title=f"Welcome, {m_name}!",
                 recipient_greeting=f"Dear {m_name},",
                 main_html=body,
-                badge_text="WELCOME TO PMS",
+                badge_text="WELCOME TO PROCKSI",
                 # Deep-links to signup, not the portal root: the mentor has no
                 # credentials yet, so the button must land where the email tells
                 # them to go.

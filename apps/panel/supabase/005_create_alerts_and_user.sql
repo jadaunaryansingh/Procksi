@@ -51,7 +51,7 @@ WHERE NOT EXISTS (
 -- You may need to adjust this based on your authentication system
 
 INSERT INTO users (email, hashed_password, role, panel_id) VALUES
-('panel01@gla.ac.in', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXwtO8ZjPEPG', 'panel', 'P01')
+('panel01@example.edu', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXwtO8ZjPEPG', 'panel', 'P01')
 ON CONFLICT (email) DO UPDATE SET
     role = EXCLUDED.role,
     panel_id = EXCLUDED.panel_id;
@@ -80,7 +80,7 @@ SELECT
     role,
     panel_id
 FROM users
-WHERE email = 'panel01@gla.ac.in';
+WHERE email = 'panel01@example.edu';
 
 -- Final summary of all data
 SELECT 'Data Summary' as category, '' as detail

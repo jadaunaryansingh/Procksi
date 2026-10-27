@@ -1,4 +1,4 @@
-"""Supabase / Postgres security auditor for the PMS project.
+"""Supabase / Postgres security auditor for the Procksi project.
 
 Checks every table, policy, grant, function, view, storage bucket and the auth /
 JWT surface, and (optionally) probes the deployed REST API as an anonymous user

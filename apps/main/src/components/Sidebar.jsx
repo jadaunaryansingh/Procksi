@@ -35,10 +35,10 @@ export const Sidebar = ({
                     ? 'w-auto opacity-100 md:w-0 md:opacity-0 md:group-hover/sidebar:w-[150px] md:group-hover/sidebar:opacity-100'
                     : 'w-[150px] opacity-100'
                     }`}>
-                    <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-8 h-8 object-contain shrink-0 mr-3 drop-shadow-sm" />
+                    <img src="/procksi-mark.png" alt="Procksi" className="w-8 h-8 object-contain shrink-0 mr-3 drop-shadow-sm" />
                     <div className="flex flex-col">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">GLA University</span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">PMS PORTAL</span>
+                        <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight whitespace-nowrap leading-tight">Procksi</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold tracking-wider">STUDENT PORTAL</span>
                     </div>
                 </div>
                 <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden md:flex p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0">

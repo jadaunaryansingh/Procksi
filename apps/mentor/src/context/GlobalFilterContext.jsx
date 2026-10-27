@@ -79,7 +79,7 @@ export function GlobalFilterProvider({ children }) {
                 fetchSemesters({ retries: 1 });
             }
         };
-        window.addEventListener('pms-auth-changed', handleAuthChange);
+        window.addEventListener('procksi-auth-changed', handleAuthChange);
         window.addEventListener('storage', handleAuthChange);
         window.addEventListener('focus', handleWake);
         window.addEventListener('online', handleAuthChange);
@@ -87,7 +87,7 @@ export function GlobalFilterProvider({ children }) {
 
         return () => {
             isMounted = false;
-            window.removeEventListener('pms-auth-changed', handleAuthChange);
+            window.removeEventListener('procksi-auth-changed', handleAuthChange);
             window.removeEventListener('storage', handleAuthChange);
             window.removeEventListener('focus', handleWake);
             window.removeEventListener('online', handleAuthChange);
@@ -98,7 +98,7 @@ export function GlobalFilterProvider({ children }) {
 
     useEffect(() => {
         saveStoredGlobalFilters(filters);
-        window.dispatchEvent(new CustomEvent('pms-mentor-global-filters-changed', { detail: filters }));
+        window.dispatchEvent(new CustomEvent('procksi-mentor-global-filters-changed', { detail: filters }));
     }, [filters]);
 
     useEffect(() => {
@@ -110,7 +110,7 @@ export function GlobalFilterProvider({ children }) {
         };
 
         const handleStorageEvent = (event) => {
-            if (event.key === 'pms-mentor-global-filters' && event.newValue) {
+            if (event.key === 'procksi-mentor-global-filters' && event.newValue) {
                 try {
                     const newFilters = JSON.parse(event.newValue);
                     if (newFilters && JSON.stringify(newFilters) !== JSON.stringify(filters)) {
@@ -122,11 +122,11 @@ export function GlobalFilterProvider({ children }) {
             }
         };
 
-        window.addEventListener('pms-mentor-global-filters-changed', handleCustomEvent);
+        window.addEventListener('procksi-mentor-global-filters-changed', handleCustomEvent);
         window.addEventListener('storage', handleStorageEvent);
 
         return () => {
-            window.removeEventListener('pms-mentor-global-filters-changed', handleCustomEvent);
+            window.removeEventListener('procksi-mentor-global-filters-changed', handleCustomEvent);
             window.removeEventListener('storage', handleStorageEvent);
         };
     }, [filters]);

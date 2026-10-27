@@ -268,7 +268,7 @@ export const mentorAPI = {
   },
 };
 
-// PMS-Chat. Unlike the mentor client, apiRequest here returns the whole
+// Procksi Chat. Unlike the mentor client, apiRequest here returns the whole
 // response body, so callers read `.data` themselves. The panel backend answers
 // with {status, data}. Access is re-derived from the session on every call.
 export const chatAPI = {
@@ -285,7 +285,7 @@ export const chatAPI = {
   },
 
   // Slash commands execute server-side; the result is posted into the
-  // conversation as a message from PMSbot rather than returned for display.
+  // conversation as a message from ProcksiBot rather than returned for display.
   runCommand: async ({ command, option = null, conversationId = null }) => {
     const res = await apiRequest('/panel/chat/command', {
       method: 'POST',

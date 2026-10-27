@@ -8,6 +8,12 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.core.ttl_cache import TTLCache
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
 logger = logging.getLogger(__name__)
 
 # Fallback TTL; every _cached_get call site passes its own.
@@ -111,7 +117,7 @@ class SupabaseRESTClient:
         # the `finally` below.
         self._cache = TTLCache(
             ttl=CACHE_DEFAULT_TTL,
-            max_entries=int(os.getenv("PMS_REST_CACHE_MAX", "4096")),
+            max_entries=int(os.getenv("PROCKSI_REST_CACHE_MAX", "4096")),
         )
         self._pending_tasks = {}  # Map key -> asyncio.Task
 
@@ -753,7 +759,7 @@ class SupabaseRESTClient:
         new_member = {
             "id": str(student["id"]),
             "name": student["name"],
-            "email": student.get("email") or f"{student.get('roll') or student['id']}@gla.ac.in",
+            "email": student.get("email") or f"{student.get('roll') or student['id']}{_allowed_email_suffix()}",
             "branch": m_branch,
             "roll": student.get("roll")
         }

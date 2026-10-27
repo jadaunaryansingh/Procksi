@@ -158,7 +158,7 @@ async def list_assigned_teams(
             "project_title": t.project_title,
             "member_count": len(t.members),
             "status": t.status,
-            "github_url": f"https://github.com/PMS-2026/team-{str(t.id)[:8]}",
+            "github_url": f"https://github.com/Procksi-2026/team-{str(t.id)[:8]}",
             "latest_proposal": {
                 "title": latest.title,
                 "status": latest.status,
@@ -207,7 +207,7 @@ async def get_team_details(
         "name": team.name,
         "project_title": team.project_title,
         "status": team.status,
-        "github_url": f"https://github.com/PMS-2026/team-{str(team.id)[:8]}",
+        "github_url": f"https://github.com/Procksi-2026/team-{str(team.id)[:8]}",
         "members": [str(m.student_id) for m in team.members], # Minimal for now
         "proposal": {
             "title": latest_proposal.title if latest_proposal else team.project_title,

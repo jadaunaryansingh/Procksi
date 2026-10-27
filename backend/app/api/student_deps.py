@@ -1,9 +1,16 @@
+import os
 import asyncio
 import json
 import urllib.request
 import urllib.error
 import uuid
 import logging
+
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
 
 logger = logging.getLogger(__name__)
 from fastapi import Depends, HTTPException, status
@@ -191,7 +198,7 @@ async def _fetch_student_profile_uncached(token: str) -> Student:
                 id=m_id,
                 student_id=m.get("roll") or m_id,
                 name=m.get("name", "Unknown"),
-                email=m.get("email") or f"{m_id}@gla.ac.in",
+                email=m.get("email") or f"{m_id}{_allowed_email_suffix()}",
                 branch=m.get("branch", "B.Tech CS"),
                 section="A",
                 year=3

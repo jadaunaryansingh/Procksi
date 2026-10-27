@@ -25,7 +25,7 @@ from fastapi import APIRouter, Request, Response
 
 router = APIRouter(prefix="/api/panel-sync", tags=["panel-sync-proxy"])
 
-# Internal address — never the public panel.glapms.in host. On Vercel,
+# Internal address — never the public panel host. On Vercel,
 # PANEL_API_URL is injected by the admin-api -> panel-api service binding;
 # under docker-compose it falls back to the compose-network hostname.
 PANEL_API_INTERNAL_URL = (

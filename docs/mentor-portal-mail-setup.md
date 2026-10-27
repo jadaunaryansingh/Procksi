@@ -15,7 +15,7 @@ Six variables, read from the environment (a `.env` file locally, the EC2
 |---|---|---|
 | `MAIL_SERVER` | `smtp.gmail.com` | |
 | `MAIL_PORT` | `587` | STARTTLS. Port 465 would need `MAIL_SSL_TLS`. |
-| `MAIL_USERNAME` | `aiml_project_coordinator@gla.ac.in` | The Google account the app password belongs to. |
+| `MAIL_USERNAME` | `aiml_project_coordinator@example.edu` | The Google account the app password belongs to. |
 | `MAIL_PASSWORD` | 16-character Google app password | See section 2. |
 | `MAIL_FROM` | same as `MAIL_USERNAME` | Falls back to `MAIL_USERNAME` if unset. |
 | `MAIL_STARTTLS` | `True` | Only read by the `fastapi_mail` path. |
@@ -47,7 +47,7 @@ question entirely.
 
 ## 2. Generating the app password
 
-1. Sign in as **`aiml_project_coordinator@gla.ac.in`**. Confirm the account in
+1. Sign in as **`aiml_project_coordinator@example.edu`**. Confirm the account in
    the avatar menu -- a password generated under any other Google account
    produces an error identical to a wrong password.
 2. 2-Step Verification must be enabled on that account. App passwords do not
@@ -58,10 +58,10 @@ question entirely.
    `student-api`, `mentor-api` all authenticate as the same mailbox.
 5. Update the `MAIL_PASSWORD` GitHub secret, then run a deploy.
 
-`gla.ac.in` is a Google Workspace domain. A Workspace administrator can
+`example.edu` is a Google Workspace domain. A Workspace administrator can
 disable app passwords for the whole organisation, in which case a freshly
 generated password is still rejected. If everything above is correct and
-login still fails, that policy is the remaining explanation and only GLA IT
+login still fails, that policy is the remaining explanation and only Procksi IT
 can lift it.
 
 ---
@@ -78,7 +78,7 @@ other fails.
 - Refuses any address that is not a known, resettable mentor account.
 - Signs a JWT with `SECRET_KEY`, **15 minute expiry** (`auth.py:637-639`).
 - Builds the link from `MENTOR_PORTAL_URL`, defaulting to
-  `https://mentor.glapms.in` (`auth.py:643`).
+  `https://mentor.your-domain.com` (`auth.py:643`).
 - Sends HTML via `smtplib` with STARTTLS (`auth.py:698-701`).
 
 This path fails loudly and usefully:
@@ -161,7 +161,7 @@ To test production, which uses the deployed `.env` rather than any local
 file, trigger the reset path with a real mentor address:
 
 ```
-curl -s -X POST https://mentor.glapms.in/auth/forgot-password \
+curl -s -X POST https://mentor.your-domain.com/auth/forgot-password \
   -H 'Content-Type: application/json' \
   -d '{"email":"<a real mentor address>"}'
 ```
@@ -180,7 +180,7 @@ SMTP error in full.
 | Connection timeout | Wrong host/port, or egress blocked. | Check `MAIL_SERVER`/`MAIL_PORT`; confirm the security group allows outbound 587. |
 | Local works, production does not | The GitHub secret is unset, or no deploy has run since it was set. | Set the secret, then deploy -- the secret alone changes nothing. |
 | Reset link says expired | Tokens live 15 minutes (`auth.py:637`). | Request a new one. |
-| Reset link points at the wrong host | `MENTOR_PORTAL_URL` unset or wrong. | Set it; it defaults to `https://mentor.glapms.in`. |
+| Reset link points at the wrong host | `MENTOR_PORTAL_URL` unset or wrong. | Set it; it defaults to `https://mentor.your-domain.com`. |
 | Communication sends nothing, no error | The segment resolved to zero recipients. | `communication_service.py:334` only calls the mailer when `msg["emails"]` is non-empty. Check the segment. |
 | Scheduled message never fired | The poller did not run. | It starts with the app (`main.py:25`); confirm the process stayed up. |
 

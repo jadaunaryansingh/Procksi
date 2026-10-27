@@ -1,3 +1,4 @@
+import os
 import asyncio
 import json
 import logging
@@ -6,6 +7,12 @@ from sqlalchemy.exc import IntegrityError
 from app.core.database import async_session_factory
 from app.core.github_analyzer import GitHubAnalyzerClient, DUPLICATE_TEAM_SENTINEL
 from app.core import rest_db
+
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
 
 logger = logging.getLogger("github_sync_scheduler")
 
@@ -452,7 +459,7 @@ async def sync_github_data():
             analyzed_url = row["analyzed_url"]
             raw_report_data = row["raw_report"]
             
-            if not team_id or not repo_url or not repo_url.strip() or "gla-pms" in repo_url.lower() or "github.com/" not in repo_url.lower():
+            if not team_id or not repo_url or not repo_url.strip() or "procksi" in repo_url.lower() or "github.com/" not in repo_url.lower():
                 continue
             
             raw_data = {}
@@ -678,7 +685,7 @@ async def sync_github_data():
                                 "commit": {
                                     "author": {
                                         "name": team_members[0]["name"] if team_members else "Team Leader",
-                                        "email": team_members[0].get("email") or "leader@gla.ac.in"
+                                        "email": team_members[0].get("email") or f"leader{_allowed_email_suffix()}"
                                     }
                                 }
                             }

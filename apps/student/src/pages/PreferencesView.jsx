@@ -496,7 +496,7 @@ export default function PreferencesView() {
                     const ext = proposalFile.name.split('.').pop();
                     const filePath = `proposals/${userId}/${Date.now()}.${ext}`;
 
-                    const bucket = 'PMS';
+                    const bucket = 'Procksi';
                     const uploadResult = await supabase.storage
                         .from(bucket)
                         .upload(filePath, proposalFile, { upsert: false });

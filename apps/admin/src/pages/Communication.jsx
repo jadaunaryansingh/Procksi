@@ -457,7 +457,7 @@ export default function Communication() {
                             <div className="flex items-center justify-between p-4 bg-indigo-50/60 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl">
                                 <div>
                                     <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">Include Portal Redirect Button</label>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Appends a button in outgoing email redirecting to <b>glapms.in</b></p>
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Appends a button in outgoing email linking to the <b>Procksi student portal</b></p>
                                 </div>
                                 <button 
                                     type="button" 
@@ -678,13 +678,13 @@ export default function Communication() {
                                         {/* Dark Navy Header Card */}
                                         <div className="bg-[#0f172a] text-white p-6 border-b-4 border-indigo-500 relative">
                                             <span className="inline-block px-3 py-1 bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 text-[10px] font-black uppercase tracking-widest rounded-md mb-2">
-                                                {(previewContent.mailType || "GLA PMS NOTIFICATION").toUpperCase()}
+                                                {(previewContent.mailType || "PROCKSI NOTIFICATION").toUpperCase()}
                                             </span>
                                             <h2 className="text-xl font-extrabold text-white leading-tight">
                                                 {previewContent.subject || "Email Subject"}
                                             </h2>
                                             <p className="text-xs text-slate-400 font-medium mt-1">
-                                                GLA University • Project Management System
+                                                Procksi • Project Management Platform
                                             </p>
                                         </div>
                                         {/* White Card Body */}
@@ -706,8 +706,8 @@ export default function Communication() {
                                             />
                                             {previewContent.includePortalButton && (
                                                 <div className="pt-4 text-center">
-                                                    <a href="https://glapms.in" target="_blank" rel="noreferrer" className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
-                                                        Open PMS Portal (glapms.in)
+                                                    <a href={import.meta.env.VITE_STUDENT_PORTAL_URL || '#'} target="_blank" rel="noreferrer" className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
+                                                        Open Procksi
                                                     </a>
                                                 </div>
                                             )}
@@ -719,7 +719,7 @@ export default function Communication() {
                                         </div>
                                         {/* Official Footer */}
                                         <div className="bg-slate-100 p-4 text-center border-t border-slate-200">
-                                            <p className="text-[11px] font-semibold text-slate-600 margin-0">Official Automated Communication • GLA Project Management System</p>
+                                            <p className="text-[11px] font-semibold text-slate-600 margin-0">Official Automated Communication • Procksi</p>
                                             <p className="text-[10px] text-slate-400 margin-0">If you have questions regarding this notification, please contact your department coordinator.</p>
                                         </div>
                                     </div>

@@ -628,7 +628,7 @@ export default function PsArchitecturePlanModal({ ps, onClose, _onGenerateAi, ai
                                 AI
                             </div>
                             <h4 className="text-xs font-bold tracking-tight text-white flex items-center gap-2 min-w-0">
-                                <span className="shrink-0">PMS Architecture Blueprint</span>
+                                <span className="shrink-0">Procksi Architecture Blueprint</span>
                                 {psCodeLabel && (
                                     <span className="px-2 py-0.5 rounded-full bg-[#6C3CE1]/20 border border-[#6C3CE1]/40 text-[#8B5CF6] text-[10px] font-mono font-bold uppercase max-w-[160px] truncate">
                                         {psCodeLabel}

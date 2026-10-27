@@ -1,6 +1,6 @@
 # Database Backup & Restore Runbook
 
-Project: **PMS Admin Portal** (Supabase project ref `rmmkjczuwsuxcnrdtkrh`, org "Aryan's Org", **Pro plan**, region `ap-northeast-1`).
+Project: **Procksi Admin Portal** (Supabase project ref `rmmkjczuwsuxcnrdtkrh`, org "Aryan's Org", **Pro plan**, region `ap-northeast-1`).
 
 ## What backup coverage we have
 

@@ -102,7 +102,7 @@ SELECT
     '=== LOGIN INFORMATION ===' as info,
     '' as value
 UNION ALL
-SELECT 'Email:', 'panel01@gla.ac.in'
+SELECT 'Email:', 'panel01@example.edu'
 UNION ALL
 SELECT 'Password:', 'panel123'
 UNION ALL

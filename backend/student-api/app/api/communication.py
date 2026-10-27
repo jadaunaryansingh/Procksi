@@ -20,7 +20,7 @@ from app.schemas.communication import SendMailRequest
 router = APIRouter(prefix="/api/admin/communication", tags=["Communication"])
 
 TEMPLATES_REGISTRY = [
-    {"id": "1", "name": "Awareness Campaign", "code": "awareness", "subject": "Project Management System: Getting Started", "body": "Welcome to the PMS..."},
+    {"id": "1", "name": "Awareness Campaign", "code": "awareness", "subject": "Project Management System: Getting Started", "body": "Welcome to Procksi..."},
     {"id": "2", "name": "Proposal Submission Reminder", "code": "proposal_reminder", "subject": "URGENT: Project Proposal Deadline", "body": "Please submit your proposal by {deadline}..."},
     {"id": "3", "name": "Team Formation Alert", "code": "team_formation_reminder", "subject": "TEAM FORMATION: Final Call", "body": "Form your teams before the deadline..."},
     {"id": "4", "name": "Mentor Allocation Notice", "code": "mentor_allocation", "subject": "MENTOR ALLOCATED: {team_name}", "body": "Your project team {team_name} has been assigned to {mentor_name}..."},

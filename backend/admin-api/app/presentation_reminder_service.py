@@ -8,7 +8,7 @@ from dotenv import load_dotenv, find_dotenv
 root_env = find_dotenv() or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
 load_dotenv(root_env)
 if not os.getenv("TWILIO_ACCOUNT_SID"):
-    p = r"c:\Users\ARYAN SINGH JADAUN\Desktop\PMS Latest\.env"
+    p = r"c:\Users\ARYAN SINGH JADAUN\Desktop\Procksi Latest\.env"
     if os.path.exists(p):
         load_dotenv(p)
 

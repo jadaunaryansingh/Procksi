@@ -39,9 +39,9 @@ export default function StaffLanding() {
             {/* Top Navigation */}
             <div className="absolute top-0 left-0 right-0 p-6 z-50 max-w-7xl mx-auto flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                    <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-10 h-10" />
+                    <img src="/procksi-mark.png" alt="Procksi" className="w-10 h-10" />
                     <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 dark:text-white text-lg leading-tight">GLA University</span>
+                        <span className="font-bold text-slate-900 dark:text-white text-lg leading-tight">Procksi</span>
                         <span className="text-[10px] tracking-widest text-[#00cba9] font-bold uppercase">Staff & Faculty Portal</span>
                     </div>
                 </div>
@@ -680,13 +680,13 @@ export default function StaffLanding() {
             <footer className="bg-white dark:bg-[#020617] border-t border-slate-200 dark:border-slate-800 py-8 text-slate-500 text-xs relative z-10">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-3">
-                        <img src="/GLA_University_logo.png" alt="GLA Logo" className="w-6 h-6 grayscale opacity-70" />
+                        <img src="/procksi-mark.png" alt="Procksi" className="w-6 h-6 grayscale opacity-70" />
                         <div className="flex flex-col">
-                            <span className="font-bold text-slate-700 dark:text-slate-300">GLA University</span>
-                            <span className="text-[10px] tracking-widest uppercase">PMS Portal</span>
+                            <span className="font-bold text-slate-700 dark:text-slate-300">Procksi</span>
+                            <span className="text-[10px] tracking-widest uppercase">Project Management Platform</span>
                         </div>
                     </div>
-                    <div>© {new Date().getFullYear()} GLA Project Management System. All rights reserved.</div>
+                    <div>© {new Date().getFullYear()} Procksi. All rights reserved.</div>
                 </div>
             </footer>
         </div>

@@ -59,21 +59,21 @@ TEMPLATES: dict[str, dict[str, Any]] = {
         "body": ("Dear Student,\n\nThe project semester has officially begun. Over the coming "
                  "weeks you will form teams, select a problem statement, and be paired with a "
                  "faculty mentor.\n\nPlease watch your inbox and the student portal for the next "
-                 "steps.\n\nRegards,\nPMS Admin"),
+                 "steps.\n\nRegards,\nProcksi Admin"),
     },
     "team_formation": {
         "name": "Team Formation Call", "default_segment": "all_students", "params": ["deadline"],
         "subject": "Action Required: Form Your Project Team",
         "body": ("Dear Student,\n\nIt's time to form your project teams (maximum 3 members per "
                  "team). One member should log in to the portal and add the other members' "
-                 "details.\n\nPlease complete team formation before {deadline}.\n\nRegards,\nPMS Admin"),
+                 "details.\n\nPlease complete team formation before {deadline}.\n\nRegards,\nProcksi Admin"),
     },
     "problem_statements": {
         "name": "Problem Statements Released", "default_segment": "all_students", "params": ["deadline"],
         "subject": "Problem Statements Are Now Available",
         "body": ("Dear Student,\n\nThe department's problem statements have been released. Please "
                  "review them with your team and submit your selection (with a short description) "
-                 "on the portal before {deadline}.\n\nRegards,\nPMS Admin"),
+                 "on the portal before {deadline}.\n\nRegards,\nProcksi Admin"),
     },
     "team_add_request": {
         "name": "Request to Add a Member", "default_segment": "specific_team",
@@ -81,34 +81,34 @@ TEMPLATES: dict[str, dict[str, Any]] = {
         "subject": "Admin Request: Add a Member to Your Team",
         "body": ("Dear Team {team_name},\n\nThe admin requests to add {student_name} to your team. "
                  "If you agree, please log in to the portal and add this student's details to "
-                 "finalize your team.\n\nRegards,\nPMS Admin"),
+                 "finalize your team.\n\nRegards,\nProcksi Admin"),
     },
     "proposal_approved": {
         "name": "Custom Proposal Approved", "default_segment": "specific_team", "params": ["team_name"],
         "subject": "Proposal Approved - {team_name}",
         "body": ("Dear Team {team_name},\n\nYour custom project proposal has been approved. Please "
                  "log in to the portal and enter your final project description to proceed.\n\n"
-                 "Regards,\nPMS Admin"),
+                 "Regards,\nProcksi Admin"),
     },
     "proposal_rejected": {
         "name": "Custom Proposal Rejected", "default_segment": "specific_team", "params": ["team_name"],
         "subject": "Proposal Update - {team_name}",
         "body": ("Dear Team {team_name},\n\nYour custom project proposal was not approved this time. "
                  "Please select a problem statement from the department's standard list on the "
-                 "portal before the deadline.\n\nRegards,\nPMS Admin"),
+                 "portal before the deadline.\n\nRegards,\nProcksi Admin"),
     },
     "proposal_revision": {
         "name": "Custom Proposal Revision Requested", "default_segment": "specific_team", "params": ["team_name"],
         "subject": "Proposal Revision Requested - {team_name}",
         "body": ("Dear Team {team_name},\n\nThe project administration has requested a revision for your custom proposal. "
                  "Please log in to the portal to review administrator comments and submit your updated proposal.\n\n"
-                 "Regards,\nPMS Admin"),
+                 "Regards,\nProcksi Admin"),
     },
     "proposal_resubmitted": {
         "name": "Proposal Resubmitted Confirmation", "default_segment": "specific_team", "params": ["team_name"],
         "subject": "Proposal Resubmitted - {team_name}",
         "body": ("Dear Team {team_name},\n\nYour revised project proposal has been successfully resubmitted "
-                 "for admin review.\n\nRegards,\nPMS Admin"),
+                 "for admin review.\n\nRegards,\nProcksi Admin"),
     },
     "mentor_onboarding": {
         "name": "Faculty Mentor Registration", "default_segment": "mentors", "params": [],
@@ -258,7 +258,7 @@ def _smtp_send_multipart(subject, recipients, content, is_html, attachments, inc
         include_portal_button=include_portal_button,
     )
     sender = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-    sender_name = (os.getenv("MAIL_FROM_NAME") or "GLA PMS Portal").strip()
+    sender_name = (os.getenv("MAIL_FROM_NAME") or "Procksi Portal").strip()
 
     items_to_send = []
     for r in clean_recips:
@@ -1240,7 +1240,7 @@ def build_communication_router(service_client) -> APIRouter:
                     "Please log in to the Student Portal (Preferences Page), fill in the project configurations form, and submit it as soon as possible. Note that once submitted, these details are locked and can only be modified by an administrator.\n\n"
                     "If you have already submitted or formed a custom team, please coordinate with your team leader to ensure the submission has been finalized.\n\n"
                     "Regards,\n"
-                    "PMS Administration"
+                    "Procksi Administration"
                 )
                 try:
                     smtp_delivered = bool(_smtp_send(subject, email_recipients, body).get("sent"))

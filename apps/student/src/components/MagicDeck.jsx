@@ -70,7 +70,7 @@ const TriangleSVG = () => (
   </svg>
 );
 
-// ── Card Back (GLA PMS branding) ─────────────────────────────────────────────
+// ── Card Back (Procksi branding) ─────────────────────────────────────────────
 const CardBack = ({ small = false }) => (
   <div className="w-full h-full relative overflow-hidden flex flex-col items-center justify-center"
     style={{
@@ -107,7 +107,7 @@ const CardBack = ({ small = false }) => (
         WebkitTextFillColor: 'transparent',
         letterSpacing: '0.1em',
         textShadow: `none`,
-      }}>GLA<br />PMS</span>
+      }}>Procksi</span>
       {!small && (
         <>
           <div style={{ width: 28, height: 1, background: `${GOLD}66`, marginTop: 2 }} />
@@ -230,7 +230,7 @@ export default function MagicDeck() {
                     ))}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', width: '100%' }}>
                       <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${GOLD}88)` }} />
-                      <span style={{ color: GOLD, fontWeight: 900, fontSize: 11, letterSpacing: '0.55em', textTransform: 'uppercase' }}>GLA</span>
+                      <span style={{ color: GOLD, fontWeight: 900, fontSize: 11, letterSpacing: '0.55em', textTransform: 'uppercase' }}>PROCKSI</span>
                       <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${GOLD}88)` }} />
                     </div>
                   </motion.div>
@@ -271,7 +271,7 @@ export default function MagicDeck() {
                         lineHeight: 1.9, padding: '12px 14px', wordBreak: 'break-all',
                         fontFamily: 'monospace', letterSpacing: '0.12em',
                       }}>
-                        {Array(90).fill('✦ GLA PMS PROJECT MANAGEMENT SYSTEM ').join('')}
+                        {Array(90).fill('✦ PROCKSI · PROJECT MANAGEMENT PLATFORM ').join('')}
                       </p>
                     </div>
 
@@ -301,13 +301,13 @@ export default function MagicDeck() {
                       );
                     })}
 
-                    {/* Bottom "PMS" label */}
+                    {/* Bottom "Procksi" label */}
                     <div style={{
                       position: 'absolute', bottom: 14, left: 0, right: 0,
                       display: 'flex', alignItems: 'center', gap: 10, padding: '0 18px', zIndex: 3
                     }}>
                       <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${GOLD}88)` }} />
-                      <span style={{ color: GOLD, fontWeight: 900, fontSize: 11, letterSpacing: '0.55em', textTransform: 'uppercase' }}>PMS</span>
+                      <span style={{ color: GOLD, fontWeight: 900, fontSize: 11, letterSpacing: '0.55em', textTransform: 'uppercase' }}>PROCKSI</span>
                       <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${GOLD}88)` }} />
                     </div>
 

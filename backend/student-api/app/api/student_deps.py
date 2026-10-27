@@ -6,6 +6,12 @@ import urllib.parse
 import uuid
 import logging
 
+
+def _allowed_email_suffix() -> str:
+    """'@' + ALLOWED_EMAIL_DOMAIN. Unset rejects every address (fail closed)."""
+    return "@" + os.getenv("ALLOWED_EMAIL_DOMAIN", "").strip().lstrip("@").lower()
+
+
 logger = logging.getLogger(__name__)
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -33,7 +39,7 @@ security = HTTPBearer()
 # orphaned entry (a full student object with team, members and mentors) per
 # rotation, forever. TTLCache sweeps expired entries on write and caps total size.
 PROFILE_CACHE_TTL = 10  # seconds
-PROFILE_CACHE_MAX = int(os.getenv("PMS_PROFILE_CACHE_MAX", "2048"))
+PROFILE_CACHE_MAX = int(os.getenv("PROCKSI_PROFILE_CACHE_MAX", "2048"))
 PROFILE_CACHE = TTLCache(ttl=PROFILE_CACHE_TTL, max_entries=PROFILE_CACHE_MAX)
 
 # Map token -> asyncio.Task. Bounded by construction: every entry is removed in
@@ -258,7 +264,7 @@ async def _fetch_student_profile_uncached(token: str) -> Student:
                 continue
 
             s_db = students_by_id.get(str(m_id)) or students_by_id.get(str(m_roll)) or {}
-            m_email = s_db.get("email") or m_email or (f"{m_roll}@gla.ac.in" if str(m_roll).isalnum() else None)
+            m_email = s_db.get("email") or m_email or (f"{m_roll}{_allowed_email_suffix()}" if str(m_roll).isalnum() else None)
             m_name = s_db.get("name") or m_name
             m_branch = s_db.get("branch") or m_branch
             m_section = s_db.get("section") or "A"

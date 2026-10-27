@@ -11,7 +11,7 @@ export const AdminLayout = ({ onLogout, adminUser }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     // Read the stored preference during the first render instead of rendering
     // light and correcting it from the effect below.
-    const [isDark, setIsDark] = useState(() => localStorage.getItem('pms-admin-theme') === 'dark');
+    const [isDark, setIsDark] = useState(() => localStorage.getItem('procksi-admin-theme') === 'dark');
     const [freezePopupOpen, setFreezePopupOpen] = useState(false);
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDark);
@@ -23,8 +23,8 @@ export const AdminLayout = ({ onLogout, adminUser }) => {
     useEffect(() => {
         // Seed the default on a first visit. The class itself is applied by the
         // effect below, which tracks isDark rather than setting it.
-        if (!localStorage.getItem('pms-admin-theme')) {
-            localStorage.setItem('pms-admin-theme', 'light');
+        if (!localStorage.getItem('procksi-admin-theme')) {
+            localStorage.setItem('procksi-admin-theme', 'light');
         }
 
         const handleFreezeError = () => {
@@ -39,10 +39,10 @@ export const AdminLayout = ({ onLogout, adminUser }) => {
         setIsDark(!isDark);
         if (!isDark) {
             document.documentElement.classList.add('dark');
-            localStorage.setItem('pms-admin-theme', 'dark');
+            localStorage.setItem('procksi-admin-theme', 'dark');
         } else {
             document.documentElement.classList.remove('dark');
-            localStorage.setItem('pms-admin-theme', 'light');
+            localStorage.setItem('procksi-admin-theme', 'light');
         }
     };
 
