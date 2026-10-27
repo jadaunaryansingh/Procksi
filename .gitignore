@@ -50,4 +50,6 @@ Icon?
 # Cloudflare Tunnel (Option B) — never commit tunnel credentials
 deploy/cloudflared/credentials.json
 
-frames_i_gave_those_images_just_for_r.mp4_60fps_png.zip
+
+# Office lock files
+~$*
