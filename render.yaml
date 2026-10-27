@@ -58,11 +58,11 @@ services:
         sync: false
       # Server-to-server calls that used to go over the docker-compose network.
       - key: PANEL_API_INTERNAL_URL
-        value: https://pms-panel-api.onrender.com
+        value: https://procksi-panel-portal.onrender.com
       - key: PANEL_PORTAL_API_URL
-        value: https://pms-panel-api.onrender.com
+        value: https://procksi-panel-portal.onrender.com
       - key: MENTOR_PORTAL_API_URL
-        value: https://pms-mentor-api.onrender.com
+        value: https://procksi-mentor-portal.onrender.com
 
   - type: web
     name: pms-panel-api

@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://pms-admin-api.onrender.com/api/:path*" },
-    { "source": "/auth/:path*", "destination": "https://pms-admin-api.onrender.com/auth/:path*" },
+    { "source": "/api/:path*", "destination": "https://procksi-4d8a.onrender.com/api/:path*" },
+    { "source": "/auth/:path*", "destination": "https://procksi-4d8a.onrender.com/auth/:path*" },
     { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ],
   "headers": [
