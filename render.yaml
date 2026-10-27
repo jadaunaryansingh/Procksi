@@ -1,0 +1,110 @@
+# Render Blueprint: the four FastAPI services (free plan).
+# Frontends are on Vercel; see apps/*/vercel.json and docs/DEPLOYMENT.md.
+#
+# Secrets are NOT in this file. Before applying the Blueprint, create an
+# environment group named `pms-secrets` in the Render dashboard holding the
+# shared values (DATABASE_URL, SUPABASE_*, MAIL_*, TWILIO_*, OPENAI_API_KEY,
+# GOOGLE_CLIENT_SECRET, ADMIN_API_KEY, PASSWORD_RESET_SECRET). SECRET_KEY is
+# per service and Render asks for each one on first apply (sync: false).
+#
+# If a service name below is already taken on Render, Render gives it a
+# suffixed onrender.com URL. Update the matching vercel.json rewrites and the
+# *_INTERNAL/_API_URL values below to the real URL.
+
+envVarGroups:
+  - name: pms-config
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: STUDENT_PORTAL_URL
+        value: https://student.glapms.in
+      - key: ADMIN_PORTAL_URL
+        value: https://admin.glapms.in
+      - key: MENTOR_PORTAL_URL
+        value: https://mentor.glapms.in
+      - key: PANEL_PORTAL_URL
+        value: https://panel.glapms.in
+      - key: GOOGLE_CLIENT_ID
+        value: 53268196905-gfa2r4klrqrtpgt9r9s4mjhmmgunjlrr.apps.googleusercontent.com
+      - key: GOOGLE_REDIRECT_URI
+        value: https://admin.glapms.in/auth/google/callback
+      - key: GOOGLE_CALENDAR_ID
+        value: primary
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_FROM_NAME
+        value: GLA PMS Portal
+      # Extra CORS origins on top of the hardcoded *.glapms.in list, so the
+      # *.vercel.app preview URLs work before the custom domains are moved.
+      - key: FRONTEND_URL
+        value: https://pms-main.vercel.app,https://pms-admin.vercel.app,https://pms-panel.vercel.app,https://pms-student.vercel.app,https://pms-mentor.vercel.app
+
+services:
+  - type: web
+    name: pms-admin-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend/admin-api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: pms-config
+      - fromGroup: pms-secrets
+      - key: SECRET_KEY
+        sync: false
+      # Server-to-server calls that used to go over the docker-compose network.
+      - key: PANEL_API_INTERNAL_URL
+        value: https://pms-panel-api.onrender.com
+      - key: PANEL_PORTAL_API_URL
+        value: https://pms-panel-api.onrender.com
+      - key: MENTOR_PORTAL_API_URL
+        value: https://pms-mentor-api.onrender.com
+
+  - type: web
+    name: pms-panel-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend/panel-api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: pms-config
+      - fromGroup: pms-secrets
+      - key: SECRET_KEY
+        sync: false
+
+  - type: web
+    name: pms-student-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend/student-api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: pms-config
+      - fromGroup: pms-secrets
+      - key: SECRET_KEY
+        sync: false
+
+  - type: web
+    name: pms-mentor-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend/mentor-api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: pms-config
+      - fromGroup: pms-secrets
+      - key: SECRET_KEY
+        sync: false

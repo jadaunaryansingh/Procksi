@@ -33,6 +33,7 @@ import ExtraActivitiesView from './pages/ExtraActivitiesView';
 import GitHubAnalysisView from './pages/GitHubAnalysisView';
 import { useProfile, clearQueryCache } from './hooks/useStudentData';
 import PmsChatRoute from './components/PmsChatRoute';
+import { getApiBaseUrl } from './lib/apiBase';
 
 export default function App() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function App() {
     // — we do nothing and let them stay. This "fail open" rule means a temporary
     // backend problem can never accidentally lock out genuine students.
     const gateOAuthSession = async (session) => {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8002';
+      const API_BASE_URL = getApiBaseUrl();
       try {
         // The token proves who they are; the backend reads the e-mail from it and
         // looks it up in the students table.

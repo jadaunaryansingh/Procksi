@@ -3,6 +3,7 @@ FastAPI backend for the Panel (and mentor) dashboard using Supabase.
 """
 
 import app.patch_supabase
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -77,6 +78,12 @@ ALLOWED_ORIGINS = [
     "http://glapms.in",
     "http://www.glapms.in",
 ]
+
+# Extra origins (comma-separated) for hosts outside *.glapms.in, e.g. the
+# *.vercel.app deployment URLs. Same convention as student-api/mentor-api.
+for _origin in os.getenv("FRONTEND_URL", "").split(","):
+    if _origin.strip() and _origin.strip() not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(_origin.strip())
 
 
 def _add_cors(request: Request, response: JSONResponse) -> JSONResponse:

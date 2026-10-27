@@ -432,6 +432,12 @@ ALLOWED_ORIGINS = [
     "http://www.glapms.in",
 ]
 
+# Extra origins (comma-separated) for hosts outside *.glapms.in, e.g. the
+# *.vercel.app deployment URLs. Same convention as student-api/mentor-api.
+for _origin in os.getenv("FRONTEND_URL", "").split(","):
+    if _origin.strip() and _origin.strip() not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(_origin.strip())
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
