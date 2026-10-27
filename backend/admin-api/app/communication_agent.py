@@ -847,8 +847,9 @@ def send_communication(service_client, payload: SendRequest) -> dict:
                 resp = client.post(url, json=payload_body, headers=headers)
                 resp.raise_for_status()
 
-        panel_url = (os.getenv("PANEL_PORTAL_API_URL") or "http://panel-backend:8001").rstrip("/")
-        mentor_url = (os.getenv("MENTOR_PORTAL_API_URL") or "http://mentor-backend:8003").rstrip("/")
+        # PANEL_API_URL / MENTOR_API_URL come from the Vercel service bindings.
+        panel_url = (os.getenv("PANEL_API_URL") or os.getenv("PANEL_PORTAL_API_URL") or "http://panel-backend:8001").rstrip("/")
+        mentor_url = (os.getenv("MENTOR_API_URL") or os.getenv("MENTOR_PORTAL_API_URL") or "http://mentor-backend:8003").rstrip("/")
         admin_key = (os.getenv("ADMIN_API_KEY") or "").strip()
 
         # panel-api guards this with require_admin_key, so the shared key works.

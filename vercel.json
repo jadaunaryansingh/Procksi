@@ -1,0 +1,128 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "main": {
+      "root": "apps/main",
+      "framework": "vite",
+      "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        }
+      ]
+    },
+    "admin": {
+      "root": "apps/admin",
+      "framework": "vite",
+      "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        }
+      ]
+    },
+    "panel": {
+      "root": "apps/panel",
+      "framework": "vite",
+      "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        }
+      ]
+    },
+    "student": {
+      "root": "apps/student",
+      "framework": "vite",
+      "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        }
+      ]
+    },
+    "mentor": {
+      "root": "apps/mentor",
+      "framework": "vite",
+      "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        }
+      ]
+    },
+    "admin-api": {
+      "root": "backend/admin-api",
+      "framework": "fastapi",
+      "entrypoint": "app.main:app",
+      "bindings": [
+        { "type": "service", "service": "panel-api", "format": "url", "env": "PANEL_API_URL" },
+        { "type": "service", "service": "mentor-api", "format": "url", "env": "MENTOR_API_URL" }
+      ]
+    },
+    "panel-api": {
+      "root": "backend/panel-api",
+      "framework": "fastapi",
+      "entrypoint": "app.main:app"
+    },
+    "student-api": {
+      "root": "backend/student-api",
+      "framework": "fastapi",
+      "entrypoint": "app.main:app"
+    },
+    "mentor-api": {
+      "root": "backend/mentor-api",
+      "framework": "fastapi",
+      "entrypoint": "app.main:app"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(api|auth)/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "admin." } }],
+      "destination": { "service": "admin-api" }
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "admin." } }],
+      "destination": { "service": "admin" }
+    },
+    {
+      "source": "/(api|auth|panel|mentor|evaluation)/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "panel." } }],
+      "destination": { "service": "panel-api" }
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "panel." } }],
+      "destination": { "service": "panel" }
+    },
+    {
+      "source": "/(api|auth)/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "student." } }],
+      "destination": { "service": "student-api" }
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "student." } }],
+      "destination": { "service": "student" }
+    },
+    {
+      "source": "/(api|auth)/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "mentor." } }],
+      "destination": { "service": "mentor-api" }
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "pre": "mentor." } }],
+      "destination": { "service": "mentor" }
+    },
+    { "source": "/api/(.*)", "destination": { "service": "student-api" } },
+    { "source": "/(.*)", "destination": { "service": "main" } }
+  ]
+}

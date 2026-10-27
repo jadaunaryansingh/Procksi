@@ -25,8 +25,14 @@ from fastapi import APIRouter, Request, Response
 
 router = APIRouter(prefix="/api/panel-sync", tags=["panel-sync-proxy"])
 
-# Internal, compose-network address — never the public panel.glapms.in host.
-PANEL_API_INTERNAL_URL = os.getenv("PANEL_API_INTERNAL_URL", "http://panel-backend:8001").rstrip("/")
+# Internal address — never the public panel.glapms.in host. On Vercel,
+# PANEL_API_URL is injected by the admin-api -> panel-api service binding;
+# under docker-compose it falls back to the compose-network hostname.
+PANEL_API_INTERNAL_URL = (
+    os.getenv("PANEL_API_URL")
+    or os.getenv("PANEL_API_INTERNAL_URL")
+    or "http://panel-backend:8001"
+).rstrip("/")
 _ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
 
 # Headers that must not be copied verbatim between hops (RFC 7230 §6.1, plus
