@@ -53,3 +53,6 @@ deploy/cloudflared/credentials.json
 
 # Office lock files
 ~$*
+
+# Full Supabase data exports (real user rows, auth users, password hashes).
+supabase_export_*/

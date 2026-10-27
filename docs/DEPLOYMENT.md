@@ -17,11 +17,12 @@ config did. The browser only ever talks to its own origin, so **do not set
 
 Render has no outbound IPv6, and Supabase's direct host (`db.<ref>.supabase.co`)
 is IPv6-only. Use the **Session pooler** string instead
-(Supabase → Project Settings → Database → Connection string → Session pooler),
-with the `postgresql+asyncpg://` scheme:
+(Supabase → Connect → Session pooler). Keep the plain `postgresql://` scheme:
+each service rewrites it to its own driver (`+asyncpg` for student/mentor,
+`+psycopg` for panel), so a pre-converted `+asyncpg` URL breaks panel-api.
 
 ```
-postgresql+asyncpg://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
+postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
 ```
 
 ## 2. Render (backends)
