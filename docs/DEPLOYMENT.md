@@ -2,11 +2,11 @@
 
 | Frontend (Vercel project) | URL | Root directory | Proxies to (Render service) |
 | :--- | :--- | :--- | :--- |
-| `procksi-main` | https://procksi-main.vercel.app | `apps/main` | student-api |
-| `procksi-admin` | https://procksi-admin.vercel.app | `apps/admin` | admin-api |
-| `procksi-panel` | https://procksi-panel.vercel.app | `apps/panel` | panel-api |
-| `procksi-student` | https://procksi-student.vercel.app | `apps/student` | student-api |
-| `procksi-mentor` | https://procksi-mentor.vercel.app | `apps/mentor` | mentor-api |
+| `procksi-main` | https://www.procksi.in | `apps/main` | student-api |
+| `procksi-admin` | https://admin.procksi.in | `apps/admin` | admin-api |
+| `procksi-panel` | https://panel.procksi.in | `apps/panel` | panel-api |
+| `procksi-student` | https://student.procksi.in | `apps/student` | student-api |
+| `procksi-mentor` | https://mentor.procksi.in | `apps/mentor` | mentor-api |
 
 | Render service | URL |
 | :--- | :--- |
@@ -48,9 +48,9 @@ Every service needs:
 | `ADMIN_API_KEY`, `PASSWORD_RESET_SECRET` | random, same value on every service |
 | `ALLOWED_EMAIL_DOMAIN` | the only email domain allowed to sign in, e.g. `university.edu`. **Unset rejects everyone.** |
 | `MASTER_ADMIN_EMAIL`, `MASTER_ADMIN_PASSWORD` | coordinator account |
-| `STUDENT_PORTAL_URL`, `ADMIN_PORTAL_URL`, `MENTOR_PORTAL_URL`, `PANEL_PORTAL_URL` | the Vercel URLs above (email links) |
-| `FRONTEND_URL` | all five Vercel URLs, comma-separated (CORS allowlist) |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | redirect: `<admin URL>/auth/google/callback` |
+| `STUDENT_PORTAL_URL`, `ADMIN_PORTAL_URL`, `MENTOR_PORTAL_URL`, `PANEL_PORTAL_URL` | https://student.procksi.in, https://admin.procksi.in, https://mentor.procksi.in, https://panel.procksi.in (email links) |
+| `FRONTEND_URL` | all production frontend origins, comma-separated: `https://www.procksi.in,https://procksi.in,https://admin.procksi.in,https://panel.procksi.in,https://student.procksi.in,https://mentor.procksi.in` (CORS allowlist) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | redirect: `https://admin.procksi.in/auth/google/callback` |
 | `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_FROM_NAME` | SMTP; `MAIL_FROM_NAME=Procksi` |
 | `OPENAI_API_KEY` / `NVIDIA_API_KEY`, `TWILIO_*` | optional |
 | `PYTHON_VERSION` | `3.12.7` (also pinned by `backend/*/.python-version`) |
@@ -80,10 +80,10 @@ the same settings as a Blueprint.
 
 ## 4. Supabase Auth
 
-Authentication → URL Configuration: Site URL = student URL; Redirect URLs = all
-five Vercel URLs with `/**`. Providers → Google: same client ID/secret as above.
-Google Cloud Console: add `https://<ref>.supabase.co/auth/v1/callback` and the
-`GOOGLE_REDIRECT_URI` as authorized redirect URIs.
+Authentication → URL Configuration: Site URL = `https://student.procksi.in`; Redirect URLs = all
+six portal URLs with `/**` (`https://www.procksi.in/**`, `https://procksi.in/**`, `https://student.procksi.in/**`, `https://admin.procksi.in/**`, `https://mentor.procksi.in/**`, `https://panel.procksi.in/**`). Providers → Google: same client ID/secret as above.
+Google Cloud Console: add `https://<ref>.supabase.co/auth/v1/callback` and
+`https://admin.procksi.in/auth/google/callback` as authorized redirect URIs.
 
 ## 5. Custom domain (optional)
 

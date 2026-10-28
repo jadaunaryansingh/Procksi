@@ -51,8 +51,8 @@ export const TopNav = ({
         semesterOptions,
         updateFilter,
     } = useGlobalFilters();
-    const panelViewUrl = import.meta.env.VITE_PANEL_VIEW_URL || '';
-    const mentorViewUrl = import.meta.env.VITE_MENTOR_VIEW_URL || '';
+    const panelViewUrl = import.meta.env.VITE_PANEL_VIEW_URL || 'https://panel.procksi.in';
+    const mentorViewUrl = import.meta.env.VITE_MENTOR_VIEW_URL || 'https://mentor.procksi.in';
 
 
     useEffect(() => {

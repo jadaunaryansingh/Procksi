@@ -18,17 +18,17 @@ envVarGroups:
       - key: PYTHON_VERSION
         value: 3.12.7
       - key: STUDENT_PORTAL_URL
-        value: https://procksi-student.vercel.app
+        value: https://student.procksi.in
       - key: ADMIN_PORTAL_URL
-        value: https://procksi-admin.vercel.app
+        value: https://admin.procksi.in
       - key: MENTOR_PORTAL_URL
-        value: https://procksi-mentor.vercel.app
+        value: https://mentor.procksi.in
       - key: PANEL_PORTAL_URL
-        value: https://procksi-panel.vercel.app
+        value: https://panel.procksi.in
       - key: GOOGLE_CLIENT_ID
         value: 53268196905-gfa2r4klrqrtpgt9r9s4mjhmmgunjlrr.apps.googleusercontent.com
       - key: GOOGLE_REDIRECT_URI
-        value: https://procksi-admin.vercel.app/auth/google/callback
+        value: https://admin.procksi.in/auth/google/callback
       - key: GOOGLE_CALENDAR_ID
         value: primary
       - key: MAIL_SERVER
@@ -39,7 +39,7 @@ envVarGroups:
         value: Procksi
       # CORS allowlist: every production frontend origin, comma-separated.
       - key: FRONTEND_URL
-        value: https://procksi-main.vercel.app,https://procksi-admin.vercel.app,https://procksi-panel.vercel.app,https://procksi-student.vercel.app,https://procksi-mentor.vercel.app
+        value: https://www.procksi.in,https://procksi.in,https://admin.procksi.in,https://panel.procksi.in,https://student.procksi.in,https://mentor.procksi.in,https://procksi-main.vercel.app,https://procksi-admin.vercel.app,https://procksi-panel.vercel.app,https://procksi-student.vercel.app,https://procksi-mentor.vercel.app
 
 services:
   - type: web

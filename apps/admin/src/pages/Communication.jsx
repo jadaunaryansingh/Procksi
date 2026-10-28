@@ -706,7 +706,7 @@ export default function Communication() {
                                             />
                                             {previewContent.includePortalButton && (
                                                 <div className="pt-4 text-center">
-                                                    <a href={import.meta.env.VITE_STUDENT_PORTAL_URL || '#'} target="_blank" rel="noreferrer" className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
+                                                    <a href={import.meta.env.VITE_STUDENT_PORTAL_URL || 'https://student.procksi.in'} target="_blank" rel="noreferrer" className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
                                                         Open Procksi
                                                     </a>
                                                 </div>

@@ -646,7 +646,7 @@ async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depend
     token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     # Send email
-    mentor_base_url = (os.getenv("MENTOR_PORTAL_URL") or getattr(settings, "MENTOR_PORTAL_URL", None) or "").rstrip("/")
+    mentor_base_url = (os.getenv("MENTOR_PORTAL_URL") or getattr(settings, "MENTOR_PORTAL_URL", None) or "https://mentor.procksi.in").rstrip("/")
     reset_link = f"{mentor_base_url}/reset-password?token={token}"
     html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">

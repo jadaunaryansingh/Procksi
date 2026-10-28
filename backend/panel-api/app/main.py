@@ -65,6 +65,17 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:3002",
     "http://localhost:3003",
     "http://127.0.0.1:3003",
+    "https://www.procksi.in",
+    "https://procksi.in",
+    "https://student.procksi.in",
+    "https://admin.procksi.in",
+    "https://panel.procksi.in",
+    "https://mentor.procksi.in",
+    "https://procksi-main.vercel.app",
+    "https://procksi-student.vercel.app",
+    "https://procksi-admin.vercel.app",
+    "https://procksi-panel.vercel.app",
+    "https://procksi-mentor.vercel.app",
 ]
 
 # Production origins (comma-separated), e.g. the deployed frontend URLs. Same convention as student-api/mentor-api.

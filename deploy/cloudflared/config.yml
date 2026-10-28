@@ -10,13 +10,17 @@ credentials-file: /etc/cloudflared/credentials.json
 # Route public hostnames to the frontend containers (compose network DNS).
 # Order matters: first match wins, and the final catch-all is required.
 ingress:
-  - hostname: admin.your-domain.com
+  - hostname: www.procksi.in
+    service: http://main-frontend:80
+  - hostname: procksi.in
+    service: http://main-frontend:80
+  - hostname: admin.procksi.in
     service: http://admin-frontend:80
-  - hostname: panel.your-domain.com
+  - hostname: panel.procksi.in
     service: http://panel-frontend:80
-  - hostname: student.your-domain.com
+  - hostname: student.procksi.in
     service: http://student-frontend:80
-  - hostname: mentor.your-domain.com
+  - hostname: mentor.procksi.in
     service: http://mentor-frontend:80
   # everything else -> 404 (do NOT expose anything unlisted)
   - service: http_status:404

@@ -142,6 +142,17 @@ allowed_origins = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
+    "https://www.procksi.in",
+    "https://procksi.in",
+    "https://student.procksi.in",
+    "https://admin.procksi.in",
+    "https://panel.procksi.in",
+    "https://mentor.procksi.in",
+    "https://procksi-main.vercel.app",
+    "https://procksi-student.vercel.app",
+    "https://procksi-admin.vercel.app",
+    "https://procksi-panel.vercel.app",
+    "https://procksi-mentor.vercel.app",
 ]
 if settings.FRONTEND_URL:
     for origin in settings.FRONTEND_URL.split(","):

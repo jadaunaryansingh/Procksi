@@ -319,7 +319,7 @@ def build_professional_email_wrapper(
 </html>"""
 
 def get_student_portal_url() -> str:
-    return (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
+    return (os.getenv("STUDENT_PORTAL_URL") or "https://student.procksi.in").rstrip("/")
 
 def notify_team_formed(recipients: list[str], team_name: str, leader_name: str, btech_year: str = None):
     if not recipients:

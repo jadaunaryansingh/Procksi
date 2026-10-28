@@ -23,9 +23,9 @@ logger = logging.getLogger("email_notifier")
 logging.basicConfig(level=logging.INFO)
 
 # --- Portal URLs (env-overridable, fall back to production live domains) ---
-_STUDENT_URL = (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
-_PANEL_URL   = (os.getenv("PANEL_PORTAL_URL")   or "").rstrip("/")
-_MENTOR_URL  = (os.getenv("MENTOR_PORTAL_URL")  or "").rstrip("/")
+_STUDENT_URL = (os.getenv("STUDENT_PORTAL_URL") or "https://student.procksi.in").rstrip("/")
+_PANEL_URL   = (os.getenv("PANEL_PORTAL_URL")   or "https://panel.procksi.in").rstrip("/")
+_MENTOR_URL  = (os.getenv("MENTOR_PORTAL_URL")  or "https://mentor.procksi.in").rstrip("/")
 
 def get_supabase_client():
     """Helper to return the initialized Supabase service role client."""

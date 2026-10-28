@@ -186,7 +186,7 @@ async def forgot_password(body: StudentForgotPasswordRequest, db: AsyncSession =
     token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     # Send email
-    student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "").rstrip("/")
+    student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "https://student.procksi.in").rstrip("/")
     reset_link = f"{student_base_url}/student/reset-password?token={token}"
     html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
@@ -467,7 +467,7 @@ async def signup(body: StudentSignupRequest, db: AsyncSession = Depends(get_db))
 
     try:
         from app.services.email_service import build_professional_email_wrapper, send_html_email_async
-        student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "").rstrip("/")
+        student_base_url = (os.getenv("STUDENT_PORTAL_URL") or getattr(settings, "STUDENT_PORTAL_URL", None) or "https://student.procksi.in").rstrip("/")
         subject = "Confirm your Procksi account"
         body = f"""
         <p>A student account was created for this address on Procksi.</p>

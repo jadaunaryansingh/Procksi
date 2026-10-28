@@ -428,6 +428,17 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
+    "https://www.procksi.in",
+    "https://procksi.in",
+    "https://student.procksi.in",
+    "https://admin.procksi.in",
+    "https://panel.procksi.in",
+    "https://mentor.procksi.in",
+    "https://procksi-main.vercel.app",
+    "https://procksi-student.vercel.app",
+    "https://procksi-admin.vercel.app",
+    "https://procksi-panel.vercel.app",
+    "https://procksi-mentor.vercel.app",
 ]
 
 # Production origins (comma-separated), e.g. the deployed frontend URLs. Same convention as student-api/mentor-api.
@@ -725,7 +736,7 @@ def forgot_password(payload: ForgotPasswordPayload) -> dict[str, Any]:
         token = reset_tokens.issue(payload.email.strip().lower(), portal="admin")
 
         # Send email
-        admin_base_url = (os.getenv("ADMIN_PORTAL_URL") or "").rstrip("/")
+        admin_base_url = (os.getenv("ADMIN_PORTAL_URL") or "https://admin.procksi.in").rstrip("/")
         reset_link = f"{admin_base_url}/admin/reset-password?token={token}"
         html_content = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
@@ -2695,7 +2706,7 @@ def _resolve_google_redirect_uri(request: FastAPIRequest | None = None) -> str:
     """GOOGLE_REDIRECT_URI, else ADMIN_PORTAL_URL + /auth/google/callback."""
     if GOOGLE_REDIRECT_URI:
         return GOOGLE_REDIRECT_URI
-    return f"{(os.getenv('ADMIN_PORTAL_URL') or '').rstrip('/')}/auth/google/callback"
+    return f"{(os.getenv('ADMIN_PORTAL_URL') or 'https://admin.procksi.in').rstrip('/')}/auth/google/callback"
 
 
 def _admin_schedule_url() -> str:
@@ -6095,7 +6106,7 @@ async def notify_pending_teams(payload: NotifyPendingTeamsPayload):
         from app.email_notifier import _send_smtp_chunked
 
         sender_email = (os.getenv("MAIL_FROM") or os.getenv("MAIL_USERNAME") or os.getenv("MASTER_ADMIN_EMAIL") or "").strip()
-        student_portal_url = (os.getenv("STUDENT_PORTAL_URL") or "").rstrip("/")
+        student_portal_url = (os.getenv("STUDENT_PORTAL_URL") or "https://student.procksi.in").rstrip("/")
 
         total_recipients = 0
         teams_notified_count = 0
