@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\reproduce_failure.py", line 37, in reproduce
+    ProjectCRUD.create_project(repo_url=REPO_URL, team_name="Reproduction Team")
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\crud.py", line 30, in create_project
+    result = supabase.table("projects").insert(data).execute()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'duplicate key value violates unique constraint "projects_repo_url_key"', 'code': '23505', 'hint': None, 'details': 'Key (repo_url)=(https://github.com/Preshit22/chatbot) already exists.'}
+⚠️  Redis connection failed: Connection closed by server. - caching disabled
+🚀 Reproducing failure for https://github.com/Preshit22/chatbot...
+Generated Project ID: e4ba8fab-26d8-42ac-80f6-049c2729ed77
+Generated Job ID: 0963e1e8-8108-4b8d-a69e-92d192a4279d
+Creating test project...
+Error creating project: {'message': 'duplicate key value violates unique constraint "projects_repo_url_key"', 'code': '23505', 'hint': None, 'details': 'Key (repo_url)=(https://github.com/Preshit22/chatbot) already exists.'}
+
+❌ Captured Exception: {'message': 'duplicate key value violates unique constraint "projects_repo_url_key"', 'code': '23505', 'hint': None, 'details': 'Key (repo_url)=(https://github.com/Preshit22/chatbot) already exists.'}

@@ -1,0 +1,136 @@
+services:
+  # Redis - Message Broker & Result Backend
+  redis:
+    image: redis:7-alpine
+    container_name: github-agent-redis
+    restart: unless-stopped
+    command: >
+      redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes --appendfsync everysec --save 900 1 --save 300 10 --save 60 10000
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build: .
+    container_name: github-agent-api
+    ports:
+      - "3000:3000"
+    environment:
+      - APP_ENV=development
+      - GITHUB_TOKEN=${GH_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      # Mount source code for hot-reload
+      - ./src:/app/src
+      - ./celery_worker.py:/app/celery_worker.py
+      - ./celery_app.py:/app/celery_app.py
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+    command: uvicorn main:app --host 0.0.0.0 --port 3000 --workers 4 --timeout-keep-alive 75
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Celery Worker - Single Repository Analysis (Dedicated)
+  celery_worker_single:
+    build: .
+    container_name: github-agent-celery-worker-single
+    environment:
+      - APP_ENV=development
+      - GITHUB_TOKEN=${GH_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./celery_worker.py:/app/celery_worker.py
+      - ./celery_app.py:/app/celery_app.py
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+    command: >
+      celery -A celery_app worker --loglevel=info -Q single_analysis --concurrency=1 --hostname=single@%h --max-tasks-per-child=10 --time-limit=3600 --soft-time-limit=3300
+    stop_signal: SIGTERM
+    stop_grace_period: 30s
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Celery Worker - Batch Analysis
+  celery_worker_batch:
+    build: .
+    container_name: github-agent-celery-worker-batch
+    environment:
+      - APP_ENV=development
+      - GITHUB_TOKEN=${GH_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./celery_worker.py:/app/celery_worker.py
+      - ./celery_app.py:/app/celery_app.py
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+    command: >
+      celery -A celery_app worker --loglevel=info -Q analysis,batch,dlq,default,celery --concurrency=10 --hostname=batch@%h --max-tasks-per-child=10 --time-limit=3600 --soft-time-limit=3300
+    stop_signal: SIGTERM
+    stop_grace_period: 30s
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build: .
+    container_name: github-agent-celery-beat
+    environment:
+      - APP_ENV=development
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./celery_worker.py:/app/celery_worker.py
+      - ./celery_app.py:/app/celery_app.py
+    command: celery -A celery_app beat --loglevel=info
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery_worker_single:
+        condition: service_started
+      celery_worker_batch:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+
+
+volumes:
+  redis-data:
+    driver: local

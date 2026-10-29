@@ -1,0 +1,58 @@
+======================================================================
+MIGRATION VERIFICATION REPORT
+======================================================================
+Generated: 2026-02-11 00:13:42
+
+STATUS: [FAIL] 7 CHECK(S) FAILED
+
+Checks Passed: 23
+Checks Failed: 7
+Warnings: 11
+
+----------------------------------------------------------------------
+DATABASE STATISTICS
+----------------------------------------------------------------------
+Total Teams                              98
+Teams with repo_url                      92
+Teams without repo_url                   6
+Repo URL Coverage                        93.9%
+Valid Team IDs                           98
+Teams with analysis scores               0
+Projects table records                   93
+teams records                            98
+batches records                          1
+students records                         0
+team_members records                     153
+analysis_jobs records                    92
+users records                            11
+Teams analyzed                           0
+Teams with scores                        0
+Teams with status=completed              0
+
+----------------------------------------------------------------------
+ERRORS
+----------------------------------------------------------------------
+✗ Some teams missing repo_url: 6 teams without repo_url
+✗ team_members: Still has project_id references: 153 records with project_id
+✗ analysis_jobs: Still has project_id references: 92 records with project_id
+✗ tech_stack: Still has project_id references: 95 records with project_id
+✗ issues: Still has project_id references: 2 records with project_id
+✗ Projects table still exists: 93 records found - table should be dropped
+✗ Invalid batch references: 98 teams reference non-existent batches
+
+----------------------------------------------------------------------
+WARNINGS
+----------------------------------------------------------------------
+Team 'Team 6' (ID: a995e094-731a-4964-86b8-f3a6f52a28a4) has no repo_url
+Team 'Team 8' (ID: 477c4fae-97f1-4500-9577-c6bfbc0c3b45) has no repo_url
+Team 'Team 86' (ID: 9ca69f1d-a46c-40b8-8040-f4e5572ef00a) has no repo_url
+Team 'Team 95' (ID: a3c6ad89-a1c1-436e-b6eb-9435b86634aa) has no repo_url
+Team 'Team 98' (ID: 5972f1c7-0dcc-4daa-be53-beafb92f60f5) has no repo_url
+Team 'Team 94' (ID: 39fff66e-5782-43f6-9eb9-dcdae099b6e9) has no repo_url
+team_members: Could not check - {'message': 'column team_members.team_id does not exist', 'code': '42703', 'hint': None, 'details': None}
+  Migration may be incomplete - team_members still references projects
+  Migration may be incomplete - analysis_jobs still references projects
+  Migration may be incomplete - tech_stack still references projects
+  Migration may be incomplete - issues still references projects
+
+======================================================================

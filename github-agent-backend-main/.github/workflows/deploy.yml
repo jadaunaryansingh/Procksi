@@ -1,0 +1,153 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      rollback_ref:
+        description: "Git ref to rollback to (e.g. HEAD^, a tag, or a SHA)"
+        required: true
+        default: "HEAD^"
+
+jobs:
+  test:
+    # Skip tests for manual rollback runs so recovery is fast
+    if: ${{ github.event_name == 'push' }}
+    name: Test before deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short
+
+      - name: Verify Docker build
+        run: docker build -t github-agent-backend:ci .
+
+  deploy:
+    name: Deploy to EC2
+    needs: test
+    # Deploy only on push to main, and only if the test gate passed.
+    # Manual workflow_dispatch is reserved for the rollback job below.
+    if: ${{ github.event_name == 'push' && needs.test.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy backend via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "🚀 Deploying backend"
+            cd ~/github-agent-backend
+
+            echo "📥 Pulling latest code"
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "🐳 Rebuilding & starting containers"
+            docker compose down
+            docker builder prune -f
+            docker compose build --no-cache
+            docker compose up -d
+
+            echo "📊 Container status"
+            docker compose ps
+
+            echo "⏳ Waiting for API to become healthy..."
+
+            MAX_RETRIES=20
+            RETRY_DELAY=5
+            COUNT=0
+
+            until curl -fs http://localhost:3000/health/live > /dev/null; do
+              COUNT=$((COUNT+1))
+              if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+                echo "❌ API failed health check after $MAX_RETRIES attempts"
+                echo "📜 Showing API logs:"
+                docker compose logs api --tail=50
+                exit 1
+              fi
+              echo "⏳ Attempt $COUNT/$MAX_RETRIES failed. Retrying in $RETRY_DELAY seconds..."
+              sleep $RETRY_DELAY
+            done
+
+            echo "✅ Backend deployment successful"
+
+  rollback:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Rollback backend via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "↩️ Rolling back backend"
+            cd ~/github-agent-backend
+
+            echo "📥 Fetching refs"
+            git fetch --all --tags
+
+            echo "🔎 Validating rollback ref"
+            git rev-parse --verify "${{ github.event.inputs.rollback_ref }}" >/dev/null
+
+            echo "⏪ Resetting to rollback ref"
+            git reset --hard "${{ github.event.inputs.rollback_ref }}"
+
+            echo "🐳 Rebuilding & restarting containers"
+            docker compose down
+            docker builder prune -f
+            docker compose build --no-cache
+            docker compose up -d
+
+            echo "📊 Container status"
+            docker compose ps
+
+            echo "⏳ Waiting for API to become healthy..."
+
+            MAX_RETRIES=20
+            RETRY_DELAY=5
+            COUNT=0
+
+            until curl -fs http://localhost:3000/health/live > /dev/null; do
+              COUNT=$((COUNT+1))
+              if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+                echo "❌ API failed health check after rollback"
+                echo "📜 Showing API logs:"
+                docker compose logs api --tail=50
+                exit 1
+              fi
+              echo "⏳ Attempt $COUNT/$MAX_RETRIES failed. Retrying in $RETRY_DELAY seconds..."
+              sleep $RETRY_DELAY
+            done
+
+            echo "✅ Backend rollback successful"

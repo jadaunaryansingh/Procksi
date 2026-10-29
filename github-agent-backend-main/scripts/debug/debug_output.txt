@@ -1,0 +1,28 @@
+Fetching failed jobs...
+Attempt 1 to connect to Supabase...
+Found 5 failed jobs:
+ID: 724cb52f-d2a0-47f6-8c08-2ca3321c539a
+Project: a467babc-720c-4521-95aa-dd5c78a15c94
+Error: Failed to save analysis results to database
+Time: 2026-01-09T15:29:28.123437
+--------------------------------------------------
+ID: 70c7ad8b-722e-47f4-b85a-13f74c0e3db7
+Project: a467babc-720c-4521-95aa-dd5c78a15c94
+Error: Failed to save analysis results to database
+Time: 2026-01-09T15:27:41.685117
+--------------------------------------------------
+ID: 159918a9-0012-4a60-a0cf-5080b61d72c8
+Project: a467babc-720c-4521-95aa-dd5c78a15c94
+Error: Failed to save analysis results to database
+Time: 2026-01-09T15:25:08.886743
+--------------------------------------------------
+ID: daa1edfb-7440-4ecb-a874-d38944c80a01
+Project: a467babc-720c-4521-95aa-dd5c78a15c94
+Error: Failed to save analysis results to database
+Time: 2026-01-09T15:24:13.690279
+--------------------------------------------------
+ID: 26811105-9a7f-4f0f-b4bf-7155b034ce05
+Project: a467babc-720c-4521-95aa-dd5c78a15c94
+Error: Failed to save analysis results to database
+Time: 2026-01-09T15:23:44.075656
+--------------------------------------------------

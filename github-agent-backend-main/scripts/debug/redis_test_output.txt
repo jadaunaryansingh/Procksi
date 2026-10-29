@@ -1,0 +1,58 @@
+Testing Redis connection...
+Host: localhost
+Port: 6379
+Password: None
+Pinging Redis...
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 855, in connect_check_health
+    sock = self.retry.call_with_retry(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\retry.py", line 116, in call_with_retry
+    return do()
+           ^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 856, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 1306, in _connect
+    raise err
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 1290, in _connect
+    sock.connect(socket_address)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\test_redis.py", line 32, in test_redis
+    response = r.ping()
+               ^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\commands\core.py", line 1226, in ping
+    return self.execute_command("PING", **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\client.py", line 657, in execute_command
+    return self._execute_command(*args, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\client.py", line 663, in _execute_command
+    conn = self.connection or pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\utils.py", line 196, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 2603, in get_connection
+    connection.connect()
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 846, in connect
+    self.connect_check_health(check_health=True)
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 863, in connect_check_health
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. No connection could be made because the target machine actively refused it.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\test_redis.py", line 52, in <module>
+    test_redis()
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\test_redis.py", line 47, in test_redis
+    print(f"\u274c Redis connection failed: {e}")
+  File "C:\Users\parva\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>

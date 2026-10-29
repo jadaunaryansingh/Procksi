@@ -1,0 +1,8 @@
+
+=== Recent Batches (Last 3) ===
+Batch ID: 1f5ce06e-70a3-4133-b227-40dfa00a6ebc
+Created: 2026-01-09T17:53:41.328754+00:00
+Status: processing
+Stats: 2/2 (Failed: 0)
+Error: None
+----------------------------------------

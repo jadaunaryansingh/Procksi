@@ -51,6 +51,9 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
     healthCheckPath: /health
+    # Deploys come only from GitHub Actions (.github/workflows/ci-cd.yml) after
+    # the tests pass; Render must not deploy on its own when main changes.
+    autoDeployTrigger: "off"
     envVars:
       - fromGroup: procksi-config
       - fromGroup: procksi-secrets
@@ -73,6 +76,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
     healthCheckPath: /health
+    autoDeployTrigger: "off"
     envVars:
       - fromGroup: procksi-config
       - fromGroup: procksi-secrets
@@ -88,6 +92,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
     healthCheckPath: /health
+    autoDeployTrigger: "off"
     envVars:
       - fromGroup: procksi-config
       - fromGroup: procksi-secrets
@@ -103,6 +108,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
     healthCheckPath: /health
+    autoDeployTrigger: "off"
     envVars:
       - fromGroup: procksi-config
       - fromGroup: procksi-secrets

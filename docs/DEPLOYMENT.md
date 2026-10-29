@@ -101,8 +101,48 @@ URIs. No code change is needed.
 - Free instance hours are **750/month per workspace, shared by all four
   services**. If the reminders must be reliable, move admin-api to a paid instance.
 
+## 6. CI/CD (GitHub Actions)
+
+`.github/workflows/ci-cd.yml` is the only path to production. Render auto-deploy
+(`autoDeployTrigger: "off"` in `render.yaml`) and Vercel Git deployments
+(`"git": { "deploymentEnabled": false }` in each `vercel.json`) are switched off,
+so nothing ships without passing the tests.
+
+| Event | Tests | Render (backends) | Vercel (frontends) |
+| :--- | :--- | :--- | :--- |
+| Pull request to `main` | full suite | not deployed | **preview** for changed apps |
+| Push / merge to `main` | full suite | changed services | **production** for changed apps |
+| Manual run (Actions → CI/CD → Run workflow) | full suite | all four | all five, production |
+
+Order: detect changes → tests (backend pytest per service, compile check,
+lint + `node --test` + build per frontend) → deploy. If any test job fails, no
+deploy job runs. Only services whose folder changed are deployed; editing the
+workflow (or `render.yaml` for backends) redeploys all of them. PRs from forks
+are tested but never deployed, because GitHub does not give them secrets.
+
+### Repository secrets (Settings → Secrets and variables → Actions)
+
+| Secret | Where to get it |
+| :--- | :--- |
+| `RENDER_DEPLOY_HOOK_ADMIN_API`, `RENDER_DEPLOY_HOOK_PANEL_API`, `RENDER_DEPLOY_HOOK_STUDENT_API`, `RENDER_DEPLOY_HOOK_MENTOR_API` | Render → service → Settings → Deploy Hook (the full URL) |
+| `VERCEL_TOKEN` | Vercel → Account Settings → Tokens |
+| `VERCEL_ORG_ID` | `orgId` in `.vercel/project.json` after `vercel link`, or Team Settings → General |
+| `VERCEL_PROJECT_ID_MAIN`, `_ADMIN`, `_PANEL`, `_STUDENT`, `_MENTOR` | each project → Settings → General → Project ID |
+
+The Vercel projects keep their **Root Directory = `apps/<app>`** setting; the
+pipeline runs the CLI from the repository root and Vercel applies it. Build-time
+`VITE_*` variables still live in each Vercel project (§3) and are pulled by
+`vercel pull` for the matching environment (Preview or Production), so set
+them for both.
+
+### Blocking merges on red tests
+
+Settings → Branches → add a rule for `main` → *Require status checks to pass*
+and select the test jobs (`Backend tests (…)`, `Backend compile check`,
+`Frontend checks (…)`). Without the rule a PR can still be merged while its
+checks fail; the merge commit would then fail the tests again and not deploy.
+
 ## Unused since the move off EC2
 
 `docker-compose.yml`, `deploy/cloudflared/`, `apps/*/nginx.conf`,
-`apps/*/Dockerfile`, `backend/*/Dockerfile`, `.github/workflows/deploy-main.yml`,
-and the deploy job in `.github/workflows/deploy-ec2.yml` (keep its test job as CI).
+`apps/*/Dockerfile` and `backend/*/Dockerfile`.

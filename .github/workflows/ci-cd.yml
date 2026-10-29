@@ -1,0 +1,309 @@
+# CI/CD: test everything, then deploy only what changed.
+#
+#   push to main  -> tests -> Render (changed backends) + Vercel production (changed frontends)
+#   pull request  -> tests -> Vercel preview (changed frontends); backends are tested, not deployed
+#   manual run    -> tests -> deploy every service (optionally skip the deploy)
+#
+# Nothing deploys unless every test job passes. Render auto-deploy and Vercel Git
+# deployments are switched off (render.yaml / apps/*/vercel.json), so this
+# workflow is the only path to production. Required secrets: docs/DEPLOYMENT.md §6.
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy every service after the tests pass"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# One run per branch/PR. New pushes to a PR cancel its older run; runs on main
+# queue instead, so a production deploy is never interrupted halfway.
+concurrency:
+  group: ci-cd-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+  VERCEL_CLI_VERSION: "65.7.0"
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Which services did this commit / PR touch?
+  # --------------------------------------------------------------------------
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backends: ${{ github.event_name == 'workflow_dispatch' && '["admin-api","panel-api","student-api","mentor-api"]' || steps.backend.outputs.changes }}
+      frontends: ${{ github.event_name == 'workflow_dispatch' && '["main","admin","panel","student","mentor"]' || steps.frontend.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Changed backends
+        id: backend
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            admin-api:
+              - "backend/admin-api/**"
+              - "render.yaml"
+              - ".github/workflows/ci-cd.yml"
+            panel-api:
+              - "backend/panel-api/**"
+              - "render.yaml"
+              - ".github/workflows/ci-cd.yml"
+            student-api:
+              - "backend/student-api/**"
+              - "render.yaml"
+              - ".github/workflows/ci-cd.yml"
+            mentor-api:
+              - "backend/mentor-api/**"
+              - "render.yaml"
+              - ".github/workflows/ci-cd.yml"
+
+      - name: Changed frontends
+        id: frontend
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            main:
+              - "apps/main/**"
+              - ".github/workflows/ci-cd.yml"
+            admin:
+              - "apps/admin/**"
+              - ".github/workflows/ci-cd.yml"
+            panel:
+              - "apps/panel/**"
+              - ".github/workflows/ci-cd.yml"
+            student:
+              - "apps/student/**"
+              - ".github/workflows/ci-cd.yml"
+            mentor:
+              - "apps/mentor/**"
+              - ".github/workflows/ci-cd.yml"
+
+      - name: Summary
+        run: |
+          echo "### Changed services" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Backends: \`${{ github.event_name == 'workflow_dispatch' && 'all' || steps.backend.outputs.changes }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontends: \`${{ github.event_name == 'workflow_dispatch' && 'all' || steps.frontend.outputs.changes }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  # --------------------------------------------------------------------------
+  # Test gate. Always runs the full suite, whatever changed: a change in one
+  # service can break a contract test in another. Each backend gets its own
+  # runner because their pinned dependencies conflict (e.g. supabase versions).
+  # --------------------------------------------------------------------------
+  backend-tests:
+    name: Backend tests (${{ matrix.service.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: shared, dir: backend, requirements: backend/requirements.txt }
+          - { name: student-api, dir: backend/student-api, requirements: backend/student-api/requirements.txt }
+          - { name: mentor-api, dir: backend/mentor-api, requirements: backend/mentor-api/requirements.txt }
+          - { name: panel-api, dir: backend/panel-api, requirements: backend/panel-api/requirements.txt }
+    env:
+      # Dummy values: settings classes refuse to import without them. No test
+      # touches a real database or network.
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      SECRET_KEY: ci-test-secret
+      ADMIN_API_KEY: ci-test-admin-key
+      PASSWORD_RESET_SECRET: ci-test-reset-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ${{ matrix.service.requirements }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r "${{ matrix.service.requirements }}"
+          pip install pytest pytest-asyncio
+      - name: Run tests
+        working-directory: ${{ matrix.service.dir }}
+        run: pytest tests
+
+  backend-compile:
+    name: Backend compile check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # admin-api has no test suite yet; at least make sure every service parses.
+      - name: Byte-compile all services
+        run: python -m compileall -q backend/admin-api backend/panel-api backend/student-api backend/mentor-api
+
+  frontend-tests:
+    name: Frontend checks (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [main, admin, panel, student, mentor]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/${{ matrix.app }}/package-lock.json
+      - name: Install dependencies
+        working-directory: apps/${{ matrix.app }}
+        # npm ci is strict about cross-platform optional-dependency drift in
+        # lockfiles authored on Windows (vite 8 rolldown / @napi-rs).
+        run: npm ci || npm install
+      - name: Lint
+        working-directory: apps/${{ matrix.app }}
+        run: npm run lint
+      - name: Unit tests
+        working-directory: apps/${{ matrix.app }}
+        run: |
+          shopt -s nullglob
+          files=(tests/*.test.mjs)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No tests for ${{ matrix.app }}."
+          else
+            node --test "${files[@]}"
+          fi
+      - name: Build
+        working-directory: apps/${{ matrix.app }}
+        run: npm run build
+
+  # --------------------------------------------------------------------------
+  # Render: backends. Production only (push to main or manual run), never from a
+  # PR, so unmerged code cannot reach the live API. Triggered through each
+  # service's deploy hook; Render auto-deploy is off in render.yaml.
+  # --------------------------------------------------------------------------
+  deploy-render:
+    name: Render deploy (${{ matrix.service }})
+    needs: [changes, backend-tests, backend-compile, frontend-tests]
+    if: >-
+      needs.changes.outputs.backends != '[]' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.deploy))
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.backends) }}
+    env:
+      RENDER_DEPLOY_HOOK_ADMIN_API: ${{ secrets.RENDER_DEPLOY_HOOK_ADMIN_API }}
+      RENDER_DEPLOY_HOOK_PANEL_API: ${{ secrets.RENDER_DEPLOY_HOOK_PANEL_API }}
+      RENDER_DEPLOY_HOOK_STUDENT_API: ${{ secrets.RENDER_DEPLOY_HOOK_STUDENT_API }}
+      RENDER_DEPLOY_HOOK_MENTOR_API: ${{ secrets.RENDER_DEPLOY_HOOK_MENTOR_API }}
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          SERVICE: ${{ matrix.service }}
+        run: |
+          var="RENDER_DEPLOY_HOOK_$(echo "$SERVICE" | tr 'a-z-' 'A-Z_')"
+          hook="${!var}"
+          if [ -z "$hook" ]; then
+            echo "::error::Repository secret $var is not set (Render > service > Settings > Deploy Hook)."
+            exit 1
+          fi
+          # The hook URL contains its own key, so never echo it.
+          code=$(curl -sS -o response.json -w '%{http_code}' -X POST "$hook")
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "::error::Render rejected the deploy for $SERVICE (HTTP $code)."
+            exit 1
+          fi
+          echo "Render deploy started for $SERVICE at commit ${GITHUB_SHA::7}." | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # --------------------------------------------------------------------------
+  # Vercel: frontends. PR -> preview URL, push to main -> production.
+  # Built in CI with the project's own Vercel env vars (vercel pull), then
+  # uploaded prebuilt, so the deployed bundle is exactly what passed the checks.
+  # --------------------------------------------------------------------------
+  deploy-vercel:
+    name: Vercel ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} (${{ matrix.app }})
+    needs: [changes, backend-tests, backend-compile, frontend-tests]
+    # PRs from forks get no secrets, so they are tested but not deployed.
+    if: >-
+      needs.changes.outputs.frontends != '[]' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.deploy) ||
+       (github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.changes.outputs.frontends) }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID_MAIN: ${{ secrets.VERCEL_PROJECT_ID_MAIN }}
+      VERCEL_PROJECT_ID_ADMIN: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
+      VERCEL_PROJECT_ID_PANEL: ${{ secrets.VERCEL_PROJECT_ID_PANEL }}
+      VERCEL_PROJECT_ID_STUDENT: ${{ secrets.VERCEL_PROJECT_ID_STUDENT }}
+      VERCEL_PROJECT_ID_MENTOR: ${{ secrets.VERCEL_PROJECT_ID_MENTOR }}
+      TARGET: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Select Vercel project
+        env:
+          APP: ${{ matrix.app }}
+        run: |
+          var="VERCEL_PROJECT_ID_$(echo "$APP" | tr 'a-z' 'A-Z')"
+          missing=""
+          [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ] && missing="$missing VERCEL_ORG_ID"
+          [ -z "${!var}" ] && missing="$missing $var"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing"
+            exit 1
+          fi
+          echo "VERCEL_PROJECT_ID=${!var}" >> "$GITHUB_ENV"
+
+      - name: Install Vercel CLI
+        run: npm install --global "vercel@${VERCEL_CLI_VERSION}"
+
+      # Run from the repo root: the Vercel projects use "Root Directory =
+      # apps/<app>", and the CLI applies that setting itself.
+      - name: Pull Vercel settings and env vars
+        run: vercel pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+
+      - name: Build
+        run: |
+          if [ "$TARGET" = production ]; then
+            vercel build --prod --token="$VERCEL_TOKEN"
+          else
+            vercel build --token="$VERCEL_TOKEN"
+          fi
+
+      - name: Deploy
+        id: deploy
+        run: |
+          if [ "$TARGET" = production ]; then
+            url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          else
+            url=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "**${{ matrix.app }}** ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"

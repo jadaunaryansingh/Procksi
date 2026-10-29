@@ -1,0 +1,61 @@
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\utils\cache.py", line 51, in _connect
+    self._client.ping()
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\commands\core.py", line 1226, in ping
+    return self.execute_command("PING", **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\client.py", line 657, in execute_command
+    return self._execute_command(*args, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\client.py", line 663, in _execute_command
+    conn = self.connection or pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\utils.py", line 196, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 2603, in get_connection
+    connection.connect()
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 846, in connect
+    self.connect_check_health(check_health=True)
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 869, in connect_check_health
+    self.on_connect_check_health(check_health=check_health)
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 941, in on_connect_check_health
+    auth_response = self.read_response()
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\connection.py", line 1133, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\_parsers\resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\_parsers\resp2.py", line 25, in _read_response
+    raw = self._buffer.readline()
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\_parsers\socket.py", line 115, in readline
+    self._read_from_socket()
+  File "D:\Coding\Github-Agent\proj-github agent\venv\Lib\site-packages\redis\_parsers\socket.py", line 68, in _read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\reproduce_failure.py", line 70, in <module>
+    reproduce()
+  File "D:\Coding\Github-Agent\proj-github agent\scripts\reproduce_failure.py", line 16, in reproduce
+    from src.api.backend.services.analyzer_service import AnalyzerService
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\services\analyzer_service.py", line 16, in <module>
+    from src.api.backend.services.data_mapper import DataMapper
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\services\data_mapper.py", line 9, in <module>
+    from src.api.backend.utils.cache import cache
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\utils\cache.py", line 143, in <module>
+    cache = RedisCache()
+            ^^^^^^^^^^^^
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\utils\cache.py", line 33, in __init__
+    self._connect()
+  File "D:\Coding\Github-Agent\proj-github agent\src\api\backend\utils\cache.py", line 54, in _connect
+    print(f"\u26a0\ufe0f  Redis connection failed: {e} - caching disabled")
+  File "C:\Users\parva\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>

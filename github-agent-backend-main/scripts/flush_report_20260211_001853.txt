@@ -1,0 +1,59 @@
+======================================================================
+DATABASE FLUSH REPORT
+======================================================================
+Generated: 2026-02-11 00:18:53
+
+BEFORE FLUSH
+----------------------------------------------------------------------
+analysis_history                        0 records
+analysis_snapshots                      0 records
+analysis_jobs                          92 records
+team_members                          153 records
+tech_stack                             95 records
+issues                                  2 records
+project_comments                        0 records
+students                                0 records
+projects                               93 records
+teams                                  98 records
+batches                                 1 records
+----------------------------------------------------------------------
+TOTAL                                 534 records
+
+RECORDS DELETED
+----------------------------------------------------------------------
+analysis_history                        0 records
+analysis_snapshots                      0 records
+analysis_jobs                          92 records
+team_members                          153 records
+tech_stack                             95 records
+issues                                  2 records
+project_comments                        0 records
+students                                0 records
+projects                               93 records
+teams                                   0 records
+batches                                 0 records
+users                                   1 records
+----------------------------------------------------------------------
+TOTAL                                 436 records
+
+AFTER FLUSH
+----------------------------------------------------------------------
+analysis_history                        0 records
+analysis_snapshots                      0 records
+analysis_jobs                           0 records
+team_members                            0 records
+tech_stack                              0 records
+issues                                  0 records
+project_comments                        0 records
+students                                0 records
+projects                                0 records
+teams                                   0 records
+batches                                 0 records
+----------------------------------------------------------------------
+TOTAL                                   0 records
+
+ERRORS
+----------------------------------------------------------------------
+Error flushing analysis_history: {'message': "Could not find the table 'public.analysis_history' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you meant the table 'public.analysis_jobs'", 'details': None}
+
+======================================================================
