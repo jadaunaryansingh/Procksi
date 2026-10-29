@@ -31,10 +31,14 @@ envVarGroups:
         value: https://admin.procksi.in/auth/google/callback
       - key: GOOGLE_CALENDAR_ID
         value: primary
+      # Brevo SMTP relay on 2525: Render free web services block outbound
+      # SMTP on ports 25, 465 and 587, so smtp.gmail.com:587 cannot connect.
+      # MAIL_USERNAME is the Brevo SMTP login and MAIL_PASSWORD the Brevo SMTP
+      # key; both live in the procksi-secrets group, never in this file.
       - key: MAIL_SERVER
-        value: smtp.gmail.com
+        value: smtp-relay.brevo.com
       - key: MAIL_PORT
-        value: "587"
+        value: "2525"
       - key: MAIL_FROM_NAME
         value: Procksi
       # CORS allowlist: every production frontend origin, comma-separated.

@@ -57,9 +57,24 @@ def _send_smtp_chunked(recipients_with_messages: list[dict], chunk_size: int = 5
     if total == 0:
         return {"sent": sent_ok, "failed": failed}
 
+    # The configured port goes first. It used to be ignored in favour of a fixed
+    # 465 -> 587 sequence, and Render's free plan blocks both of those, so bulk
+    # mail could never connect even when MAIL_PORT pointed at an open relay port
+    # (Brevo's 2525). 465 is implicit TLS; every other port uses STARTTLS.
+    try:
+        configured_port = int(os.getenv("MAIL_PORT") or 0)
+    except ValueError:
+        configured_port = 0
+    attempts = []
+    if configured_port:
+        attempts.append((configured_port == 465, configured_port))
+    for fallback in [(True, 465), (False, 587)]:
+        if fallback not in attempts:
+            attempts.append(fallback)
+
     def _connect():
-        """Open ONE authenticated SMTP connection. SSL:465 first, STARTTLS:587 fallback."""
-        for use_ssl, try_port in [(True, 465), (False, 587)]:
+        """Open ONE authenticated SMTP connection: MAIL_PORT first, then SSL:465 and STARTTLS:587."""
+        for use_ssl, try_port in attempts:
             try:
                 if use_ssl:
                     ctx = _ssl.create_default_context()

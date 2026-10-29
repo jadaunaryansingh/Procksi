@@ -1,0 +1,37 @@
+# Files the CI/CD pipeline must NOT upload to Vercel.
+# The workflow deploys from the repo root (the projects use Root Directory =
+# apps/<app>), so without this the whole monorepo would be uploaded on every
+# frontend deploy. Only apps/ is needed to build a portal.
+
+# Backends, database and infrastructure (deployed to Render / Supabase)
+backend/
+database/
+supabase/
+deploy/
+scripts/
+test_scripts/
+render.yaml
+docker-compose.yml
+
+# Large binaries and docs
+scroll_images/
+docs/
+*.zip
+*.mp4
+*.pdf
+*.docx
+presentation.html
+PRESENTATION_SPEECH.txt
+
+# Build output and dependencies (Vercel installs and builds itself)
+**/node_modules/
+**/dist/
+**/.vercel/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example

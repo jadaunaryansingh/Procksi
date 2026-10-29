@@ -284,26 +284,21 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global "vercel@${VERCEL_CLI_VERSION}"
 
-      # Run from the repo root: the Vercel projects use "Root Directory =
-      # apps/<app>", and the CLI applies that setting itself.
-      - name: Pull Vercel settings and env vars
-        run: vercel pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
-
-      - name: Build
-        run: |
-          if [ "$TARGET" = production ]; then
-            vercel build --prod --token="$VERCEL_TOKEN"
-          else
-            vercel build --token="$VERCEL_TOKEN"
-          fi
-
-      - name: Deploy
+      # Build on Vercel, not in this runner. Vercel env vars are "Sensitive" by
+      # default, and the CLI cannot read sensitive values: `vercel pull` writes
+      # them as empty strings, so a local `vercel build` baked an empty
+      # VITE_SUPABASE_URL into the bundle ("Invalid supabaseUrl" on load).
+      # Vercel's own build servers do have the values. The test gate is
+      # unchanged: this job still runs only after every check has passed, and it
+      # uploads exactly the commit that was tested.
+      #
+      # Run from the repo root: the projects use "Root Directory = apps/<app>",
+      # which Vercel applies to the uploaded source.
+      - name: Deploy (remote build)
         id: deploy
         run: |
-          if [ "$TARGET" = production ]; then
-            url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
-          else
-            url=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
-          fi
+          args=(deploy --yes --archive=tgz --token="$VERCEL_TOKEN")
+          [ "$TARGET" = production ] && args+=(--prod)
+          url=$(vercel "${args[@]}")
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "**${{ matrix.app }}** ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"
