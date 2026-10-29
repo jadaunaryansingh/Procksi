@@ -16,6 +16,22 @@ import { PS_TEAM_CAPACITY, normalizePsTitle, buildAllocationsByTitle, isPsAvaila
 
 
 
+// teams_validation.members is jsonb, but some rows hold it as a JSON *string*
+// ("[{...}]") or as null/an object. `(team.members || []).map` crashed the whole
+// page on the first such row, so every read goes through this.
+function memberList(members) {
+    if (Array.isArray(members)) return members;
+    if (typeof members === 'string') {
+        try {
+            const parsed = JSON.parse(members);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+    return [];
+}
+
 function isHardwarePs(ps) {
     if (!ps) return false;
     const code = String(ps.ps_code || ps.id || '').trim().toUpperCase();
@@ -219,7 +235,7 @@ export default function ProjectAllocation() {
                 await api.resolveConflict(teamLock.id, "Replaced on manual allocation").catch(e => console.log('Lock clear warning:', e));
             }
 
-            const memberIds = (team.members || []).map(m => String(m.id || m.student_id || m).trim());
+            const memberIds = memberList(team.members).map(m => String(m?.id || m?.student_id || m).trim());
             const leaderId = String(team.leader).trim();
             const allIds = [...new Set([leaderId, ...memberIds].filter(Boolean))];
 
@@ -247,7 +263,7 @@ export default function ProjectAllocation() {
             );
 
             const teamsWithMeta = unallocatedList.map(team => {
-                const memberIds = (team.members || []).map(m => String(m.id || m.student_id || m).trim());
+                const memberIds = memberList(team.members).map(m => String(m?.id || m?.student_id || m).trim());
                 const leaderId = String(team.leader).trim();
                 const allIds = [...new Set([leaderId, ...memberIds].filter(Boolean))];
                 const prefRecord = preferences.find(p => allIds.includes(String(p.student_id).trim()));
@@ -450,7 +466,7 @@ export default function ProjectAllocation() {
 
             const label = teamLabel(t.id, t, semesterMap).toLowerCase();
             const projectTitle = (t.title || '').toLowerCase();
-            const members = (t.members || []).map(m => (m.name || '').toLowerCase()).join(' ');
+            const members = memberList(t.members).map(m => (m?.name || '').toLowerCase()).join(' ');
             const query = allotmentSearch.toLowerCase();
 
             return label.includes(query) || projectTitle.includes(query) || members.includes(query);
@@ -710,7 +726,7 @@ export default function ProjectAllocation() {
                                 const isAllocated = getHasAllocated(team);
                                 const teamYear = getTeamYear(team);
 
-                                const memberIds = (team.members || []).map(m => String(m.id || m.student_id || m).trim());
+                                const memberIds = memberList(team.members).map(m => String(m?.id || m?.student_id || m).trim());
                                 const leaderId = String(team.leader).trim();
                                 const allIds = [leaderId, ...memberIds];
 
@@ -745,7 +761,7 @@ export default function ProjectAllocation() {
                                         <div className="mb-4">
                                             <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Roster Ranks</div>
                                             <div className="flex flex-wrap gap-1.5">
-                                                {(team.members || []).map((m, idx) => (
+                                                {memberList(team.members).map((m, idx) => (
                                                     <span key={`${m.id || m.student_id || idx}-${idx}`} className="text-[10px] font-bold bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded" title={m.roll || m.student_id}>
                                                         {m.name}
                                                     </span>
