@@ -20,18 +20,9 @@ export function GlobalFilterProvider({ children }) {
     // useCallback: referencing `loadSemesters` from its own body meant reading
     // the binding before it was initialised, which is what the compiler flags.
     // Only setSemesters is captured, and setters are stable.
+    // Fetch only: every setState here runs in a promise callback, never
+    // synchronously, so calling this from an effect does not cascade renders.
     const loadSemesters = useCallback(() => {
-        // /api/data/semester_config now requires an admin session (it used to
-        // be carved out as public, which meant anyone could dump the whole
-        // table with no auth at all). Skip the call entirely until a token
-        // exists -- e.g. while this provider is mounted under the login
-        // screen -- rather than firing a request we know will 401. The
-        // procksi-auth-changed listener below re-triggers this once login
-        // succeeds.
-        if (!getAuthToken()) {
-            setSemesters([]);
-            return;
-        }
         const attempt = (retryCount) => {
             const apiBase = getApiBaseUrl();
             fetch(`${apiBase}/api/data/semester_config`, {
@@ -58,19 +49,37 @@ export function GlobalFilterProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        loadSemesters();
-        const handleAuthChange = () => loadSemesters();
-        window.addEventListener('procksi-semester-config-changed', loadSemesters);
+        // /api/data/semester_config requires an admin session (it used to be
+        // carved out as public, which let anyone dump the whole table). Skip
+        // the call until a token exists -- e.g. while this provider is mounted
+        // under the login screen -- rather than firing a request we know will
+        // 401. State starts as [], so there is nothing to clear on mount.
+        if (getAuthToken()) {
+            loadSemesters();
+        }
+        // Login reloads; logout clears. Runs from event callbacks, not the
+        // effect body.
+        const handleAuthChange = () => {
+            if (getAuthToken()) {
+                loadSemesters();
+            } else {
+                setSemesters([]);
+            }
+        };
+        const handleConfigChange = () => {
+            if (getAuthToken()) loadSemesters();
+        };
+        window.addEventListener('procksi-semester-config-changed', handleConfigChange);
         window.addEventListener('procksi-auth-changed', handleAuthChange);
         const handleStorageChange = (e) => {
             if (e.key === 'access_token' || e.key === 'procksi-admin-session') {
-                loadSemesters();
+                handleAuthChange();
             }
         };
         window.addEventListener('storage', handleStorageChange);
 
         return () => {
-            window.removeEventListener('procksi-semester-config-changed', loadSemesters);
+            window.removeEventListener('procksi-semester-config-changed', handleConfigChange);
             window.removeEventListener('procksi-auth-changed', handleAuthChange);
             window.removeEventListener('storage', handleStorageChange);
         };
