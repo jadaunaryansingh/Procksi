@@ -51,7 +51,9 @@ Every service needs:
 | `STUDENT_PORTAL_URL`, `ADMIN_PORTAL_URL`, `MENTOR_PORTAL_URL`, `PANEL_PORTAL_URL` | https://student.procksi.in, https://admin.procksi.in, https://mentor.procksi.in, https://panel.procksi.in (email links) |
 | `FRONTEND_URL` | all production frontend origins, comma-separated: `https://www.procksi.in,https://procksi.in,https://admin.procksi.in,https://panel.procksi.in,https://student.procksi.in,https://mentor.procksi.in` (CORS allowlist) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | redirect: `https://admin.procksi.in/auth/google/callback` |
-| `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_FROM_NAME` | SMTP; `MAIL_FROM_NAME=Procksi` |
+| `MAIL_SERVER`, `MAIL_PORT` | `smtp-relay.brevo.com`, `2525`. Render free web services block outbound SMTP on 25/465/587, so Gmail SMTP cannot connect from Render. |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | Brevo SMTP login (`…@smtp-brevo.com`) and SMTP key (`xsmtpsib-…`), from Brevo → SMTP & API → SMTP |
+| `MAIL_FROM`, `MAIL_FROM_NAME` | a sender verified in Brevo (e.g. `pmsglau@gmail.com`); `MAIL_FROM_NAME=Procksi` |
 | `OPENAI_API_KEY` / `NVIDIA_API_KEY`, `TWILIO_*` | optional |
 | `PYTHON_VERSION` | `3.12.7` (also pinned by `backend/*/.python-version`) |
 
