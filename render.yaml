@@ -26,7 +26,7 @@ envVarGroups:
       - key: PANEL_PORTAL_URL
         value: https://panel.procksi.in
       - key: GOOGLE_CLIENT_ID
-        value: 53268196905-gfa2r4klrqrtpgt9r9s4mjhmmgunjlrr.apps.googleusercontent.com
+        value: 1099009818998-dq8sp3qrl5s19iinc0d3hp3b2akngt6a.apps.googleusercontent.com
       - key: GOOGLE_REDIRECT_URI
         value: https://admin.procksi.in/auth/google/callback
       - key: GOOGLE_CALENDAR_ID
